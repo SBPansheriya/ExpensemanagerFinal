@@ -6,6 +6,8 @@ public class IncomeAndExpense implements Serializable {
     int id;
     String amount;
     String date;
+    String dayName;
+    String time;
     String categoryName;
     int categoryImage;
     String description;
@@ -15,10 +17,12 @@ public class IncomeAndExpense implements Serializable {
     public IncomeAndExpense() {
     }
 
-    public IncomeAndExpense(int id, String amount, String date, String categoryName, int categoryImage, String description, String addAttachment, String tag) {
+    public IncomeAndExpense(int id, String amount, String date, String dayName, String time, String categoryName, int categoryImage, String description, String addAttachment, String tag) {
         this.id = id;
         this.amount = amount;
         this.date = date;
+        this.dayName = dayName;
+        this.time = time;
         this.categoryName = categoryName;
         this.categoryImage = categoryImage;
         this.description = description;
@@ -48,6 +52,22 @@ public class IncomeAndExpense implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getDayName() {
+        return dayName;
+    }
+
+    public void setDayName(String dayName) {
+        this.dayName = dayName;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getCategoryName() {

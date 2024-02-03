@@ -59,7 +59,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
             android:backgroundTint="@color/lightGreen20"
-            android:background="@drawable/border"
+            android:background="@drawable/border12"
             android:fontFamily="@font/lexenddeca_regular"
             android:gravity="center"
             android:text="No"

@@ -45,62 +45,19 @@
             android:minHeight="56dp"/>
         </RelativeLayout>
 
-        <LinearLayout
+        <Button
+            android:id="@+id/save"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/save"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/border2"
-                android:fontFamily="@font/lexenddeca_regular"
-                android:gravity="center"
-                android:text="Save"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                app:backgroundTint="@null" />
-
-            <View
-                android:id="@+id/view"
-                android:layout_width="20dp"
-                android:layout_height="0dp"
-                android:visibility="gone"/>
-
-            <Button
-                android:id="@+id/delete"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/border2"
-                android:fontFamily="@font/lexenddeca_regular"
-                android:gravity="center"
-                android:text="Delete"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                app:backgroundTint="@null" />
-        </LinearLayout>
-<!--        <Button-->
-<!--            android:id="@+id/save"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="56dp"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginBottom="30dp"-->
-<!--            android:background="@drawable/border2"-->
-<!--            android:fontFamily="@font/lexenddeca_regular"-->
-<!--            android:gravity="center"-->
-<!--            android:text="@string/save"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="20sp"-->
-<!--            app:backgroundTint="@null" />-->
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/border2"
+            android:fontFamily="@font/lexenddeca_regular"
+            android:gravity="center"
+            android:text="@string/save"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:backgroundTint="@null" />
 
     </LinearLayout>
 </LinearLayout>

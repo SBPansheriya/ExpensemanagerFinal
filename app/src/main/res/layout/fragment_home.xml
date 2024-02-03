@@ -149,6 +149,7 @@
                                 android:textSize="14sp" />
 
                             <TextView
+                                android:id="@+id/total_income"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/lexenddeca_bold"
@@ -201,6 +202,7 @@
                                 android:textSize="14sp" />
 
                             <TextView
+                                android:id="@+id/total_expense"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/lexenddeca_medium"

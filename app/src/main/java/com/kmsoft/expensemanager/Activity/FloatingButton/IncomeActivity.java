@@ -25,9 +25,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +45,13 @@ import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.kmsoft.expensemanager.Activity.Budget.DetailsBudgetActivity;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,6 +70,7 @@ public class IncomeActivity extends AppCompatActivity {
     RelativeLayout incomeSetImage;
     LinearLayout incomeCategory, incomeAddAttachment;
     String selectedDate;
+    String dayName;
     Bitmap bitmap;
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
@@ -78,6 +79,7 @@ public class IncomeActivity extends AppCompatActivity {
     int click;
     int imageResId;
     String categoryName;
+    String incomeAddTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,8 +151,9 @@ public class IncomeActivity extends AppCompatActivity {
                 } else {
                     String amount = incomeAddAmount.getText().toString();
                     String description = incomeDescription.getText().toString();
+//                    String addAttachmentImage = bitmapToString(bitmap);
                     String addAttachmentImage = setIncomeImage.toString();
-                    incomeAndExpense = new IncomeAndExpense(0, amount, selectedDate, categoryName, imageResId, description, addAttachmentImage, "Income");
+                    incomeAndExpense = new IncomeAndExpense(0, amount, selectedDate, dayName,incomeAddTime,categoryName, imageResId, description, addAttachmentImage, "Income");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
                     Dialog dialog = new Dialog(IncomeActivity.this);
@@ -388,9 +391,14 @@ public class IncomeActivity extends AppCompatActivity {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar currentTime = Calendar.getInstance();
+                currentTime.set(year, month, dayOfMonth);
+                int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
 
+                // Convert the numerical representation of day of week to string representation
+                String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
+                dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                String time = dateFormat.format(currentTime.getTime());
+                incomeAddTime = dateFormat.format(currentTime.getTime());
                 selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
             }
         });

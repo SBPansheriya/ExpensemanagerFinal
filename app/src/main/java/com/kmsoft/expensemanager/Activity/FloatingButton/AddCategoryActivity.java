@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -40,7 +41,9 @@ public class AddCategoryActivity extends AppCompatActivity {
     RecyclerView incomeCategoryRecyclerview;
     RecyclerView expenseCategoryRecyclerview;
     Button addNewCategoryBtn;
-    int addCategoryImageResId;
+    int addCategoryImage;
+    int editCategoryImage;
+    BottomSheetDialog dialog;
     BottomSheetDialog dialog1;
     public static boolean click;
     String clicked;
@@ -52,8 +55,10 @@ public class AddCategoryActivity extends AppCompatActivity {
     int image;
     String tagFind;
     String findClick;
-    ArrayList<Category> incomeList = new ArrayList<>();
-    ArrayList<Category> expenseList = new ArrayList<>();
+    ArrayList<Category> incomeCategoryList = new ArrayList<>();
+    ArrayList<Category> expenseCategoryList = new ArrayList<>();
+    ImageView editNewCategoryImage;
+    ImageView addNewCategoryImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +101,13 @@ public class AddCategoryActivity extends AppCompatActivity {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 Intent data = result.getData();
                 if (data != null) {
-                    addCategoryImageResId = data.getIntExtra("imageResId", 0);
-                    getCategoryName = data.getStringExtra("name");
+                    if (findClick.equals("Edit")) {
+                        editCategoryImage = data.getIntExtra("imageResId", 0);
+                        editNewCategoryImage.setImageResource(editCategoryImage);
+                    } else if (findClick.equals("Add")) {
+                        addCategoryImage = data.getIntExtra("imageResId", 0);
+                        addNewCategoryImage.setImageResource(addCategoryImage);
+                    }
                 }
             }
         });
@@ -170,7 +180,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         super.onResume();
         if (click) {
             if (findClick.equals("Add")) {
-                showAddNewCategoryBottomDialog();
+                dialog.show();
             } else if (findClick.equals("Edit")) {
                 dialog1.show();
             }
@@ -202,38 +212,38 @@ public class AddCategoryActivity extends AppCompatActivity {
 
     private void showAddNewCategoryBottomDialog() {
 
-        BottomSheetDialog dialog = new BottomSheetDialog(AddCategoryActivity.this);
+        dialog = new BottomSheetDialog(AddCategoryActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.add_new_category_bottomsheet_layout);
         dialog.setCancelable(true);
-        dialog.show();
 
         EditText addNewCategory = dialog.findViewById(R.id.adding);
-        TextView save = dialog.findViewById(R.id.save);
-        ImageView categoryImage = dialog.findViewById(R.id.category_image);
+        Button save = dialog.findViewById(R.id.save);
+        addNewCategoryImage = dialog.findViewById(R.id.category_image);
 
-        if (addCategoryImageResId != 0) {
-            categoryImage.setImageResource(addCategoryImageResId);
+        if (addCategoryImage == 0) {
+            addNewCategoryImage.setImageResource(R.drawable.i);
         } else {
-            categoryImage.setImageResource(R.drawable.i);
+            addNewCategoryImage.setImageResource(addCategoryImage);
         }
 
-        categoryImage.setOnClickListener(new View.OnClickListener() {
+        addNewCategoryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 findClick = "Add";
                 Intent intent = new Intent(AddCategoryActivity.this, IconActivity.class);
-                intent.putExtra("name",addNewCategory.getText().toString());
+                intent.putExtra("name", addNewCategory.getText().toString());
                 launchSomeActivity.launch(intent);
                 dialog.dismiss();
             }
         });
 
-        if (!TextUtils.isEmpty(getCategoryName)){
-            addNewCategory.setText(getCategoryName);
-        } else {
-            addNewCategory.setHint("Add category name");
-        }
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                addCategoryImage = 0;
+            }
+        });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,61 +252,63 @@ public class AddCategoryActivity extends AppCompatActivity {
                     Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
                 } else {
                     addCategoryName = addNewCategory.getText().toString();
-                    category = new Category(0, addCategoryName, addCategoryImageResId, tagFind);
+                    category = new Category(0, addCategoryName, addCategoryImage, tagFind);
                     categoryArrayList.add(category);
+                    dbHelper.insertCategoryData(category);
                     if (tagFind.equals("Income")) {
-                        incomeList.add(category);
-                        addCategoryIncomeAdapter.updateData(incomeList);
+                        incomeCategoryList.add(category);
+                        addCategoryIncomeAdapter.updateData(incomeCategoryList);
                     } else if (tagFind.equals("Expense")) {
-                        expenseList.add(category);
-                        addCategoryIncomeAdapter.updateData(expenseList);
+                        expenseCategoryList.add(category);
+                        addCategoryIncomeAdapter.updateData(expenseCategoryList);
                     } else {
                         Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
                     }
-                    dbHelper.insertCategoryData(category);
+                    addCategoryImage = 0;
                     dialog.dismiss();
                 }
             }
         });
+        dialog.show();
     }
 
     public void showEditNewCategoryBottomDialog(Category getcategory, int position) {
-
         dialog1 = new BottomSheetDialog(AddCategoryActivity.this);
         dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog1.setContentView(R.layout.add_new_category_bottomsheet_layout);
+        dialog1.setContentView(R.layout.edit_category_bottomsheet_layout);
         dialog1.setCancelable(true);
         dialog1.show();
 
-        EditText editCategory = dialog1.findViewById(R.id.adding);
-        View view = dialog1.findViewById(R.id.view);
-        TextView save = dialog1.findViewById(R.id.save);
+        EditText editCategory = dialog1.findViewById(R.id.edit_category_name);
+        TextView update = dialog1.findViewById(R.id.update);
         TextView delete = dialog1.findViewById(R.id.delete);
-        ImageView categoryImage = dialog1.findViewById(R.id.category_image);
+        editNewCategoryImage = dialog1.findViewById(R.id.edit_category_image);
 
-        save.setText("Update");
-
-        delete.setVisibility(View.VISIBLE);
-        view.setVisibility(View.VISIBLE);
-
-        if (getcategory.getCategoryImage() == 0 && addCategoryImageResId == 0) {
-            categoryImage.setImageResource(R.drawable.i);
+        if (getcategory.getCategoryImage() == 0) {
+            editNewCategoryImage.setImageResource(R.drawable.i);
         } else {
-            categoryImage.setImageResource(getcategory.getCategoryImage());
+            if (editCategoryImage == 0) {
+                editNewCategoryImage.setImageResource(getcategory.getCategoryImage());
+            } else {
+                editNewCategoryImage.setImageResource(editCategoryImage);
+            }
         }
 
-//        if (TextUtils.isEmpty(addCategoryName)){
-            editCategory.setText(getcategory.getCategoryName());
-//        } else {
-//            editCategory.setText(getCategoryName);
-//        }
+        dialog1.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                editCategoryImage = 0;
+            }
+        });
 
-        categoryImage.setOnClickListener(new View.OnClickListener() {
+
+        editCategory.setText(getcategory.getCategoryName());
+
+        editNewCategoryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 findClick = "Edit";
                 Intent intent = new Intent(AddCategoryActivity.this, IconActivity.class);
-                intent.putExtra("name",getcategory.getCategoryName());
                 launchSomeActivity.launch(intent);
                 dialog1.dismiss();
             }
@@ -307,54 +319,53 @@ public class AddCategoryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (tagFind.equals("Income")) {
                     dbHelper.deleteCategoryData(getcategory.getId());
-                    incomeList.remove(position);
-                    addCategoryIncomeAdapter.updateData(incomeList);
+                    incomeCategoryList.remove(position);
+                    addCategoryIncomeAdapter.updateData(incomeCategoryList);
                 } else if (tagFind.equals("Expense")) {
                     dbHelper.deleteCategoryData(getcategory.getId());
-                    expenseList.remove(position);
-                    addCategoryIncomeAdapter.updateData(expenseList);
+                    expenseCategoryList.remove(position);
+                    addCategoryIncomeAdapter.updateData(expenseCategoryList);
                 }
                 categoryArrayList.remove(position);
                 dialog1.dismiss();
             }
         });
 
-        save.setOnClickListener(new View.OnClickListener() {
+        update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(editCategory.getText().toString())) {
                     Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
                 } else {
                     addCategoryName = editCategory.getText().toString();
-
+                    category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind);
+                    categoryArrayList.add(category);
                     if (tagFind.equals("Income")) {
-                        for (int i = 0; i < incomeList.size(); i++) {
-                            if (incomeList.get(i).getId() == getcategory.getId()) {
-                                incomeList.set(i, category);
+                        for (int i = 0; i < incomeCategoryList.size(); i++) {
+                            if (incomeCategoryList.get(i).getId() == getcategory.getId()) {
+                                incomeCategoryList.set(i, category);
                                 break;
                             }
                         }
-                        addCategoryIncomeAdapter.updateData(incomeList);
+                        addCategoryIncomeAdapter.updateData(incomeCategoryList);
                     } else if (tagFind.equals("Expense")) {
-                        for (int i = 0; i < expenseList.size(); i++) {
-                            if (expenseList.get(i).getId() == getcategory.getId()) {
-                                expenseList.set(i, category);
+                        for (int i = 0; i < expenseCategoryList.size(); i++) {
+                            if (expenseCategoryList.get(i).getId() == getcategory.getId()) {
+                                expenseCategoryList.set(i, category);
                                 break;
                             }
                         }
-                        addCategoryIncomeAdapter.updateData(expenseList);
+                        addCategoryIncomeAdapter.updateData(expenseCategoryList);
                     } else {
                         Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
                     }
-                    category = new Category(getcategory.getId(), addCategoryName, addCategoryImageResId, tagFind);
-                    categoryArrayList.add(category);
                     dbHelper.updateCategoryData(AddCategoryActivity.this.category);
+                    editCategoryImage = 0;
                     dialog1.dismiss();
                 }
             }
         });
     }
-
 
     private void Display() {
         Cursor cursor = dbHelper.getAllCategoryData();
@@ -369,16 +380,16 @@ public class AddCategoryActivity extends AppCompatActivity {
                 category = new Category(id, categoryName, categoryImage, tag);
                 categoryArrayList.add(category);
 
-                incomeList = filterCategories(categoryArrayList, "Income");
-                expenseList = filterCategories(categoryArrayList, "Expense");
+                incomeCategoryList = filterCategories(categoryArrayList, "Income");
+                expenseCategoryList = filterCategories(categoryArrayList, "Expense");
 
                 if (TextUtils.equals(tagFind, "Income")) {
                     incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-                    addCategoryIncomeAdapter = new AddCategoryIncomeAdapter(AddCategoryActivity.this, incomeList);
+                    addCategoryIncomeAdapter = new AddCategoryIncomeAdapter(AddCategoryActivity.this, incomeCategoryList);
                     incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 } else if (TextUtils.equals(tagFind, "Expense")) {
                     incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-                    addCategoryIncomeAdapter = new AddCategoryIncomeAdapter(AddCategoryActivity.this, expenseList);
+                    addCategoryIncomeAdapter = new AddCategoryIncomeAdapter(AddCategoryActivity.this, expenseCategoryList);
                     incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 }
             } while (cursor.moveToNext());

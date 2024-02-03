@@ -22,6 +22,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_AMOUNT = "amount";
     private static final String COLUMN_DATE = "date";
+    private static final String COLUMN_DAY= "day";
+    private static final String COLUMN_TIME = "time";
     private static final String COLUMN_CATEGORY_NAME = "category_name";
     private static final String COLUMN_CATEGORY_IMAGE = "category_image";
     private static final String COLUMN_DESCRIPTION = "description";
@@ -40,6 +42,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_ID + " INTEGER PRIMARY KEY,"
             + COLUMN_AMOUNT + " TEXT,"
             + COLUMN_DATE + " TEXT,"
+            + COLUMN_DAY + " TEXT,"
+            + COLUMN_TIME + " TEXT,"
             + COLUMN_CATEGORY_NAME + " TEXT,"
             + COLUMN_CATEGORY_IMAGE + " TEXT,"
             + COLUMN_DESCRIPTION + " TEXT,"
@@ -48,7 +52,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + ")";
 
     private static final String CREATE_TABLE_CATEGORY = "CREATE TABLE " + TABLE1 + "("
-            + COLUMN_ID + " INTEGER PRIMARY KEY,"
+            + COLUMN_ID_SHOW + " INTEGER PRIMARY KEY,"
             + COLUMN_CATEGORY_NAME_SHOW + " TEXT,"
             + COLUMN_CATEGORY_IMAGE_SHOW + " TEXT,"
             + COLUMN_TAG_SHOW + " TEXT"
@@ -80,6 +84,8 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT, incomeAndExpense.getAmount());
         contentValues.put(COLUMN_DATE, incomeAndExpense.getDate());
+        contentValues.put(COLUMN_DAY, incomeAndExpense.getDayName());
+        contentValues.put(COLUMN_TIME, incomeAndExpense.getTime());
         contentValues.put(COLUMN_CATEGORY_NAME, incomeAndExpense.getCategoryName());
         contentValues.put(COLUMN_CATEGORY_IMAGE, incomeAndExpense.getCategoryImage());
         contentValues.put(COLUMN_DESCRIPTION, incomeAndExpense.getDescription());
@@ -95,6 +101,8 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT, incomeAndExpense.getAmount());
         contentValues.put(COLUMN_DATE, incomeAndExpense.getDate());
+        contentValues.put(COLUMN_DAY, incomeAndExpense.getDayName());
+        contentValues.put(COLUMN_TIME, incomeAndExpense.getTime());
         contentValues.put(COLUMN_CATEGORY_NAME, incomeAndExpense.getCategoryName());
         contentValues.put(COLUMN_CATEGORY_IMAGE, incomeAndExpense.getCategoryImage());
         contentValues.put(COLUMN_DESCRIPTION, incomeAndExpense.getDescription());
@@ -114,7 +122,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Retrieve All Data
     public Cursor getAllData() {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE, null);
     }
 

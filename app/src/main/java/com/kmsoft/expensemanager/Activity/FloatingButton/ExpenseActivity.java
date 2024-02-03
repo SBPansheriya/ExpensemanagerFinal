@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -29,6 +30,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -40,24 +42,39 @@ import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.kmsoft.expensemanager.DBHelper;
+import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
 import java.io.IOException;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class ExpenseActivity extends AppCompatActivity {
 
+    DBHelper dbHelper;
+    ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
+    IncomeAndExpense incomeAndExpense;
     ImageView back, calender, setExpenseImage, removeExpenseImage;
-    TextView showExpenseDate;
+    TextView showExpenseDate, expenseCategoryName;
+    EditText expenseAddAmount, expenseDescription;
     Button expenseAdded;
     RelativeLayout expenseSetImage;
     LinearLayout expenseCategory, expenseAddAttachment;
     String selectedDate;
+    String dayName;
     Bitmap bitmap;
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
+    ActivityResultLauncher<Intent> launchSomeActivityResult;
     private static final int CAMERA_REQUEST = 100;
     int click;
-
+    int imageResId;
+    String categoryName;
+    String expenseAddTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +85,22 @@ public class ExpenseActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         init();
+
+        dbHelper = new DBHelper(this);
+        incomeAndExpenseArrayList = new ArrayList<>();
+
+        launchSomeActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    imageResId = data.getIntExtra("categoryImage", 0);
+                    categoryName = data.getStringExtra("categoryName");
+                    if (!TextUtils.isEmpty(categoryName)) {
+                        expenseCategoryName.setText("" + categoryName);
+                    }
+                }
+            }
+        });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +121,7 @@ public class ExpenseActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ExpenseActivity.this, AddCategoryActivity.class);
                 intent.putExtra("clicked","Expense");
-                startActivity(intent);
+                launchSomeActivityResult.launch(intent);
             }
         });
 
@@ -102,7 +135,46 @@ public class ExpenseActivity extends AppCompatActivity {
         expenseAdded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String editTextValue = expenseAddAmount.getText().toString();
+                if (editTextValue.equals("₹0") || editTextValue.equals("₹")) {
+                    Toast.makeText(ExpenseActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(editTextValue)){
+                    Toast.makeText(ExpenseActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(showExpenseDate.getText().toString())) {
+                    Toast.makeText(ExpenseActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(expenseCategoryName.getText().toString())) {
+                    Toast.makeText(ExpenseActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+                } else {
+                    String amount = expenseAddAmount.getText().toString();
+                    String description = expenseDescription.getText().toString();
+                    String addAttachmentImage = setExpenseImage.toString();
+                    incomeAndExpense = new IncomeAndExpense(0, amount, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
+                    incomeAndExpenseArrayList.add(incomeAndExpense);
+                    dbHelper.insertData(incomeAndExpense);
+                    Dialog dialog = new Dialog(ExpenseActivity.this);
+                    if (dialog.getWindow() != null) {
+                        dialog.getWindow().setGravity(Gravity.CENTER);
+                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        dialog.setCancelable(true);
+                    }
+                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    dialog.setContentView(R.layout.dailog_removed_layout);
+                    dialog.setCancelable(true);
+                    dialog.show();
 
+                    TextView txt = dialog.findViewById(R.id.txt);
+                    txt.setText("Expense has been successfully added");
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (dialog.isShowing()) {
+                                onBackPressed();
+                                dialog.dismiss();
+                            }
+                        }
+                    }, 2000);
+                }
             }
         });
 
@@ -313,6 +385,15 @@ public class ExpenseActivity extends AppCompatActivity {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                Calendar currentTime = Calendar.getInstance();
+                currentTime.set(year, month, dayOfMonth);
+                int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+
+                // Convert the numerical representation of day of week to string representation
+                String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
+                dayName = daysOfWeek[dayOfWeek];
+                SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                expenseAddTime = dateFormat.format(currentTime.getTime());
                 selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
             }
         });
@@ -337,6 +418,14 @@ public class ExpenseActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent();
+        intent.putExtra("incomeAndExpense",incomeAndExpense);
+        setResult(RESULT_OK, intent);
+    }
+
     private void init() {
         back = findViewById(R.id.back);
         calender = findViewById(R.id.expense_calender);
@@ -347,5 +436,8 @@ public class ExpenseActivity extends AppCompatActivity {
         expenseSetImage = findViewById(R.id.expense_set_image);
         removeExpenseImage = findViewById(R.id.remove_expense_image);
         expenseAdded = findViewById(R.id.expense_added);
+        expenseAddAmount = findViewById(R.id.expense_add_amount);
+        expenseCategoryName = findViewById(R.id.expense_category_name);
+        expenseDescription = findViewById(R.id.expense_description);
     }
 }

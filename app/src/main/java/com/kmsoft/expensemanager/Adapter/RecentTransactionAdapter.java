@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.kmsoft.expensemanager.Activity.Trancation.DetailsTrancationActivity;
 import com.kmsoft.expensemanager.Fragment.HomeFragment;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -47,6 +51,15 @@ public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransac
         else {
             holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(homeFragment.getContext(), DetailsTrancationActivity.class);
+                intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
+                homeFragment.getContext().startActivity(intent);
+            }
+        });
 
         if (position == incomeAndExpenseArrayList.size()-1) {
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
