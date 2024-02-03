@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bottom_border"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/filter_line"
+        android:layout_gravity="center|top"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="10dp"
+            android:textSize="16sp"
+            android:fontFamily="@font/lexenddeca_semibold"
+            android:textColor="@color/black"
+            android:text="@string/filter_transaction"/>
+
+        <TextView
+            android:id="@+id/trans_reset"
+            android:layout_width="71dp"
+            android:layout_height="32dp"
+            android:layout_marginHorizontal="10dp"
+            android:text="@string/reset"
+            android:gravity="center"
+            android:background="@drawable/border"
+            android:backgroundTint="#3329756F"
+            android:textColor="@color/green"
+            android:fontFamily="@font/lexenddeca_semibold"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp">
+        <TextView
+            android:id="@+id/txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:fontFamily="@font/lexenddeca_semibold"
+            android:textColor="@color/black"
+            android:text="@string/filter_by"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/txt">
+            <TextView
+                android:id="@+id/trans_income"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/income"
+                android:gravity="center"
+                android:textColor="@color/green"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="0dp"/>
+            <TextView
+                android:id="@+id/trans_expense"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/expense"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp">
+        <TextView
+            android:id="@+id/txt1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:fontFamily="@font/lexenddeca_semibold"
+            android:textColor="@color/black"
+            android:text="@string/sort_by"/>
+
+        <LinearLayout
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/txt1">
+            <TextView
+                android:id="@+id/trans_highest"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/highest"
+                android:gravity="center"
+                android:textColor="@color/green"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="0dp"/>
+            <TextView
+                android:id="@+id/trans_lowest"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/lowest"
+                android:gravity="center"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="0dp"/>
+            <TextView
+                android:id="@+id/trans_newest"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/newest"
+                android:gravity="center"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/title">
+
+        <TextView
+            android:id="@+id/trans_oldest"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_weight="1"
+            android:text="@string/oldest"
+            android:gravity="center"
+            android:fontFamily="@font/lexenddeca_semibold"
+            android:textSize="16sp"/>
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="0dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:text="@string/oldest"
+                android:gravity="center"
+                android:background="@drawable/border4"
+                android:textColor="@color/black"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+            <View
+                android:layout_width="20dp"
+                android:layout_height="0dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:visibility="invisible"
+                android:layout_weight="1"
+                android:text="@string/oldest"
+                android:gravity="center"
+                android:background="@drawable/border4"
+                android:textColor="@color/black"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/trans_apply"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/border2"
+        android:fontFamily="@font/lexenddeca_regular"
+        android:gravity="center"
+        android:text="@string/apply"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:backgroundTint="@null" />
+
+</LinearLayout>

@@ -1,0 +1,64 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.ExpenseManager" parent="Theme.Material3.DayNight">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.ExpenseManager" parent="Base.Theme.ExpenseManager">
+
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MyApp.FloatingActionButton" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:letterSpacing">0.010</item>
+        <item name="fontFamily">@font/lexenddeca_bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="spinnerItemStyle" parent="android:Widget.TextView.SpinnerItem"></style>
+
+    <style name="CalenderViewDateCustomText" parent="android:TextAppearance.DeviceDefault.Small">
+        <item name="android:textColor">@drawable/date_selector</item>
+    </style>
+
+    <style name="CalenderViewWeekCustomText" parent="android:TextAppearance.DeviceDefault.Small">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CalenderViewCustom" parent="Theme.AppCompat">
+        <item name="colorControlActivated">@color/green</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
+    <style name="SpinnerTheme" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/spinner_background1</item>
+    </style>
+
+    <style name="SpinnerTheme1" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/spinner_background2</item>
+    </style>
+
+    <style name="SpinnerTheme2" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/spinner_background3</item>
+    </style>
+
+    <style name="EditTextNoUnderline" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="YOURSTYLE" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:dropDownHorizontalOffset">-380dp</item>
+        <item name="android:fontFamily">@font/lexenddeca_medium</item>
+        <item name="android:itemBackground">@drawable/popup_menu_background</item>
+    </style>
+</resources>

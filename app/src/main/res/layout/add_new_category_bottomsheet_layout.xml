@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bottom_border"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/filter_line"
+        android:layout_gravity="center|top"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border10">
+
+        <ImageView
+            android:id="@+id/category_image"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/i"/>
+
+        <EditText
+            android:id="@+id/adding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/category_image"
+            android:hint="Add category name"
+            android:paddingStart="10dp"
+            app:backgroundTint="@color/white"
+            android:textColor="@color/black"
+            android:fontFamily="@font/lexenddeca_medium"
+            android:minHeight="56dp"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/save"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/border2"
+                android:fontFamily="@font/lexenddeca_regular"
+                android:gravity="center"
+                android:text="Save"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                app:backgroundTint="@null" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="20dp"
+                android:layout_height="0dp"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/delete"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/border2"
+                android:fontFamily="@font/lexenddeca_regular"
+                android:gravity="center"
+                android:text="Delete"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                app:backgroundTint="@null" />
+        </LinearLayout>
+<!--        <Button-->
+<!--            android:id="@+id/save"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:layout_marginBottom="30dp"-->
+<!--            android:background="@drawable/border2"-->
+<!--            android:fontFamily="@font/lexenddeca_regular"-->
+<!--            android:gravity="center"-->
+<!--            android:text="@string/save"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="20sp"-->
+<!--            app:backgroundTint="@null" />-->
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    tools:context=".Fragment.BudgetFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/tbMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center_vertical"
+            android:minHeight="?attr/actionBarSize"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="25dp"
+                android:layout_height="30dp"
+                android:visibility="gone"
+                android:background="@drawable/border"
+                android:src="@drawable/black_back" />
+
+            <TextView
+                android:id="@+id/txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/back"
+                android:fontFamily="@font/lexenddeca_bold"
+                android:gravity="center"
+                android:text="@string/budget"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:visibility="gone"
+            android:layout_marginHorizontal="40dp"
+            android:fontFamily="@font/lexenddeca_medium"
+            android:textColor="@color/gray"
+            android:text="@string/you_don_t_have_a_budget_let_s_make_one_so_you_in_control"
+            android:layout_centerInParent="true"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/budget_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tbMenu"
+            android:visibility="visible"
+            tools:itemCount="5"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="20dp"
+            tools:listitem="@layout/item_budget_layout"/>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/create_budget"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/border2"
+        android:fontFamily="@font/lexenddeca_regular"
+        android:gravity="center"
+        android:text="@string/create_a_budget"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:backgroundTint="@null" />
+</FrameLayout>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relative"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/edit_category"
+        android:background="@drawable/border10">
+
+
+        <ImageView
+            android:id="@+id/add_new_category_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/i" />
+
+    <TextView
+        android:id="@+id/show_category_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="10dp"
+        android:layout_toStartOf="@+id/checkbox"
+        android:layout_toEndOf="@+id/add_new_category_image"
+        android:fontFamily="@font/lexenddeca_semibold"
+        android:gravity="center|start"
+        android:text="@string/shopping"
+        android:textColor="@color/black"
+        android:textSize="16dp" />
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:button="@drawable/custom_checkbox"
+        app:buttonTint="@null" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/edit_category"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/border11"
+        android:layout_marginStart="10dp"
+        android:layout_alignParentEnd="true">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/edit_categroy" />
+    </RelativeLayout>
+</RelativeLayout>

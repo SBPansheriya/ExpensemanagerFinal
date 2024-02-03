@@ -1,0 +1,103 @@
+<resources>
+    <string name="app_name">Expense manager</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="expense">Expense</string>
+    <string name="how_much">How much?</string>
+    <string name="date">Date</string>
+    <string name="shopping">Shopping</string>
+    <string name="description">Description</string>
+    <string name="repeat">Repeat</string>
+    <string name="repeat_transaction_set_your_own_time">Repeat transaction, set your own time</string>
+    <string name="continue1">Continue</string>
+    <string name="income">Income</string>
+    <string name="simple_expense_manager">Simple Expense Manager</string>
+    <string name="expense_management_effortlessly">Expense Management, Effortlessly.</string>
+    <string name="recent_transaction">Recent Transaction</string>
+    <string name="see_all">See all</string>
+    <string name="buy_some_grocery">Buy some grocery</string>
+    <string name="transaction">Transaction</string>
+    <string name="see_your_financial_report">See your financial report</string>
+    <string name="newest">Newest</string>
+    <string name="lowest">Lowest</string>
+    <string name="highest">Highest</string>
+    <string name="sort_by">Sort By</string>
+    <string name="filter_by">Filter By</string>
+    <string name="reset">Reset</string>
+    <string name="filter_transaction">Filter Transaction</string>
+    <string name="oldest">Oldest</string>
+    <string name="apply">Apply</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="type">Type</string>
+    <string name="time">Time</string>
+    <string name="category">Category</string>
+    <string name="salary">Salary</string>
+    <string name="details_transaction">Details transaction</string>
+    <string name="attachment">Attachment</string>
+    <string name="amet_minim_mollit_non_deserunt_ullamcoest_sit_aliqua_dolor_do_amet_sint_velit_officia_consequat_duis_enim_velit_mollit_exercitation_veniam_consequat_sunt_nostrud_amet">Amet minim mollit non deserunt ullamcoest sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.</string>
+    <string name="a">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</string>
+    <string name="salary_for_march">Salary for march</string>
+    <string name="sunday_15_march_2022">Sunday 15 march 2022</string>
+    <string name="_10000">₹10000</string>
+    <string name="edit">Edit</string>
+    <string name="remove_this_transaction">Remove this transaction?</string>
+    <string name="are_you_sure_do_you_wanna_remove_this_transaction">Are you sure do you wanna remove this transaction?</string>
+    <string name="transaction_has_been_successfully_removed">Transaction has been successfully removed</string>
+    <string name="create_a_budget">Create a Budget</string>
+    <string name="you_don_t_have_a_budget_let_s_make_one_so_you_in_control">You don’t have a budget. Let’s make one so you in control.</string>
+    <string name="you_ve_exceed_the_limit">You’ve exceed the limit!</string>
+    <string name="budget">Budget</string>
+    <string name="how_much_do_yo_want_to_spend">How much do yo want to spend?</string>
+    <string name="details_budget">Details Budget</string>
+    <string name="remaining">Remaining</string>
+    <string name="edit_budget">Edit Budget</string>
+    <string name="today">Today</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="add_new_category">Add new category</string>
+    <string name="save">Save</string>
+    <string name="financial_report">Financial Report</string>
+    <string name="profile">Profile</string>
+    <string name="username">Username</string>
+    <string name="leslie_alexander">Leslie Alexander</string>
+    <string name="camera_permission"><![CDATA[You have chosen to never ask the permission again, but camera permission is needed for proper functioning of app.]]></string>
+    <string name="setting">Setting</string>
+    <string name="rate">Rate</string>
+    <string name="share">Share</string>
+    <string name="notification">Notification</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+    <string name="export_data">Export Data</string>
+
+    <string-array name="spendFrequency" translatable="false">
+        <item>Income</item>
+        <item>Expense</item>
+    </string-array>
+
+    <string-array name="whatDataExport" translatable="false">
+        <item>All</item>
+        <item>Income</item>
+        <item>Expense</item>
+    </string-array>
+
+    <string-array name="whenDate" translatable="false">
+        <item>Last 30 days</item>
+        <item>Week</item>
+        <item>Year</item>
+
+    </string-array>
+
+
+    <string-array name="whatFormat" translatable="false">
+        <item>CSV</item>
+        <item>PDF</item>
+    </string-array>
+    <string-array name="financial_report_type" translatable="false">
+        <item>Today</item>
+        <item>Month</item>
+        <item>Week</item>
+        <item>Year</item>
+    </string-array>
+</resources>

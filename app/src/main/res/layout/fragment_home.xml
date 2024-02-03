@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Fragment.HomeFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="@drawable/gradiant_color">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/design" />
+
+            <RelativeLayout
+                android:id="@+id/title1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?attr/actionBarSize">
+
+                <RelativeLayout
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="30dp">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:src="@drawable/border_img1"/>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    app:cardCornerRadius="150dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/cardview_border">
+
+                    <ImageView
+                        android:id="@+id/home_profile_image"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/profile"
+                        android:scaleType="centerCrop" />
+                </androidx.cardview.widget.CardView>
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/lexenddeca_bold"
+                    android:gravity="center"
+                    android:text="Home"
+                    android:textColor="@color/green"
+                    android:textSize="22sp" />
+
+                <ImageView
+                    android:id="@+id/home_notification"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/home_notification" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/title2"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_below="@+id/title1"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/lexenddeca_medium"
+                android:gravity="center"
+                android:text="Total Balance"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/show_balance"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/title2"
+                android:fontFamily="@font/lexenddeca_medium"
+                android:gravity="center"
+                android:text="₹10,000"
+                android:textColor="@color/black"
+                android:textSize="28sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/show_balance"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/border"
+                    android:backgroundTint="#00A86B"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                        <ImageView
+                            android:id="@+id/home_income"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/home_income" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_toEndOf="@+id/home_income"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexenddeca_medium"
+                                android:gravity="center|start"
+                                android:text="Income"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexenddeca_bold"
+                                android:text="₹8000"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="0dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/border"
+                    android:backgroundTint="#FD3C4A"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                        <ImageView
+                            android:id="@+id/home_expense"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/home_expenses" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_toEndOf="@+id/home_expense"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexenddeca_bold"
+                                android:gravity="center|start"
+                                android:text="Expenses"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/lexenddeca_medium"
+                                android:text="₹2000"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/title3"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_below="@+id/title"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:textSize="20dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/lexenddeca_bold"
+                android:text="Spend frequency" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="120dp"
+                android:layout_height="35dp"
+                android:dropDownWidth="120dp"
+                android:popupBackground="@drawable/spinner_pop_bg"
+                android:background="@drawable/spinner_background"
+                android:spinnerMode="dropdown"/>
+        </LinearLayout>
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/title4"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:gravity="center"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:layout_below="@+id/viewpager"-->
+<!--            android:background="@drawable/cardview_border">-->
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/line_chart"
+            android:layout_width="match_parent"
+            android:layout_height="219dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_below="@+id/title3"/>
+
+            <LinearLayout
+                android:id="@+id/title4"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/cardview_border"
+                android:layout_marginHorizontal="20dp"
+                android:layout_below="@+id/line_chart"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/home_today"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/today"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:background="@drawable/selected_tab"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:id="@+id/home_week"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/week"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:id="@+id/home_month"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/month"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:id="@+id/home_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/year"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:textColor="#FFFFFF"/>
+            </LinearLayout>
+
+<!--        <com.google.android.material.tabs.TabLayout-->
+<!--            android:id="@+id/tabs"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:background="@drawable/cardview_border"-->
+<!--            android:backgroundTint="@color/white"-->
+<!--            app:tabBackground="@drawable/tab_selector"-->
+<!--            app:tabMaxWidth="90dp"-->
+<!--            app:tabMinWidth="90dp"-->
+<!--            app:tabGravity="center"-->
+<!--            app:tabIndicatorHeight="0dp"-->
+<!--            app:tabMode="scrollable"-->
+<!--            app:tabRippleColor="@null"-->
+<!--            app:tabSelectedTextColor="#FFFFFF"-->
+<!--            app:tabTextAppearance="@style/TabTextAppearance" />-->
+<!--        </LinearLayout>-->
+<!--        <androidx.viewpager.widget.ViewPager-->
+<!--            android:id="@+id/viewpager"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="219dp"-->
+<!--            android:layout_below="@+id/title3"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_marginTop="15dp"-->
+<!--            android:fitsSystemWindows="true"-->
+<!--            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>-->
+
+        <LinearLayout
+            android:id="@+id/title5"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_below="@+id/title4"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/lexenddeca_bold"
+                android:text="@string/recent_transaction" />
+
+            <TextView
+                android:id="@+id/see_all"
+                android:layout_width="90dp"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:fontFamily="@font/lexenddeca_medium"
+                android:text="@string/see_all"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:background="@drawable/gradiant_color2"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recentTransactionRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_below="@+id/title5"
+            tools:listitem="@layout/item_recent_transaction_layout"/>
+
+    </RelativeLayout>
+</androidx.core.widget.NestedScrollView>
+</FrameLayout>

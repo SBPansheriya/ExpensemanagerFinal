@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <padding android:bottom="3dp"
+                        android:left="3dp"
+                        android:right="3dp"
+                        android:top="3dp" />
+                    <corners android:radius="7dp"/>
+                    <gradient
+                        android:startColor="@color/lightGreen"
+                        android:endColor="@color/lightDarkGreen"
+                        android:angle="50"/>
+                </shape>
+            </item>
+
+            <item
+                android:drawable="@drawable/baseline_keyboard_arrow_down_242"
+                android:gravity="end"/>
+        </layer-list>
+
+    </item>
+</selector>
