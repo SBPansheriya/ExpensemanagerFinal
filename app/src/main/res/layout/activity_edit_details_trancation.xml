@@ -38,20 +38,13 @@
                 android:id="@+id/txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="25dp"
                 android:layout_toEndOf="@+id/back"
                 android:fontFamily="@font/lexenddeca_bold"
                 android:gravity="center"
-                android:text="@string/details_transaction"
+                android:text="@string/edit_transaction"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/delete"
-                android:layout_width="25dp"
-                android:layout_height="30dp"
-                android:layout_alignParentEnd="true"
-                android:background="@drawable/border"
-                android:src="@drawable/income_delete" />
 
         </RelativeLayout>
 
@@ -59,15 +52,16 @@
             android:id="@+id/title1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_below="@+id/tbMenu"
+            android:layout_centerInParent="true"
             android:layout_marginStart="15dp"
             android:layout_marginTop="30dp"
             android:gravity="start"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/show_total_balance"
+            <EditText
+                android:id="@+id/edit_total_balance"
+                style="@style/EditTextNoUnderline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -88,12 +82,13 @@
                 android:textAllCaps="false"
                 android:textColor="#FFF"
                 android:textSize="18.0sp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/show_date"
+            <EditText
+                android:id="@+id/edit_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/EditTextNoUnderline"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/lexenddeca_medium"
                 android:gravity="center"
@@ -163,7 +158,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/show_type"
+                    android:id="@+id/edit_type"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_marginHorizontal="10dp"
@@ -175,7 +170,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/show_category"
+                    android:id="@+id/edit_category"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_marginHorizontal="10dp"
@@ -187,7 +182,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/show_time"
+                    android:id="@+id/edit_time"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_marginHorizontal="10dp"
@@ -242,7 +237,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/show_description"
+                    android:id="@+id/edit_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -275,7 +270,7 @@
                     app:cardCornerRadius="8dp">
 
                     <ImageView
-                        android:id="@+id/show_addAttachment"
+                        android:id="@+id/edit_addAttachment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:scaleType="centerCrop"
@@ -286,7 +281,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <Button
-        android:id="@+id/show_edit_details_transaction"
+        android:id="@+id/edit_details_transaction"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="10dp"
@@ -296,7 +291,7 @@
         android:background="@drawable/border2"
         android:fontFamily="@font/lexenddeca_regular"
         android:gravity="center"
-        android:text="@string/edit"
+        android:text="@string/continue1"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:backgroundTint="@null" />

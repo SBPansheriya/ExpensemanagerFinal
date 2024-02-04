@@ -1,8 +1,12 @@
 package com.kmsoft.expensemanager.Activity.Trancation;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,15 +14,23 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.kmsoft.expensemanager.DBHelper;
+import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
 public class DetailsTrancationActivity extends AppCompatActivity {
 
-    ImageView delete,back;
+    DBHelper dbHelper;
+    ImageView delete,back, showAddAttachment;
+    TextView showTotalBalance, showDescription, showType, showCategory, showTime, showDate;
+    IncomeAndExpense incomeAndExpense;
+    ActivityResultLauncher<Intent> launchSomeActivity;
+    Button editDetailsTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +41,22 @@ public class DetailsTrancationActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         init();
+
+        dbHelper = new DBHelper(DetailsTrancationActivity.this);
+        incomeAndExpense = (IncomeAndExpense) getIntent().getSerializableExtra("incomeAndExpense");
+        setData();
+
+        launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    incomeAndExpense = (IncomeAndExpense) data.getSerializableExtra("incomeAndExpense");
+                    if (incomeAndExpense != null){
+                        setData();
+                    }
+                }
+            }
+        });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,6 +71,29 @@ public class DetailsTrancationActivity extends AppCompatActivity {
                 showDeleteBottomDialog();
             }
         });
+
+        editDetailsTransaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DetailsTrancationActivity.this, EditDetailsTrancationActivity.class);
+                intent.putExtra("incomeAndExpense",incomeAndExpense);
+                launchSomeActivity.launch(intent);
+            }
+        });
+    }
+
+    private void setData(){
+        showTotalBalance.setText(incomeAndExpense.getAmount());
+        showTime.setText(incomeAndExpense.getDayName() + "," + incomeAndExpense.getTime());
+        showType.setText(incomeAndExpense.getTag());
+        showCategory.setText(incomeAndExpense.getCategoryName());
+        showTime.setText(incomeAndExpense.getTime());
+        showDescription.setText(incomeAndExpense.getDescription());
+        if (incomeAndExpense.getCategoryImage() == 0) {
+            showAddAttachment.setImageResource(R.drawable.i);
+        } else {
+            showAddAttachment.setImageResource(incomeAndExpense.getCategoryImage());
+        }
     }
 
     private void showDeleteBottomDialog(){
@@ -66,6 +117,8 @@ public class DetailsTrancationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                dbHelper.deleteData(incomeAndExpense.getId());
+
                 bottomSheetDialog.dismiss();
                 Dialog dialog = new Dialog(DetailsTrancationActivity.this);
                 if (dialog.getWindow() != null) {
@@ -85,7 +138,7 @@ public class DetailsTrancationActivity extends AppCompatActivity {
                             dialog.dismiss();
                         }
                     }
-                }, 2000);
+                }, 1000);
             }
         });
     }
@@ -93,5 +146,13 @@ public class DetailsTrancationActivity extends AppCompatActivity {
     private void init(){
         delete = findViewById(R.id.delete);
         back = findViewById(R.id.back);
+        showTotalBalance = findViewById(R.id.show_total_balance);
+        showDate = findViewById(R.id.show_date);
+        showAddAttachment = findViewById(R.id.show_addAttachment);
+        showCategory = findViewById(R.id.show_category);
+        showTime = findViewById(R.id.show_time);
+        showType = findViewById(R.id.show_type);
+        showDescription = findViewById(R.id.show_description);
+        editDetailsTransaction = findViewById(R.id.show_edit_details_transaction);
     }
 }

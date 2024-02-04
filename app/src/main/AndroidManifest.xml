@@ -15,6 +15,9 @@
         android:theme="@style/Theme.ExpenseManager"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.Trancation.EditDetailsTrancationActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.FloatingButton.IconActivity"
             android:exported="false" />
         <activity
