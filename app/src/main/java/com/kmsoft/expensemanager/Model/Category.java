@@ -1,6 +1,8 @@
 package com.kmsoft.expensemanager.Model;
 
-public class Category {
+import java.io.Serializable;
+
+public class Category implements Serializable {
     int id;
     String categoryName;
     int categoryImage;

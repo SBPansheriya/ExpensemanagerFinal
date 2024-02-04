@@ -160,7 +160,7 @@ public class IncomeActivity extends AppCompatActivity {
                     if (dialog.getWindow() != null) {
                         dialog.getWindow().setGravity(Gravity.CENTER);
                         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                        dialog.setCancelable(true);
+                        dialog.setCancelable(false);
                     }
                     dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                     dialog.setContentView(R.layout.dailog_removed_layout);
@@ -178,7 +178,7 @@ public class IncomeActivity extends AppCompatActivity {
                                 dialog.dismiss();
                             }
                         }
-                    }, 2000);
+                    }, 1000);
                 }
             }
         });

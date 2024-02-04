@@ -1,7 +1,10 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,13 +19,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.kmsoft.expensemanager.Fragment.BudgetFragment;
+import com.google.android.material.slider.Slider;
+import com.kmsoft.expensemanager.DBHelper;
+import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.R;
+
+import java.util.ArrayList;
 
 public class DetailsBudgetActivity extends AppCompatActivity {
 
-    ImageView showExceedAmount,back,delete;
+    DBHelper dbHelper;
+    TextView showCategoryNameBudget, amountBudget;
+    ImageView showExceedAmount, back, delete, showCategoryImageBudget;
+    Slider showPercentage;
     Button showEditBudget;
+    Budget budget;
+    ActivityResultLauncher<Intent> launchSomeActivity;
+    ArrayList<Budget> budgetArrayList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +47,22 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         init();
+
+        dbHelper = new DBHelper(DetailsBudgetActivity.this);
+
+        budget = (Budget) getIntent().getSerializableExtra("budget");
+        setData();
+        launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    budget = (Budget) data.getSerializableExtra("budget");
+                    if (budget != null){
+                        setData();
+                    }
+                }
+            }
+        });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +75,8 @@ public class DetailsBudgetActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DetailsBudgetActivity.this, EditBudgetActivity.class);
-                startActivity(intent);
+                intent.putExtra("budget", budget);
+                launchSomeActivity.launch(intent);
             }
         });
 
@@ -57,7 +88,19 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         });
     }
 
-    private void showDeleteBottomDialog(){
+    private void setData(){
+        showCategoryNameBudget.setText(budget.getCategoryNameBudget());
+        if (budget.getCategoryImageBudget() == 0) {
+            showCategoryImageBudget.setImageResource(R.drawable.i);
+        } else {
+            showCategoryImageBudget.setImageResource(budget.getCategoryImageBudget());
+        }
+        amountBudget.setText("" + budget.getAmountBudget());
+        showPercentage.setValue(budget.getPercentageBudget());
+        showPercentage.setEnabled(false);
+    }
+
+    private void showDeleteBottomDialog() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(DetailsBudgetActivity.this);
         bottomSheetDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         bottomSheetDialog.setContentView(R.layout.delete_bottomsheet_layout);
@@ -84,11 +127,14 @@ public class DetailsBudgetActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 bottomSheetDialog.dismiss();
+
+                dbHelper.deleteBudgetData(budget.getId());
+
                 Dialog dialog = new Dialog(DetailsBudgetActivity.this);
                 if (dialog.getWindow() != null) {
                     dialog.getWindow().setGravity(Gravity.CENTER);
                     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    dialog.setCancelable(true);
+                    dialog.setCancelable(false);
                 }
                 dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 dialog.setContentView(R.layout.dailog_removed_layout);
@@ -106,15 +152,19 @@ public class DetailsBudgetActivity extends AppCompatActivity {
                             dialog.dismiss();
                         }
                     }
-                }, 2000);
+                }, 1000);
             }
         });
     }
 
-    private void init(){
+    private void init() {
         back = findViewById(R.id.back);
         delete = findViewById(R.id.delete);
         showEditBudget = findViewById(R.id.show_edit_budget);
         showExceedAmount = findViewById(R.id.show_exceed_amount);
+        showCategoryNameBudget = findViewById(R.id.show_category_name_budget);
+        amountBudget = findViewById(R.id.amount_budget);
+        showCategoryImageBudget = findViewById(R.id.show_category_image_budget);
+        showPercentage = findViewById(R.id.set_slider_budget);
     }
 }

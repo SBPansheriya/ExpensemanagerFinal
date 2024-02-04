@@ -14,14 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.slider.Slider;
 import com.kmsoft.expensemanager.Activity.Budget.DetailsBudgetActivity;
 import com.kmsoft.expensemanager.Fragment.BudgetFragment;
+import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.R;
+
+import java.util.ArrayList;
 
 public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapter.ViewHolder> {
 
     BudgetFragment budgetFragment;
+    ArrayList<Budget> budgetArrayList;
 
-    public BudgetCreateAdapter(BudgetFragment budgetFragment) {
+    public BudgetCreateAdapter(BudgetFragment budgetFragment, ArrayList<Budget> budgetArrayList) {
         this.budgetFragment = budgetFragment;
+        this.budgetArrayList = budgetArrayList;
     }
 
     @NonNull
@@ -33,19 +38,29 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
 
     @Override
     public void onBindViewHolder(@NonNull BudgetCreateAdapter.ViewHolder holder, int position) {
-        holder.setCategory.setText("Shopping");
-        holder.setRemainingAmount.setText("Remaining $1000");
+        Budget budget = budgetArrayList.get(position);
+        holder.setCategory.setText(budget.getCategoryNameBudget());
+        holder.setRemainingAmount.setText("Remaining" + budget.getAmountBudget());
         holder.setAmount.setText("₹1200 of ₹1000");
+        holder.setSlider.setValue(budget.getPercentageBudget());
+        holder.setSlider.setEnabled(false);
+//        holder.setSlider.addOnChangeListener(new Slider.OnChangeListener() {
+//            @Override
+//            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+//                slider.setValue(budget.getPercentageBudget());
+//            }
+//        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(budgetFragment.getContext(), DetailsBudgetActivity.class);
+                intent.putExtra("budget",budgetArrayList.get(position));
                 budgetFragment.getContext().startActivity(intent);
             }
         });
 
-        if (position == 4) {
+        if (position == budgetArrayList.size()) {
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(0, 20, 0, 350);
             holder.reletive.setLayoutParams(layoutParams);
@@ -54,7 +69,7 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
 
     @Override
     public int getItemCount() {
-        return 5;
+        return budgetArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

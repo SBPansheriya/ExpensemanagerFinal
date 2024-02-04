@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager;
 
+import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.Model.Category;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 
@@ -17,6 +18,7 @@ public class Constant {
             R.drawable.i41,R.drawable.i42,R.drawable.i43,R.drawable.i44,R.drawable.i45,
             R.drawable.i46,R.drawable.i47,R.drawable.i48,R.drawable.i49,R.drawable.i50};
 
-    public static ArrayList<Category> categoryArrayList = new ArrayList<>();
     public static ArrayList<IncomeAndExpense> incomeAndExpenseArrayList = new ArrayList<>();
+    public static ArrayList<Category> categoryArrayList = new ArrayList<>();
+    public static ArrayList<Budget> budgetArrayList = new ArrayList<>();
 }
