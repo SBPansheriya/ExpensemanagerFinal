@@ -44,12 +44,6 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
         holder.setAmount.setText("₹1200 of ₹1000");
         holder.setSlider.setValue(budget.getPercentageBudget());
         holder.setSlider.setEnabled(false);
-//        holder.setSlider.addOnChangeListener(new Slider.OnChangeListener() {
-//            @Override
-//            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-//                slider.setValue(budget.getPercentageBudget());
-//            }
-//        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

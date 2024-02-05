@@ -55,6 +55,12 @@ public class AddCategoryIncomeAdapter extends RecyclerView.Adapter<AddCategoryIn
         });
         holder.checkbox.setChecked(position == selectedPosition);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.checkbox.performClick();
+            }
+        });
         holder.checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,59 +78,6 @@ public class AddCategoryIncomeAdapter extends RecyclerView.Adapter<AddCategoryIn
             holder.relative.setLayoutParams(layoutParams);
         }
     }
-
-//    private void showAddNewCategoryBottomDialog() {
-//
-//        BottomSheetDialog dialog = new BottomSheetDialog(addCategoryActivity);
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        dialog.setContentView(R.layout.add_new_category_bottomsheet_layout);
-//        dialog.setCancelable(true);
-//        dialog.show();
-//
-//        EditText addNewCategory = dialog.findViewById(R.id.adding);
-//        TextView save = dialog.findViewById(R.id.save);
-//        ImageView categoryImage = dialog.findViewById(R.id.category_image);
-//
-//        if (addCategoryImageResId != 0) {
-//            categoryImage.setImageResource(addCategoryImageResId);
-//        } else {
-//            categoryImage.setImageResource(R.drawable.i);
-//        }
-//
-//        categoryImage.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(AddCategoryActivity.this, IconActivity.class);
-//                launchSomeActivity.launch(intent);
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        save.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (TextUtils.isEmpty(addNewCategory.getText().toString())) {
-//                    Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    addCategoryName = addNewCategory.getText().toString();
-//                    category = new Category(0, addCategoryName, addCategoryImageResId, tagFind);
-//                    categoryArrayList.add(category);
-//                    if (tagFind.equals("Income")) {
-//                        incomeList.add(category);
-//                        addCategoryIncomeAdapter.updateData(incomeList);
-//                    } else if (tagFind.equals("Expense")) {
-//                        expenseList.add(category);
-//                        addCategoryIncomeAdapter.updateData(expenseList);
-//                    } else {
-//                        Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
-//                    }
-//                    dbHelper.insertCategoryData(category);
-//                    dialog.dismiss();
-//                }
-//            }
-//        });
-//    }
-
 
     public void updateData(ArrayList<Category> categoryArrayList) {
         this.categoryArrayList = categoryArrayList;

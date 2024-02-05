@@ -35,8 +35,6 @@ public class DetailsBudgetActivity extends AppCompatActivity {
     Button showEditBudget;
     Budget budget;
     ActivityResultLauncher<Intent> launchSomeActivity;
-    ArrayList<Budget> budgetArrayList = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
