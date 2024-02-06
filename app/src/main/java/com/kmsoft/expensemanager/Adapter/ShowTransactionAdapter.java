@@ -1,5 +1,6 @@
 //package com.kmsoft.expensemanager.Adapter;
 //
+//import android.content.Context;
 //import android.view.LayoutInflater;
 //import android.view.View;
 //import android.view.ViewGroup;
@@ -8,6 +9,8 @@
 //
 //import androidx.recyclerview.widget.RecyclerView;
 //
+//import com.kmsoft.expensemanager.Fragment.TransactionFragment;
+//import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 //import com.kmsoft.expensemanager.R;
 //
 //import java.util.ArrayList;
@@ -18,12 +21,12 @@
 //    public static final int SECTION_VIEW = 1;
 //    public static final int CONTENT_VIEW = 2;
 //
-//    ArrayList<UserModel> mUsersAndSectionList;
-//    MainActivity mainActivity;
+//    ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
+//    TransactionFragment transactionFragment;
 //
-//    public MyAdapter(ArrayList<UserModel> mUsersAndSectionList, MainActivity mainActivity) {
-//        this.mUsersAndSectionList = mUsersAndSectionList;
-//        this.mainActivity = mainActivity;
+//    public MyAdapter(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, TransactionFragment transactionFragment) {
+//        this.incomeAndExpenseArrayList = incomeAndExpenseArrayList;
+//        this.transactionFragment = transactionFragment;
 //    }
 //
 //    @Override
@@ -33,22 +36,20 @@
 //            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item_group_title, parent, false);
 //            return new HeaderViewHolder(view);
 //        } else {
-//            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_user_item, parent, false);
+//            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout, parent, false);
 //            return new ChildViewHolder(view);
 //        }
 //    }
 //
 //    @Override
 //    public int getItemViewType(int position) {
-//        switch (mUsersAndSectionList.get(position).getViewType()) {
-//            case 0:
-//                return LayoutOne;
-//            case 1:
-//                return LayoutTwo;
-//            default:
-//                return -1;
+//        Context context = incomeAndExpenseArrayList.get();
+//        if (viewType == SECTION_VIEW) {
+//            return new SectionViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item_group_title, parent, false));
 //        }
+//        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_user_item, parent, false), context);
 //    }
+//
 //
 //    @Override
 //    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {

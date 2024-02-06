@@ -20,6 +20,14 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.slider.Slider;
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+=======
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.R;
@@ -35,6 +43,19 @@ public class DetailsBudgetActivity extends AppCompatActivity {
     Button showEditBudget;
     Budget budget;
     ActivityResultLauncher<Intent> launchSomeActivity;
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+    Gson gson;
+    ArrayList<Budget> budgetArrayList;
+    String remainingAmount;
+    String finalAmount;
+    int remainingFinalAmount;
+    int exceedAmount;
+    int num1;
+=======
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +70,91 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         dbHelper = new DBHelper(DetailsBudgetActivity.this);
 
         budget = (Budget) getIntent().getSerializableExtra("budget");
+<<<<<<< Updated upstream
         setData();
+=======
+<<<<<<< HEAD
+        remainingAmount = getIntent().getStringExtra("remainingFinalAmount");
+        finalAmount = getIntent().getStringExtra("finalAmount");
+        String listGet = getIntent().getStringExtra("budgetArrayList");
+        gson = new Gson();
+        budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {
+        }.getType());
+
+        setData();
+
+        // exceedAmount set
+        if (finalAmount != null && !finalAmount.isEmpty()) {
+            exceedAmount = Integer.parseInt(finalAmount);
+        } else {
+            exceedAmount = 0;
+        }
+        String valueTo = extractNumericPart(budget.getAmountBudget());
+        num1 = Integer.parseInt(valueTo);
+        if (exceedAmount >= num1) {
+            showPercentage.setValueTo(num1);
+            showPercentage.setValueFrom(0);
+            showPercentage.setValue(num1);
+            showExceedAmount.setVisibility(View.VISIBLE);
+        } else {
+            showPercentage.setValueTo(Float.parseFloat(valueTo));
+            showPercentage.setValueFrom(0);
+            showPercentage.setValue(exceedAmount);
+            showExceedAmount.setVisibility(View.GONE);
+        }
+
+        // remainingAmount set
+        if (remainingAmount != null && !remainingAmount.isEmpty()) {
+            remainingFinalAmount = Integer.parseInt(remainingAmount);
+        } else {
+            remainingFinalAmount = 0;
+        }
+        amountBudget.setText("₹" + remainingFinalAmount);
+
+=======
+        setData();
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 Intent data = result.getData();
                 if (data != null) {
                     budget = (Budget) data.getSerializableExtra("budget");
+<<<<<<< Updated upstream
                     if (budget != null){
                         setData();
+=======
+<<<<<<< HEAD
+                    String listGet1 = data.getStringExtra("budgetArrayList");
+                    gson = new Gson();
+                    budgetArrayList = gson.fromJson(listGet1, new TypeToken<ArrayList<Budget>>() {
+                    }.getType());
+                    if (budget != null) {
+                        setData();
+
+                        // exceedAmount set
+                        String valueTo1 = extractNumericPart(budget.getAmountBudget());
+                        num1 = Integer.parseInt(valueTo1);
+                        if (exceedAmount >= num1) {
+                            showPercentage.setValueTo(num1);
+                            showPercentage.setValueFrom(0);
+                            showPercentage.setValue(num1);
+                            showExceedAmount.setVisibility(View.VISIBLE);
+                        } else {
+                            showPercentage.setValueTo(Float.parseFloat(valueTo1));
+                            showPercentage.setValueFrom(0);
+                            showPercentage.setValue(exceedAmount);
+                            showExceedAmount.setVisibility(View.GONE);
+                        }
+
+                        // remainingAmount
+                        int result1 = num1 - exceedAmount;
+                        amountBudget.setText("₹" + result1);
+=======
+                    if (budget != null){
+                        setData();
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
                     }
                 }
             }
@@ -74,6 +172,15 @@ public class DetailsBudgetActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DetailsBudgetActivity.this, EditBudgetActivity.class);
                 intent.putExtra("budget", budget);
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+                gson = new Gson();
+                String list = gson.toJson(budgetArrayList);
+                intent.putExtra("budgetArrayList", list);
+=======
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
                 launchSomeActivity.launch(intent);
             }
         });
@@ -86,18 +193,43 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         });
     }
 
+<<<<<<< Updated upstream
     private void setData(){
+=======
+<<<<<<< HEAD
+    private void setData() {
+=======
+    private void setData(){
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
         showCategoryNameBudget.setText(budget.getCategoryNameBudget());
         if (budget.getCategoryImageBudget() == 0) {
             showCategoryImageBudget.setImageResource(R.drawable.i);
         } else {
             showCategoryImageBudget.setImageResource(budget.getCategoryImageBudget());
         }
+<<<<<<< Updated upstream
         amountBudget.setText("" + budget.getAmountBudget());
+=======
+<<<<<<< HEAD
+=======
+        amountBudget.setText("" + budget.getAmountBudget());
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
         showPercentage.setValue(budget.getPercentageBudget());
         showPercentage.setEnabled(false);
     }
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+    private String extractNumericPart(String input) {
+        return input.replaceAll("[^\\d.]", "");
+    }
+
+=======
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
     private void showDeleteBottomDialog() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(DetailsBudgetActivity.this);
         bottomSheetDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -15,7 +15,15 @@
         android:theme="@style/Theme.ExpenseManager"
         tools:targetApi="31">
         <activity
+<<<<<<< Updated upstream
             android:name=".Activity.Trancation.EditDetailsTrancationActivity"
+=======
+<<<<<<< HEAD
+            android:name=".Activity.Trancation.EditDetailsTransactionActivity"
+=======
+            android:name=".Activity.Trancation.EditDetailsTrancationActivity"
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
             android:exported="false" />
         <activity
             android:name=".Activity.FloatingButton.IconActivity"
@@ -57,7 +65,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.Trancation.DetailsTrancationActivity"
+            android:name=".Activity.Trancation.DetailsTransactionActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

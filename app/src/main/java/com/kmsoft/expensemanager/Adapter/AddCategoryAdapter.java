@@ -7,7 +7,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,26 +17,26 @@ import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
 
-public class AddCategoryIncomeAdapter extends RecyclerView.Adapter<AddCategoryIncomeAdapter.ViewHolder> {
+public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.ViewHolder> {
 
     AddCategoryActivity addCategoryActivity;
     ArrayList<Category> categoryArrayList;
     private int selectedPosition = RecyclerView.NO_POSITION;
 
-    public AddCategoryIncomeAdapter(AddCategoryActivity addCategoryActivity, ArrayList<Category> categoryArrayList) {
+    public AddCategoryAdapter(AddCategoryActivity addCategoryActivity, ArrayList<Category> categoryArrayList) {
         this.addCategoryActivity = addCategoryActivity;
         this.categoryArrayList = categoryArrayList;
     }
 
     @NonNull
     @Override
-    public AddCategoryIncomeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AddCategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_add_category_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AddCategoryIncomeAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AddCategoryAdapter.ViewHolder holder, int position) {
 
         holder.categoryName.setText(categoryArrayList.get(position).getCategoryName());
 
@@ -57,10 +56,24 @@ public class AddCategoryIncomeAdapter extends RecyclerView.Adapter<AddCategoryIn
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
+<<<<<<< Updated upstream:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryIncomeAdapter.java
+=======
+<<<<<<< HEAD:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryAdapter.java
+            public void onClick(View v) {
+                holder.checkbox.performClick();
+            }
+        });
+
+=======
+>>>>>>> Stashed changes:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryAdapter.java
             public void onClick(View view) {
                 holder.checkbox.performClick();
             }
         });
+<<<<<<< Updated upstream:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryIncomeAdapter.java
+=======
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryIncomeAdapter.java
+>>>>>>> Stashed changes:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryAdapter.java
         holder.checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

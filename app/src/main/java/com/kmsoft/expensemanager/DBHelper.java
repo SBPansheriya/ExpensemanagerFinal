@@ -184,8 +184,17 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
+<<<<<<< Updated upstream
 
     // Category Crud
+=======
+<<<<<<< HEAD
+    // Budget Crud
+=======
+
+    // Category Crud
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
 
     //insert Data
     public void insertBudgetData(Budget budget) {

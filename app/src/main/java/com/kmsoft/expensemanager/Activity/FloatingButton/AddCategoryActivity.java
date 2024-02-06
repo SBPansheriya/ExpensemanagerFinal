@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.kmsoft.expensemanager.Adapter.AddCategoryIncomeAdapter;
+import com.kmsoft.expensemanager.Adapter.AddCategoryAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Category;
 import com.kmsoft.expensemanager.R;
@@ -36,7 +36,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     DBHelper dbHelper;
     TextView income, expense;
     ImageView back;
-    AddCategoryIncomeAdapter addCategoryIncomeAdapter;
+    AddCategoryAdapter addCategoryIncomeAdapter;
     RecyclerView incomeCategoryRecyclerview;
     RecyclerView expenseCategoryRecyclerview;
     Button addNewCategoryBtn;
@@ -50,7 +50,6 @@ public class AddCategoryActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launchSomeActivity;
     Category category;
     String name;
-    String getCategoryName;
     int image;
     String tagFind;
     String findClick;
@@ -196,29 +195,6 @@ public class AddCategoryActivity extends AppCompatActivity {
             }
         }
     }
-
-//    private boolean isDataExists() {
-//        Cursor cursor = dbHelper.getAllCategoryData();
-//        while (cursor.moveToNext()) {
-//            int id = cursor.getInt(0);
-//            String categoryName = cursor.getString(1);
-//            int categoryImage = cursor.getInt(2);
-//            String tag = cursor.getString(3);
-//            for (int i = 0; i < categoryArrayList.size(); i++) {
-//                String name = categoryArrayList.get(i).getCategoryName();
-//                int image = categoryArrayList.get(i).getCategoryImage();
-//                String tag1 = categoryArrayList.get(i).getCategoryTag();
-//                if (TextUtils.equals(name, categoryName) && image == categoryImage && TextUtils.equals(tag, tag1)) {
-//                    cursor.close();
-//                    dbHelper.close();
-//                    return true;
-//                }
-//            }
-//        }
-//        cursor.close();
-//        dbHelper.close();
-//        return false;
-//    }
 
     private void showAddNewCategoryBottomDialog() {
 
@@ -377,6 +353,36 @@ public class AddCategoryActivity extends AppCompatActivity {
         });
     }
 
+    private boolean isDatabaseEmpty() {
+        Cursor cursor = dbHelper.getAllCategoryData();
+        int count = cursor.getCount();
+        cursor.close();
+        return count == 0;
+    }
+
+    private void insertInitialCategories() {
+        dbHelper.insertCategoryData(new Category(0,"Shopping", R.drawable.i47, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Food", R.drawable.i12, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Birthday", R.drawable.i11, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Party", R.drawable.i7, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Medicine", R.drawable.i18, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Books", R.drawable.i1, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Sports", R.drawable.i43, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Traveling", R.drawable.i17, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Education", R.drawable.i22, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Transportation", R.drawable.i38, "Income"));
+        dbHelper.insertCategoryData(new Category(0,"Entertainment", R.drawable.i15, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Gifts", R.drawable.i9, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Health & Fitness", R.drawable.i41, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Investments", R.drawable.i37, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Pets", R.drawable.i39, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Games", R.drawable.i34, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Car", R.drawable.i25, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Donation", R.drawable.i38, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Shipping", R.drawable.i30, "Expense"));
+        dbHelper.insertCategoryData(new Category(0,"Diamond & Jewellery", R.drawable.i19, "Expense"));
+    }
+
     private void Display() {
         Cursor cursor = dbHelper.getAllCategoryData();
         if (cursor != null && cursor.moveToFirst()) {
@@ -395,11 +401,11 @@ public class AddCategoryActivity extends AppCompatActivity {
 
                 if (TextUtils.equals(tagFind, "Income")) {
                     incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-                    addCategoryIncomeAdapter = new AddCategoryIncomeAdapter(AddCategoryActivity.this, incomeCategoryList);
+                    addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList);
                     incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 } else if (TextUtils.equals(tagFind, "Expense")) {
                     incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-                    addCategoryIncomeAdapter = new AddCategoryIncomeAdapter(AddCategoryActivity.this, expenseCategoryList);
+                    addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList);
                     incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 }
             } while (cursor.moveToNext());
@@ -415,32 +421,6 @@ public class AddCategoryActivity extends AppCompatActivity {
         }
         return filteredList;
     }
-
-//    private void showIncomeRecyclerView() {
-//
-////        Collections.sort(categoryArrayList, new Comparator<Category>() {
-////            @Override
-////            public int compare(Category category1, Category category2) {
-////                return category1.getCategoryName().compareTo(category2.getCategoryName());
-////            }
-////        });
-//
-//        incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-//        addCategoryIncomeAdapter = new AddCategoryIncomeAdapter(AddCategoryActivity.this, categoryArrayList);
-//        incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
-//
-//        incomeCategoryRecyclerview.setVisibility(View.VISIBLE);
-//        expenseCategoryRecyclerview.setVisibility(View.GONE);
-//    }
-//
-//    private void showExpenseRecyclerView() {
-//        expenseCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-//        addCategoryExpenseAdapter = new AddCategoryExpenseAdapter(AddCategoryActivity.this, categoryArrayList);
-//        expenseCategoryRecyclerview.setAdapter(addCategoryExpenseAdapter);
-//
-//        incomeCategoryRecyclerview.setVisibility(View.GONE);
-//        expenseCategoryRecyclerview.setVisibility(View.VISIBLE);
-//    }
 
     public void getData(String name1, int image1) {
         name = name1;

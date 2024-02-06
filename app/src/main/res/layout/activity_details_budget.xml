@@ -54,7 +54,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="64dp"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="40dp"
                 android:background="@drawable/border8"
                 android:gravity="center"
@@ -82,17 +81,18 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/title1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:layout_gravity="center"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/remaining"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:fontFamily="@font/lexenddeca_bold"
                 android:text="@string/remaining"
                 android:textColor="#0D0E0F"
@@ -103,13 +103,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lexenddeca_bold"
+                android:layout_below="@+id/remaining"
                 android:text="₹0"
                 android:inputType="number"
-                style="@style/EditTextNoUnderline"
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:textSize="50sp" />
-        </LinearLayout>
+        </RelativeLayout>
 
         <com.google.android.material.slider.Slider
             android:id="@+id/set_slider_budget"
@@ -117,10 +117,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:value="20"
             app:labelBehavior="gone"
-            android:valueFrom="0"
-            android:valueTo="100"
             app:haloColor="@color/white"
             app:thumbRadius="0dp"
             app:thumbColor="#DDDDDD"
@@ -133,6 +130,7 @@
             android:id="@+id/show_exceed_amount"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:visibility="gone"
             android:layout_marginTop="20dp"
             android:src="@drawable/exceed"/>
     </LinearLayout>

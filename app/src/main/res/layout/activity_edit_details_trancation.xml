@@ -4,18 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< Updated upstream
     android:background="@color/white"
     tools:context=".Activity.Trancation.DetailsTrancationActivity">
+=======
+<<<<<<< HEAD
+    android:background="@color/white">
+=======
+    android:background="@color/white"
+    tools:context=".Activity.Trancation.DetailsTrancationActivity">
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
 
     <RelativeLayout
         android:id="@+id/title"
         android:layout_width="match_parent"
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        android:layout_height="250dp"
+        android:background="@color/green">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+=======
+>>>>>>> Stashed changes
         android:layout_height="360dp">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="325dp"
             android:background="@drawable/details_border"
+<<<<<<< Updated upstream
+=======
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
             android:src="@drawable/design1" />
 
         <RelativeLayout
@@ -49,6 +73,266 @@
         </RelativeLayout>
 
         <LinearLayout
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tbMenu"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="start"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/bing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexenddeca_medium"
+                android:text="@string/how_much"
+                android:textAllCaps="false"
+                android:textColor="#FFF"
+                android:textSize="20.0sp" />
+
+            <EditText
+                android:id="@+id/edit_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/EditTextNoUnderline"
+                android:fontFamily="@font/lexenddeca_regular"
+                android:inputType="number"
+                android:text="₹0"
+                android:textColor="#FFF"
+                android:textSize="50.0sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="-20dp"
+        android:layout_marginBottom="85dp"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bottom_border">
+
+            <LinearLayout
+                android:id="@+id/title1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/border1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/edit_date"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/lexenddeca_medium"
+                    android:gravity="start|center"
+                    android:hint="@string/date"
+                    android:paddingStart="10dp"
+                    android:textColor="#91919F"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/calendar"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/income_celender" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/expense_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title1"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/border1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/edit_category_name"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/lexenddeca_medium"
+                    android:gravity="start|center"
+                    android:hint="@string/category"
+                    android:paddingStart="10dp"
+                    android:textColor="@color/gray"
+                    android:textColorHint="@color/gray"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/income_right_gray_arrow" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/edit_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/expense_category"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/border1"
+                android:fontFamily="@font/lexenddeca_medium"
+                android:gravity="start|center"
+                android:hint="@string/description"
+                android:minHeight="56dp"
+                android:paddingStart="10dp"
+                android:textColor="#91919F"
+                android:textColorHint="#91919F"
+                android:textSize="14sp" />
+
+            <RelativeLayout
+                android:id="@+id/relative"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_description">
+
+                <LinearLayout
+                    android:id="@+id/edit_add_attachment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/dotted"
+                    android:gravity="center"
+                    android:visibility="visible"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/income_attachment" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lexenddeca_medium"
+                        android:gravity="center"
+                        android:text="Add attachment"
+                        android:textColor="#91919F"
+                        android:textSize="14sp" />
+
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/edit_set_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:id="@+id/title6"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="200dp"
+                            android:layout_height="200dp"
+                            app:cardCornerRadius="8dp">
+
+                            <ImageView
+                                android:id="@+id/set_edit_image"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/placeholder" />
+                        </androidx.cardview.widget.CardView>
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/remove_image"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="-35dp"
+                        android:layout_toEndOf="@+id/title6"
+                        android:src="@drawable/close" />
+                </RelativeLayout>
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/title5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/relative"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="15dp"
+                android:visibility="gone"
+                android:background="@drawable/border1"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexenddeca_medium"
+                        android:gravity="start|center"
+                        android:hint="@string/repeat"
+                        android:paddingStart="10dp"
+                        android:textColor="#29756F"
+                        android:textColorHint="#29756F"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:text="@string/repeat_transaction_set_your_own_time" />
+                </LinearLayout>
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+            </LinearLayout>
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/edit_transaction"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+=======
+>>>>>>> Stashed changes
             android:id="@+id/title1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -285,6 +569,10 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="10dp"
+<<<<<<< Updated upstream
+=======
+>>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
+>>>>>>> Stashed changes
         android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="20dp"

@@ -11,12 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.kmsoft.expensemanager.Activity.Trancation.DetailsTrancationActivity;
+import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
 import com.kmsoft.expensemanager.Fragment.HomeFragment;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -55,7 +53,7 @@ public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransac
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(homeFragment.getContext(), DetailsTrancationActivity.class);
+                Intent intent = new Intent(homeFragment.getContext(), DetailsTransactionActivity.class);
                 intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
                 homeFragment.getContext().startActivity(intent);
             }

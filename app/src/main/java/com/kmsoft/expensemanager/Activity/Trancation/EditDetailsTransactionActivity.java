@@ -1,9 +1,9 @@
-package com.kmsoft.expensemanager.Activity.FloatingButton;
+package com.kmsoft.expensemanager.Activity.Trancation;
 
 import static android.Manifest.permission_group.CAMERA;
-
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
 import android.app.Activity;
@@ -23,14 +22,10 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,60 +39,61 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.gson.Gson;
+import com.kmsoft.expensemanager.Activity.FloatingButton.AddCategoryActivity;
+import com.kmsoft.expensemanager.Activity.FloatingButton.IncomeActivity;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
+import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class IncomeActivity extends AppCompatActivity {
+public class EditDetailsTransactionActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
-    ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
-    IncomeAndExpense incomeAndExpense = new IncomeAndExpense();
-    ImageView back,calender, setIncomeImage, removeIncomeImage;
-    TextView showIncomeDate, incomeCategoryName;
-    EditText incomeAddAmount, incomeDescription;
-    Button incomeAdded;
-    RelativeLayout incomeSetImage;
-    LinearLayout incomeCategory, incomeAddAttachment;
-    String selectedDate;
-    String dayName;
-    Bitmap bitmap;
+    ImageView back, setEditImage, removeImage;
+    RelativeLayout editSetImage;
+    LinearLayout editAddAttachment, expenseCategory;
+    EditText editTotalBalance;
+    TextView editDescription, editCategory,editDate;
+    IncomeAndExpense incomeAndExpense;
+    Button editDetailsTransaction;
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
     ActivityResultLauncher<Intent> launchSomeActivityResult;
     private static final int CAMERA_REQUEST = 100;
+    ImageView calendar;
     int click;
+    String selectedDate;
+    String dayName;
+    String editAddTime;
+    Bitmap bitmap;
     int imageResId;
     String categoryName;
-    String incomeAddTime;
     String addAttachmentImage;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_income);
+        setContentView(R.layout.activity_edit_details_trancation);
         getWindow().setStatusBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         getSupportActionBar().hide();
 
         init();
 
-        dbHelper = new DBHelper(this);
-        incomeAndExpenseArrayList = new ArrayList<>();
+        dbHelper = new DBHelper(EditDetailsTransactionActivity.this);
+        incomeAndExpense = (IncomeAndExpense) getIntent().getSerializableExtra("incomeAndExpense");
+        setData();
 
         launchSomeActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -106,7 +102,7 @@ public class IncomeActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     if (!TextUtils.isEmpty(categoryName)) {
-                        incomeCategoryName.setText("" + categoryName);
+                        editCategory.setText("" + categoryName);
                     }
                 }
             }
@@ -114,34 +110,12 @@ public class IncomeActivity extends AppCompatActivity {
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 onBackPressed();
             }
         });
-        calender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCalenderBottomDialog();
-            }
-        });
 
-        incomeCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(IncomeActivity.this, AddCategoryActivity.class);
-                intent.putExtra("clicked","Income");
-                launchSomeActivityResult.launch(intent);
-            }
-        });
-
-        incomeAddAttachment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionsForCamera();
-            }
-        });
-
-        incomeAddAmount.addTextChangedListener(new TextWatcher() {
+        editTotalBalance.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -152,54 +126,61 @@ public class IncomeActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
                 if (!input.startsWith("₹")) {
-                    incomeAddAmount.setText("₹" + input);
-                    incomeAddAmount.setSelection(incomeAddAmount.getText().length());
+                    editTotalBalance.setText("₹" + input);
+                    editTotalBalance.setSelection(editTotalBalance.getText().length());
                 }
             }
         });
 
-        incomeAdded.setOnClickListener(new View.OnClickListener() {
+        editDetailsTransaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String amount = editTotalBalance.getText().toString();
+                String description = editDescription.getText().toString();
+                if (amount.equals("₹0") || amount.equals("₹")) {
+                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(amount)){
+                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(selectedDate)) {
+                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(categoryName)) {
+                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (imageResId == 0) {
+                        imageResId = incomeAndExpense.getCategoryImage();
+                    }
+                    if (TextUtils.isEmpty(categoryName)) {
+                        categoryName = incomeAndExpense.getCategoryName();
+                    }
+                    if (TextUtils.isEmpty(selectedDate)) {
+                        selectedDate = incomeAndExpense.getDate();
+                        dayName = incomeAndExpense.getDayName();
+                        editAddTime = incomeAndExpense.getTime();
+                    }
+                    if (TextUtils.isEmpty(addAttachmentImage)) {
+                        addAttachmentImage = incomeAndExpense.getAddAttachment();
+                    }
+                    incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
+                    incomeAndExpenseArrayList.add(incomeAndExpense);
+                    dbHelper.updateData(incomeAndExpense);
+                    onBackPressed();
+                }
+            }
+        });
+
+        expenseCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String editTextValue = incomeAddAmount.getText().toString();
-                if (editTextValue.equals("₹0") || editTextValue.equals("₹")) {
-                    Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(editTextValue)){
-                    Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(showIncomeDate.getText().toString())) {
-                    Toast.makeText(IncomeActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(incomeCategoryName.getText().toString())) {
-                    Toast.makeText(IncomeActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
-                } else {
-                    String amount = incomeAddAmount.getText().toString();
-                    String description = incomeDescription.getText().toString();
-                    incomeAndExpense = new IncomeAndExpense(0, amount, selectedDate, dayName,incomeAddTime,categoryName, imageResId, description, addAttachmentImage, "Income");
-                    incomeAndExpenseArrayList.add(incomeAndExpense);
-                    dbHelper.insertData(incomeAndExpense);
-                    Dialog dialog = new Dialog(IncomeActivity.this);
-                    if (dialog.getWindow() != null) {
-                        dialog.getWindow().setGravity(Gravity.CENTER);
-                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                        dialog.setCancelable(false);
-                    }
-                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    dialog.setContentView(R.layout.dailog_removed_layout);
-                    dialog.setCancelable(true);
-                    dialog.show();
+                Intent intent = new Intent(EditDetailsTransactionActivity.this, AddCategoryActivity.class);
+                intent.putExtra("clicked",incomeAndExpense.getTag());
+                launchSomeActivityResult.launch(intent);
+            }
+        });
 
-                    TextView txt = dialog.findViewById(R.id.txt);
-                    txt.setText("Income has been successfully added");
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (dialog.isShowing()) {
-                                onBackPressed();
-                                dialog.dismiss();
-                            }
-                        }
-                    }, 1000);
-                }
+        calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCalenderBottomDialog();
             }
         });
 
@@ -210,35 +191,57 @@ public class IncomeActivity extends AppCompatActivity {
             }
         });
 
-        removeIncomeImage.setOnClickListener(new View.OnClickListener() {
+        editAddAttachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                incomeAddAttachment.setVisibility(View.VISIBLE);
-                incomeSetImage.setVisibility(View.GONE);
+                checkPermissionsForCamera();
+            }
+        });
+
+        removeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editAddAttachment.setVisibility(View.VISIBLE);
+                editSetImage.setVisibility(View.GONE);
             }
         });
 
         cropImage = registerForActivityResult(new CropImageContract(), result -> {
+            addAttachmentImage = null;
             if (result.isSuccessful()) {
                 Uri uriContent = result.getUriContent();
                 bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriContent);
                     addAttachmentImage = (MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null));
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 if (bitmap != null) {
-                    setIncomeImage.setImageBitmap(bitmap);
+                    Picasso.get().load(addAttachmentImage).into(setEditImage);
                 }
             } else {
                 Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
             }
-            incomeAddAttachment.setVisibility(View.GONE);
-            incomeSetImage.setVisibility(View.VISIBLE);
+            editAddAttachment.setVisibility(View.GONE);
+            editSetImage.setVisibility(View.VISIBLE);
         });
+    }
+
+    private void setData(){
+        editTotalBalance.setText(incomeAndExpense.getAmount());
+        editDate.setText(incomeAndExpense.getDate());
+        editCategory.setText(incomeAndExpense.getCategoryName());
+        editDescription.setText(incomeAndExpense.getDescription());
+        if (TextUtils.isEmpty(incomeAndExpense.getAddAttachment())){
+            editAddAttachment.setVisibility(View.VISIBLE);
+            editSetImage.setVisibility(View.GONE);
+        } else {
+            Picasso.get().load(incomeAndExpense.getAddAttachment()).into(setEditImage);
+            editAddAttachment.setVisibility(View.GONE);
+            editSetImage.setVisibility(View.VISIBLE);
+        }
     }
 
     private void startCrop(Uri selectedImageUri) {
@@ -261,7 +264,7 @@ public class IncomeActivity extends AppCompatActivity {
     }
 
     private void showAttachmentBottomDialog(){
-        BottomSheetDialog dialog = new BottomSheetDialog(IncomeActivity.this);
+        BottomSheetDialog dialog = new BottomSheetDialog(EditDetailsTransactionActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.add_attachment_bottomsheet_layout);
         dialog.setCancelable(true);
@@ -291,7 +294,7 @@ public class IncomeActivity extends AppCompatActivity {
         String[] permissions = new String[]{Manifest.permission.CAMERA};
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(IncomeActivity.this, permissions, 100);
+            ActivityCompat.requestPermissions(EditDetailsTransactionActivity.this, permissions, 100);
         } else {
             showAttachmentBottomDialog();
         }
@@ -302,7 +305,7 @@ public class IncomeActivity extends AppCompatActivity {
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(IncomeActivity.this,CAMERA_REQUEST);
+            showPermissionDenyDialog(EditDetailsTransactionActivity.this,CAMERA_REQUEST);
         }
     }
 
@@ -380,7 +383,7 @@ public class IncomeActivity extends AppCompatActivity {
                         Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
                         intent.setData(uri);
-                        ActivityCompat.startActivityForResult(IncomeActivity.this,intent, requestCode,null);
+                        ActivityCompat.startActivityForResult(EditDetailsTransactionActivity.this,intent, requestCode,null);
                         dialog.dismiss();
                     }
                 });
@@ -399,7 +402,7 @@ public class IncomeActivity extends AppCompatActivity {
     }
 
     private void showCalenderBottomDialog(){
-        BottomSheetDialog dialog = new BottomSheetDialog(IncomeActivity.this);
+        BottomSheetDialog dialog = new BottomSheetDialog(EditDetailsTransactionActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.calender_bottomsheet_layout);
         dialog.setCancelable(false);
@@ -416,15 +419,11 @@ public class IncomeActivity extends AppCompatActivity {
                 currentTime.set(year, month, dayOfMonth);
                 int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
 
-                // Convert the numerical representation of day of week to string representation
                 String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
                 dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                incomeAddTime = dateFormat.format(currentTime.getTime());
-                Calendar selectedDateCalendar = Calendar.getInstance();
-                selectedDateCalendar.set(year, month, dayOfMonth);
-                SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+                editAddTime = dateFormat.format(currentTime.getTime());
+                selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
             }
         });
 
@@ -439,9 +438,9 @@ public class IncomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(selectedDate)){
-                    showIncomeDate.setText("");
+                    editDate.setText("");
                 } else {
-                    showIncomeDate.setText(""+selectedDate);
+                    editDate.setText(""+selectedDate);
                 }
                 dialog.dismiss();
             }
@@ -450,24 +449,24 @@ public class IncomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent intent = new Intent();
         intent.putExtra("incomeAndExpense",incomeAndExpense);
         setResult(RESULT_OK, intent);
+        super.onBackPressed();
     }
 
-    private void init() {
+    private void init(){
         back = findViewById(R.id.back);
-        calender = findViewById(R.id.income_calender);
-        incomeCategory = findViewById(R.id.income_category);
-        incomeAddAttachment = findViewById(R.id.income_add_attachment);
-        showIncomeDate = findViewById(R.id.show_income_date);
-        setIncomeImage = findViewById(R.id.set_income_image);
-        incomeSetImage = findViewById(R.id.income_set_image);
-        removeIncomeImage = findViewById(R.id.remove_income_image);
-        incomeAdded = findViewById(R.id.income_added);
-        incomeAddAmount = findViewById(R.id.income_add_amount);
-        incomeDescription = findViewById(R.id.income_description);
-        incomeCategoryName = findViewById(R.id.income_category_name);
+        editTotalBalance = findViewById(R.id.edit_amount);
+        editDate = findViewById(R.id.edit_date);
+        editAddAttachment = findViewById(R.id.edit_add_attachment);
+        editCategory = findViewById(R.id.edit_category_name);
+        editDescription = findViewById(R.id.edit_description);
+        editDetailsTransaction = findViewById(R.id.edit_transaction);
+        setEditImage = findViewById(R.id.set_edit_image);
+        removeImage = findViewById(R.id.remove_image);
+        calendar = findViewById(R.id.calendar);
+        expenseCategory = findViewById(R.id.expense_category);
+        editSetImage = findViewById(R.id.edit_set_image);
     }
 }

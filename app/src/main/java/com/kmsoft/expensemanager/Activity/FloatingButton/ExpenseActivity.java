@@ -23,7 +23,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +77,7 @@ public class ExpenseActivity extends AppCompatActivity {
     int imageResId;
     String categoryName;
     String expenseAddTime;
+    String addAttachmentImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +135,23 @@ public class ExpenseActivity extends AppCompatActivity {
             }
         });
 
+        expenseAddAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String input = s.toString();
+                if (!input.startsWith("₹")) {
+                    expenseAddAmount.setText("₹" + input);
+                    expenseAddAmount.setSelection(expenseAddAmount.getText().length());
+                }
+            }
+        });
+
         expenseAdded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +167,6 @@ public class ExpenseActivity extends AppCompatActivity {
                 } else {
                     String amount = expenseAddAmount.getText().toString();
                     String description = expenseDescription.getText().toString();
-                    String addAttachmentImage = setExpenseImage.toString();
                     incomeAndExpense = new IncomeAndExpense(0, amount, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
@@ -199,6 +218,8 @@ public class ExpenseActivity extends AppCompatActivity {
                 bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriContent);
+                    addAttachmentImage = (MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null));
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -394,8 +415,10 @@ public class ExpenseActivity extends AppCompatActivity {
                 dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
                 expenseAddTime = dateFormat.format(currentTime.getTime());
-                selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-            }
+                Calendar selectedDateCalendar = Calendar.getInstance();
+                selectedDateCalendar.set(year, month, dayOfMonth);
+                SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                selectedDate = dateFormat1.format(selectedDateCalendar.getTime());            }
         });
 
         cancel.setOnClickListener(new View.OnClickListener() {

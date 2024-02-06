@@ -42,6 +42,7 @@
             android:id="@+id/set_warning"
             android:layout_width="32dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_alignParentEnd="true"
             android:src="@drawable/warning"/>
     </RelativeLayout>
@@ -50,16 +51,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_below="@+id/title">
         <TextView
             android:id="@+id/set_remaining_amount"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_marginHorizontal="15dp"
             android:textSize="18sp"
+            android:gravity="start|center"
             android:fontFamily="@font/lexenddeca_semibold"
             android:textColor="@color/black"
-            android:text="Remaining $0"/>
+            android:text="Remaining ₹0"/>
 
         <com.google.android.material.slider.Slider
             android:id="@+id/set_slider"
@@ -67,10 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/set_remaining_amount"
             android:textAlignment="center"
-            android:value="20"
             app:labelBehavior="gone"
-            android:valueFrom="0"
-            android:valueTo="100"
             app:haloColor="@color/white"
             app:thumbRadius="0dp"
             app:thumbColor="#DDDDDD"
@@ -79,26 +79,41 @@
             app:thumbElevation="0dp"
             app:trackHeight="15dp" />
 
+        <RelativeLayout
+            android:id="@+id/title1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_below="@+id/set_slider">
+
+            <TextView
+                android:id="@+id/set_income_expense_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹0"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textColor="@color/gray"
+                android:textSize="16sp"/>
+
         <TextView
             android:id="@+id/set_amount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginHorizontal="15dp"
-            android:layout_below="@+id/set_slider"
-            android:text="₹1200 of ₹1000"
-            android:fontFamily="@font/lexenddeca_medium"
+            android:layout_toRightOf="@+id/set_income_expense_amount"
+            android:text=" of ₹1000"
+            android:fontFamily="@font/lexenddeca_semibold"
             android:textColor="@color/gray"
-            android:textSize="14sp"/>
+            android:textSize="16sp"/>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/set_exceed_amount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginTop="5dp"
             android:layout_marginHorizontal="15dp"
-            android:layout_marginBottom="10dp"
-            android:layout_below="@+id/set_amount"
+            android:layout_below="@+id/title1"
             android:textSize="12sp"
             android:fontFamily="@font/lexenddeca_medium"
             android:textColor="#FD3C4A"

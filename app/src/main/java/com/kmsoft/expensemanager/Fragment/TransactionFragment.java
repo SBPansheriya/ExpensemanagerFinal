@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.kmsoft.expensemanager.Activity.Trancation.DetailsTrancationActivity;
+import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
 import com.kmsoft.expensemanager.Activity.Trancation.FinancialReportActivity;
 import com.kmsoft.expensemanager.R;
 
@@ -57,7 +57,7 @@ public class TransactionFragment extends Fragment {
         img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent  = new Intent(getActivity(), DetailsTrancationActivity.class);
+                Intent intent  = new Intent(getActivity(), DetailsTransactionActivity.class);
                 startActivity(intent);
             }
         });

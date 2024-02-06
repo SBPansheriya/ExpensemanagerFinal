@@ -74,7 +74,7 @@
 
                 <EditText
                     android:id="@+id/edit_budget_amount"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/EditTextNoUnderline"
                     android:layout_marginTop="5dp"
@@ -88,8 +88,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.7"
+            android:layout_height="wrap_content"
             android:background="@color/green">
 
             <RelativeLayout
@@ -98,30 +97,43 @@
                 android:background="@drawable/bottom_border">
 
                 <LinearLayout
-                    android:id="@+id/title1"
+                    android:id="@+id/edit_budget_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/border1"
                     android:orientation="horizontal">
 
-                    <Spinner
-                        android:id="@+id/edit_budget_spinner"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/edit_budget_category_name"
+                        android:layout_width="0dp"
                         android:layout_height="56dp"
-                        android:dropDownWidth="130dp"
-                        style="@style/SpinnerTheme1"
-                        android:fontFamily="@font/lexenddeca_semibold"
-                        android:spinnerMode="dropdown" />
+                        android:layout_weight="1"
+                        android:fontFamily="@font/lexenddeca_medium"
+                        android:gravity="start|center"
+                        android:hint="@string/category"
+                        android:paddingStart="10dp"
+                        android:textColor="@color/gray"
+                        android:textColorHint="@color/gray"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/income_right_gray_arrow" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/title5"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/title1"
+                    android:layout_below="@+id/budget_category"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/border1"
@@ -166,6 +178,7 @@
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/edit_budget_slider"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/title5"

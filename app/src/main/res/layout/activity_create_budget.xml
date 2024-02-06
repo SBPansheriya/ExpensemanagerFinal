@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".Activity.Budget.CreateBudgetActivity">
 
     <LinearLayout
@@ -89,8 +90,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.7"
+            android:layout_height="wrap_content"
             android:background="@color/green">
 
             <RelativeLayout
@@ -99,78 +99,92 @@
                 android:background="@drawable/bottom_border">
 
                 <LinearLayout
-                    android:id="@+id/title1"
+                    android:id="@+id/budget_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/border1"
                     android:orientation="horizontal">
 
-                    <Spinner
-                        android:id="@+id/create_budget_spinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:dropDownWidth="130dp"
-                        style="@style/SpinnerTheme1"
-                        android:fontFamily="@font/lexenddeca_semibold"
-                        android:spinnerMode="dropdown" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/title5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/title1"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="15dp"
-                    android:background="@drawable/border1"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/budget_category_name"
                         android:layout_width="0dp"
                         android:layout_height="56dp"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:fontFamily="@font/lexenddeca_medium"
+                        android:gravity="start|center"
+                        android:hint="@string/category"
+                        android:paddingStart="10dp"
+                        android:textColor="@color/gray"
+                        android:textColorHint="@color/gray"
+                        android:textSize="14sp" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/lexenddeca_medium"
-                            android:gravity="start|center"
-                            android:hint="@string/repeat"
-                            android:paddingStart="10dp"
-                            android:textColor="#29756F"
-                            android:textColorHint="#29756F"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="10dp"
-                            android:text="@string/repeat_transaction_set_your_own_time" />
-                    </LinearLayout>
-
-                    <Switch
-                        android:id="@+id/create_budget_switch"
-                        android:layout_width="50dp"
-                        android:layout_height="match_parent"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:layout_gravity="center"
                         android:layout_marginEnd="10dp"
-                        android:thumb="@drawable/thumb"
-                        android:track="@drawable/track"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
+                        android:src="@drawable/income_right_gray_arrow" />
 
                 </LinearLayout>
 
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/title5"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:visibility="gone"-->
+<!--                    android:layout_below="@+id/budget_category"-->
+<!--                    android:layout_marginHorizontal="20dp"-->
+<!--                    android:layout_marginTop="15dp"-->
+<!--                    android:background="@drawable/border1"-->
+<!--                    android:orientation="horizontal">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="56dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:gravity="center"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:fontFamily="@font/lexenddeca_medium"-->
+<!--                            android:gravity="start|center"-->
+<!--                            android:hint="@string/repeat"-->
+<!--                            android:paddingStart="10dp"-->
+<!--                            android:textColor="#29756F"-->
+<!--                            android:textColorHint="#29756F"-->
+<!--                            android:textSize="14sp" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:paddingStart="10dp"-->
+<!--                            android:text="@string/repeat_transaction_set_your_own_time" />-->
+<!--                    </LinearLayout>-->
+
+<!--                    <Switch-->
+<!--                        android:id="@+id/create_budget_switch"-->
+<!--                        android:layout_width="50dp"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginEnd="10dp"-->
+<!--                        android:thumb="@drawable/thumb"-->
+<!--                        android:track="@drawable/track"-->
+<!--                        tools:ignore="UseSwitchCompatOrMaterialXml" />-->
+
+<!--                </LinearLayout>-->
+
                 <com.google.android.material.slider.Slider
                     android:id="@+id/create_budget_slider"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/title5"
-                    android:layout_marginTop="0dp"
+                    android:layout_below="@+id/budget_category"
+                    android:layout_centerInParent="true"
                     android:textAlignment="center"
                     android:value="20"
                     android:valueFrom="0"
