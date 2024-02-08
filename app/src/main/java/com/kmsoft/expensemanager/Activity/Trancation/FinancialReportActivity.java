@@ -1,13 +1,18 @@
 package com.kmsoft.expensemanager.Activity.Trancation;
 
+import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,21 +31,32 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.kmsoft.expensemanager.Adapter.FinancialAdapter;
+import com.kmsoft.expensemanager.DBHelper;
+import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class FinancialReportActivity extends AppCompatActivity {
 
+    DBHelper dbHelper;
     ImageView financialLineChart, financialPieChart,back;
     Spinner spinner, spinner1;
-    TextView financialIncome, financialExpense;
-    RecyclerView financialRecyclerview;
-    FinancialAdapter financialAdapter;
+    TextView financialIncome, financialExpense,emptyTransaction;
     LineChart chart;
     PieChart pieChart;
     int click = 1;
     int imgClick = 1;
+    RecyclerView financialRecyclerView;
+    FinancialAdapter financialAdapter;
+    IncomeAndExpense incomeAndExpense;
+    ArrayList<IncomeAndExpense> incomeList = new ArrayList<>();
+    ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
+    String selected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +68,15 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         init();
 
-        LinearLayoutManager manager = new LinearLayoutManager(FinancialReportActivity.this);
-        financialAdapter = new FinancialAdapter(FinancialReportActivity.this);
-        financialRecyclerview.setLayoutManager(manager);
-        financialRecyclerview.setAdapter(financialAdapter);
-
+        dbHelper = new DBHelper(FinancialReportActivity.this);
+        selected = "Income";
+        spinner.setSelection(0);
+        spinner1.setSelection(0);
         ArrayAdapter<String> selectTypeAdapter = new ArrayAdapter<>(FinancialReportActivity.this, R.layout.simple_spinner_item1, FinancialReportActivity.this.getResources().getStringArray(R.array.financial_report_type));
         selectTypeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(selectTypeAdapter);
 
-        ArrayAdapter<String> financialCategoryAdapter = new ArrayAdapter<>(FinancialReportActivity.this, R.layout.simple_spinner_item1, FinancialReportActivity.this.getResources().getStringArray(R.array.financial_report_type));
+        ArrayAdapter<String> financialCategoryAdapter = new ArrayAdapter<>(FinancialReportActivity.this, R.layout.simple_spinner_item1, FinancialReportActivity.this.getResources().getStringArray(R.array.financial_report_transaction_type));
         financialCategoryAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(financialCategoryAdapter);
 
@@ -115,126 +130,34 @@ public class FinancialReportActivity extends AppCompatActivity {
         financialIncome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selected = "Income";
                 click = 1;
+
                 financialIncome.setBackgroundResource(R.drawable.selected_category);
                 financialExpense.setBackgroundResource(R.drawable.unselected_category);
 
                 financialIncome.setTextColor(getResources().getColor(R.color.white));
                 financialExpense.setTextColor(getResources().getColor(R.color.black));
                 if (spinner.getSelectedItem().toString().equals("Today")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 50));
-                    entries.add(new Entry(1, 100));
-                    entries.add(new Entry(2, 10));
-                    entries.add(new Entry(3, 130));
-                    entries.add(new Entry(4, 90));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-
-                    final String[] days = {"Friday", "Sunday"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart(chart, days, entries, pieEntries);
-
-                } else if (spinner.getSelectedItem().toString().equals("Month")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 50));
-                    entries.add(new Entry(1, 50));
-                    entries.add(new Entry(2, 80));
-                    entries.add(new Entry(3, 60));
-                    entries.add(new Entry(4, 40));
-                    entries.add(new Entry(5, 70));
-                    entries.add(new Entry(6, 100));
-                    entries.add(new Entry(7, 50));
-                    entries.add(new Entry(8, 110));
-                    entries.add(new Entry(9, 150));
-                    entries.add(new Entry(10, 10));
-                    entries.add(new Entry(11, 90));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-                    final String[] days = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aus", "Sep", "Oct", "Nov", "Dec"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart(chart, days, entries, pieEntries);
+                    populateChartWithTodayIncomeData();
                 } else if (spinner.getSelectedItem().toString().equals("Week")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 50));
-                    entries.add(new Entry(1, 50));
-                    entries.add(new Entry(2, 80));
-                    entries.add(new Entry(3, 60));
-                    entries.add(new Entry(4, 40));
-                    entries.add(new Entry(5, 70));
-                    entries.add(new Entry(6, 100));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-                    final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart(chart, days, entries, pieEntries);
+                    populateChartWithWeekIncomeData();
+                } else if (spinner.getSelectedItem().toString().equals("Month")) {
+                    populateChartWithMonthIncomeData();
                 } else if (spinner.getSelectedItem().toString().equals("Year")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 50));
-                    entries.add(new Entry(1, 20));
-                    entries.add(new Entry(2, 100));
-                    entries.add(new Entry(3, 60));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-                    final String[] days = {"2021", "2022", "2023", "2024"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart(chart, days, entries, pieEntries);
+                    populateChartWithYearIncomeData();
                 }
+                Display();
+
             }
         });
 
         financialExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selected = "Expense";
                 click = 2;
+
                 financialExpense.setBackgroundResource(R.drawable.selected_category);
                 financialIncome.setBackgroundResource(R.drawable.unselected_category);
 
@@ -242,346 +165,487 @@ public class FinancialReportActivity extends AppCompatActivity {
                 financialIncome.setTextColor(getResources().getColor(R.color.black));
 
                 if (spinner.getSelectedItem().toString().equals("Today")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 50));
-                    entries.add(new Entry(1, 100));
-                    entries.add(new Entry(2, 10));
-                    entries.add(new Entry(3, 130));
-                    entries.add(new Entry(4, 90));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-
-                    final String[] days = {"Friday", "Sunday"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart1(chart, days, entries, pieEntries);
-
-                } else if (spinner.getSelectedItem().toString().equals("Month")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 10));
-                    entries.add(new Entry(1, 20));
-                    entries.add(new Entry(2, 30));
-                    entries.add(new Entry(3, 10));
-                    entries.add(new Entry(4, 90));
-                    entries.add(new Entry(5, 60));
-                    entries.add(new Entry(6, 10));
-                    entries.add(new Entry(7, 80));
-                    entries.add(new Entry(8, 80));
-                    entries.add(new Entry(9, 70));
-                    entries.add(new Entry(10, 90));
-                    entries.add(new Entry(11, 45));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-                    final String[] days = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aus", "Sep", "Oct", "Nov", "Dec"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart1(chart, days, entries, pieEntries);
+                    populateChartWithTodayExpenseData();
                 } else if (spinner.getSelectedItem().toString().equals("Week")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 50));
-                    entries.add(new Entry(1, 50));
-                    entries.add(new Entry(2, 80));
-                    entries.add(new Entry(3, 60));
-                    entries.add(new Entry(4, 40));
-                    entries.add(new Entry(5, 70));
-                    entries.add(new Entry(6, 100));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-                    final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart1(chart, days, entries, pieEntries);
+                    populateChartWithWeekExpenseData();
+                } else if (spinner.getSelectedItem().toString().equals("Month")) {
+                    populateChartWithMonthExpenseData();
                 } else if (spinner.getSelectedItem().toString().equals("Year")) {
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-                    entries.add(new Entry(0, 50));
-                    entries.add(new Entry(1, 20));
-                    entries.add(new Entry(2, 100));
-                    entries.add(new Entry(3, 60));
-
-                    chart.invalidate();
-
-                    chart.getAxisLeft().setEnabled(false);
-                    chart.getAxisRight().setEnabled(false);
-                    final String[] days = {"2021", "2022", "2023", "2024"};
-
-                    ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                    pieEntries.add(new PieEntry(30f, "Label 1"));
-                    pieEntries.add(new PieEntry(20f, "Label 2"));
-                    pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                    // Refresh chart
-                    pieChart.invalidate();
-
-                    setupLineChart1(chart, days, entries, pieEntries);
+                    populateChartWithYearExpenseData();
                 }
+                Display();
             }
         });
-
-        spinner.setSelection(0);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (spinner.getSelectedItem().toString().equals("Today")) {
                     if (click == 1) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 100));
-                        entries.add(new Entry(2, 10));
-                        entries.add(new Entry(3, 130));
-                        entries.add(new Entry(4, 90));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-
-                        final String[] days = {"Friday", "Sunday"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart(chart, days, entries, pieEntries);
+                        populateChartWithTodayIncomeData();
                     } else if (click == 2) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 100));
-                        entries.add(new Entry(2, 10));
-                        entries.add(new Entry(3, 130));
-                        entries.add(new Entry(4, 90));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-
-                        final String[] days = {"Friday", "Sunday"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart1(chart, days, entries, pieEntries);
+                        populateChartWithTodayExpenseData();
                     }
                 } else if (spinner.getSelectedItem().toString().equals("Week")) {
                     if (click == 1) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 50));
-                        entries.add(new Entry(2, 80));
-                        entries.add(new Entry(3, 60));
-                        entries.add(new Entry(4, 40));
-                        entries.add(new Entry(5, 70));
-                        entries.add(new Entry(6, 100));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart(chart, days, entries, pieEntries);
+                       populateChartWithWeekIncomeData();
                     } else if (click == 2) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 50));
-                        entries.add(new Entry(2, 80));
-                        entries.add(new Entry(3, 60));
-                        entries.add(new Entry(4, 40));
-                        entries.add(new Entry(5, 70));
-                        entries.add(new Entry(6, 100));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart1(chart, days, entries, pieEntries);
+                        populateChartWithWeekExpenseData();
                     }
                 } else if (spinner.getSelectedItem().toString().equals("Month")) {
                     if (click == 1) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 50));
-                        entries.add(new Entry(2, 80));
-                        entries.add(new Entry(3, 60));
-                        entries.add(new Entry(4, 40));
-                        entries.add(new Entry(5, 70));
-                        entries.add(new Entry(6, 100));
-                        entries.add(new Entry(7, 50));
-                        entries.add(new Entry(8, 110));
-                        entries.add(new Entry(9, 150));
-                        entries.add(new Entry(10, 10));
-                        entries.add(new Entry(11, 90));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aus", "Sep", "Oct", "Nov", "Dec"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-                        pieEntries.add(new PieEntry(58f, "Label 4"));
-                        pieEntries.add(new PieEntry(100f, "Label 5"));
-                        pieEntries.add(new PieEntry(10f, "Label 6"));
-                        pieEntries.add(new PieEntry(80f, "Label 7"));
-                        pieEntries.add(new PieEntry(20f, "Label 8"));
-                        pieEntries.add(new PieEntry(20f, "Label 9"));
-                        pieEntries.add(new PieEntry(10f, "Label 10"));
-                        pieEntries.add(new PieEntry(60f, "Label 11"));
-                        pieEntries.add(new PieEntry(80f, "Label 12"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart(chart, days, entries, pieEntries);
+                       populateChartWithMonthIncomeData();
                     } else if (click == 2) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 50));
-                        entries.add(new Entry(2, 80));
-                        entries.add(new Entry(3, 60));
-                        entries.add(new Entry(4, 40));
-                        entries.add(new Entry(5, 70));
-                        entries.add(new Entry(6, 100));
-                        entries.add(new Entry(7, 50));
-                        entries.add(new Entry(8, 110));
-                        entries.add(new Entry(9, 150));
-                        entries.add(new Entry(10, 10));
-                        entries.add(new Entry(11, 90));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aus", "Sep", "Oct", "Nov", "Dec"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart1(chart, days, entries, pieEntries);
+                        populateChartWithMonthExpenseData();
                     }
                 } else if (spinner.getSelectedItem().toString().equals("Year")) {
                     if (click == 1) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 20));
-                        entries.add(new Entry(2, 100));
-                        entries.add(new Entry(3, 60));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"2021", "2022", "2023", "2024"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart(chart, days, entries, pieEntries);
+                        populateChartWithYearIncomeData();
                     } else if (click == 2) {
-                        ArrayList<Entry> entries = new ArrayList<>();
-                        entries.add(new Entry(0, 50));
-                        entries.add(new Entry(1, 20));
-                        entries.add(new Entry(2, 100));
-                        entries.add(new Entry(3, 60));
-
-                        chart.invalidate();
-
-                        chart.getAxisLeft().setEnabled(false);
-                        chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"2021", "2022", "2023", "2024"};
-
-                        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-                        pieEntries.add(new PieEntry(30f, "Label 1"));
-                        pieEntries.add(new PieEntry(20f, "Label 2"));
-                        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-                        // Refresh chart
-                        pieChart.invalidate();
-
-                        setupLineChart1(chart, days, entries, pieEntries);
+                       populateChartWithYearExpenseData();
                     }
                 }
+                Display();
             }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Display();
+            }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Display();
+    }
+
+    private void populateChartWithTodayIncomeData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        double[] totalAmountPerHour = new double[12];
+
+        for (int i = 0; i < incomeList.size(); i++) {
+            String entryDate = incomeList.get(i).getDate();
+            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
+            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            int hourOfDay = getHourOfDay(incomeList.get(i).getTime());
+            String amountString = extractNumericPart(incomeList.get(i).getAmount());
+            double amount = Double.parseDouble(amountString);
+            if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
+                int index = hourOfDay / 2;
+                if (index >= 0 && index < totalAmountPerHour.length) {
+                    totalAmountPerHour[index] += amount;
+                }
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerHour.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerHour[i]));
+        }
+        final String[] days = {"1AM", "3AM", "5AM", "7AM", "9AM", "11AM", "1PM", "3PM", "5PM", "7PM", "9PM", "11PM"};
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart(chart, days, entries,pieEntries);
+    }
+    private void populateChartWithTodayExpenseData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        double[] totalAmountPerHour = new double[12];
+
+        for (int i = 0; i < expenseList.size(); i++) {
+            String entryDate = expenseList.get(i).getDate();
+            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
+            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            int hourOfDay = getHourOfDay(expenseList.get(i).getTime());
+            String amountString = extractNumericPart(expenseList.get(i).getAmount());
+            double amount = Double.parseDouble(amountString);
+            if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
+                int index = hourOfDay / 2;
+                if (index >= 0 && index < totalAmountPerHour.length) {
+                    totalAmountPerHour[index] += amount;
+                }
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerHour.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerHour[i]));
+        }
+        final String[] days = {"1AM", "3AM", "5AM", "7AM", "9AM", "11AM", "1PM", "3PM", "5PM", "7PM", "9PM", "11PM"};
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart1(chart, days, entries,pieEntries);
+    }
+
+    private void populateChartWithWeekIncomeData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        double[] totalAmountPerDay = new double[7];
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        for (IncomeAndExpense entry : incomeList) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            String entryDate = entry.getDate();
+            for (int i = 0; i < 7; i++) {
+                String day = dateFormat.format(calendar.getTime());
+                if (day.equals(entryDate)) {
+                    String amountString = extractNumericPart(entry.getAmount());
+                    double amount = Double.parseDouble(amountString);
+                    totalAmountPerDay[i] += amount;
+                    break;
+                }
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerDay.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerDay[i]));
+        }
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+        final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart(chart, days, entries,pieEntries);
+    }
+    private void populateChartWithWeekExpenseData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        double[] totalAmountPerDay = new double[7];
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        for (IncomeAndExpense entry : expenseList) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            String entryDate = entry.getDate();
+            for (int i = 0; i < 7; i++) {
+                String day = dateFormat.format(calendar.getTime());
+                if (day.equals(entryDate)) {
+                    String amountString = extractNumericPart(entry.getAmount());
+                    double amount = Double.parseDouble(amountString);
+                    totalAmountPerDay[i] += amount;
+                    break;
+                }
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerDay.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerDay[i]));
+        }
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+        final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart1(chart, days, entries,pieEntries);
+    }
+
+    private void populateChartWithMonthIncomeData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+        double[] totalAmountPerMonth = new double[12];
+
+        for (IncomeAndExpense entry : incomeList) {
+            String entryDate = entry.getDate();
+            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            Calendar calendar = Calendar.getInstance();
+            int currentYear = calendar.get(Calendar.YEAR);
+
+            if (currentYear == entryYear) {
+                String amountString = extractNumericPart(entry.getAmount());
+                double amount = Double.parseDouble(amountString);
+                totalAmountPerMonth[entryMonth - 1] += amount;
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerMonth.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerMonth[i]));
+        }
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+        final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart(chart, months, entries,pieEntries);
+    }
+    private void populateChartWithMonthExpenseData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+        double[] totalAmountPerMonth = new double[12];
+
+        for (IncomeAndExpense entry : expenseList) {
+            String entryDate = entry.getDate();
+            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            Calendar calendar = Calendar.getInstance();
+            int currentYear = calendar.get(Calendar.YEAR);
+
+            if (currentYear == entryYear) {
+                String amountString = extractNumericPart(entry.getAmount());
+                double amount = Double.parseDouble(amountString);
+                totalAmountPerMonth[entryMonth - 1] += amount;
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerMonth.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerMonth[i]));
+        }
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+        final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart1(chart, months, entries,pieEntries);
+    }
+
+    private void populateChartWithYearIncomeData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int startYear = currentYear - 1;
+        int endYear = currentYear + 1;
+        double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
+
+        for (IncomeAndExpense entry : incomeList) {
+            String entryDate = entry.getDate();
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            if (entryYear >= startYear && entryYear <= endYear) {
+                String amountString = extractNumericPart(entry.getAmount());
+                double amount = Double.parseDouble(amountString);
+                int index = entryYear - startYear;
+
+                totalAmountPerYear1[index] += amount;
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerYear1.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
+        }
+
+        final String currentYearStr = String.valueOf(currentYear);
+
+        // Calculate previous year
+        calendar.add(Calendar.YEAR, -1);
+        int previousYear = calendar.get(Calendar.YEAR);
+        final String previousYearStr = String.valueOf(previousYear);
+
+        // Calculate next year
+        calendar.add(Calendar.YEAR, 2);
+        int nextYear = calendar.get(Calendar.YEAR);
+        final String nextYearStr = String.valueOf(nextYear);
+        final String[] years = {previousYearStr, currentYearStr, nextYearStr};
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart(chart, years, entries,pieEntries);
+    }
+    private void populateChartWithYearExpenseData() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int startYear = currentYear - 1;
+        int endYear = currentYear + 1;
+        double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
+
+        for (IncomeAndExpense entry : incomeList) {
+            String entryDate = entry.getDate();
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            if (entryYear >= startYear && entryYear <= endYear) {
+                String amountString = extractNumericPart(entry.getAmount());
+                double amount = Double.parseDouble(amountString);
+                int index = entryYear - startYear;
+
+                totalAmountPerYear1[index] += amount;
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerYear1.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
+        }
+
+        final String currentYearStr = String.valueOf(currentYear);
+
+        // Calculate previous year
+        calendar.add(Calendar.YEAR, -1);
+        int previousYear = calendar.get(Calendar.YEAR);
+        final String previousYearStr = String.valueOf(previousYear);
+
+        // Calculate next year
+        calendar.add(Calendar.YEAR, 2);
+        int nextYear = calendar.get(Calendar.YEAR);
+        final String nextYearStr = String.valueOf(nextYear);
+        final String[] years = {previousYearStr, currentYearStr, nextYearStr};
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        pieEntries.add(new PieEntry(30f, "Label 1"));
+        pieEntries.add(new PieEntry(20f, "Label 2"));
+        pieEntries.add(new PieEntry(50f, "Label 3"));
+
+        // Refresh chart
+        pieChart.invalidate();
+
+        setupLineChart1(chart, years, entries,pieEntries);
+    }
+
+    private String extractNumericPart(String input) {
+        return input.replaceAll("[^\\d.]", "");
+    }
+
+    private int getHourOfDay(String time) {
+        String[] parts = time.split(":");
+        if (parts.length == 2) {
+            try {
+                int hour = Integer.parseInt(parts[0]);
+                if (hour >= 0 && hour <= 12) {
+                    int minute = Integer.parseInt(parts[1].split("\\s+")[0]);
+                    String period = parts[1].split("\\s+")[1];
+
+                    if (period.equalsIgnoreCase("AM")) {
+                        if (hour == 12) {
+                            return 0;
+                        }
+                    } else if (period.equalsIgnoreCase("PM")) {
+                        if (hour < 12) {
+                            hour += 12;
+                        }
+                    }
+
+                    if (minute >= 0 && minute < 60) {
+                        return hour;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        return -1;
     }
 
     private void setupLineChart(LineChart chart, String[] days, ArrayList<Entry> entries, ArrayList<PieEntry> pieEntries) {
@@ -671,6 +735,203 @@ public class FinancialReportActivity extends AppCompatActivity {
         pieChart.setCenterTextTypeface(typeface);
     }
 
+    private void Display() {
+        Cursor cursor = dbHelper.getAllData();
+        if (cursor != null && cursor.moveToFirst()) {
+            incomeAndExpenseArrayList = new ArrayList<>();
+            do {
+                int id = cursor.getInt(0);
+                String incomeAmount = cursor.getString(1);
+                String currentdate = cursor.getString(2);
+                String  incomeDate = cursor.getString(3);
+                String incomeDay = cursor.getString(4);
+                String incomeAddTime = cursor.getString(5);
+                String categoryName = cursor.getString(6);
+                int categoryImage = cursor.getInt(7);
+                String incomeDescription = cursor.getString(8);
+                String addAttachment = cursor.getString(9);
+                String tag = cursor.getString(10);
+
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
+                incomeAndExpenseArrayList.add(incomeAndExpense);
+
+                incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
+                expenseList = filterCategories(incomeAndExpenseArrayList, "Expense");
+
+                ArrayList<IncomeAndExpense> filteredTodayIncomeList = filterIncomeListByTodayDate(incomeList);
+                ArrayList<IncomeAndExpense> filteredTodayExpenseList = filterIncomeListByTodayDate(expenseList);
+                ArrayList<IncomeAndExpense> filteredWeekIncomeList = filterIncomeListByCurrentWeek(incomeList);
+                ArrayList<IncomeAndExpense> filteredWeekExpenseList = filterIncomeListByCurrentWeek(expenseList);
+                ArrayList<IncomeAndExpense> filteredMonthIncomeList = filterIncomeListByCurrentMonth(incomeList);
+                ArrayList<IncomeAndExpense> filteredMonthExpenseList = filterIncomeListByCurrentMonth(expenseList);
+                ArrayList<IncomeAndExpense> filteredYearIncomeList = filterIncomeListByCurrentYear(incomeList);
+                ArrayList<IncomeAndExpense> filteredYearExpenseList = filterIncomeListByCurrentYear(expenseList);
+
+                if (TextUtils.equals(spinner.getSelectedItem().toString(),"Today")) {
+                    if (TextUtils.equals(selected, "Income")) {
+                        if (filteredTodayIncomeList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredTodayIncomeList,spinner1.getSelectedItem().toString(),selected);
+
+                        }
+                    } else if (TextUtils.equals(selected, "Expense")) {
+                        if (filteredTodayExpenseList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredTodayExpenseList,spinner1.getSelectedItem().toString(),selected);
+                        }
+                    }
+                }
+                else if (spinner.getSelectedItem().toString().equals("Week")) {
+                    if (TextUtils.equals(selected, "Income")) {
+                        if (filteredWeekIncomeList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredWeekIncomeList,spinner1.getSelectedItem().toString(),selected);
+                        }
+                    } else if (TextUtils.equals(selected, "Expense")) {
+                        if (filteredWeekExpenseList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredWeekExpenseList,spinner1.getSelectedItem().toString(),selected);
+                        }
+                    }
+                } else if (spinner.getSelectedItem().toString().equals("Month")) {
+                    if (TextUtils.equals(selected, "Income")) {
+                        if (filteredWeekIncomeList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredMonthIncomeList,spinner1.getSelectedItem().toString(),selected);
+                        }
+                    } else if (TextUtils.equals(selected, "Expense")) {
+                        if (filteredWeekExpenseList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredMonthExpenseList,spinner1.getSelectedItem().toString(),selected);
+                        }
+                    }
+                } else if (spinner.getSelectedItem().toString().equals("Year")) {
+                    if (TextUtils.equals(selected, "Income")) {
+                        if (filteredWeekIncomeList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredYearIncomeList,spinner1.getSelectedItem().toString(),selected);
+                        }
+                    } else if (TextUtils.equals(selected, "Expense")) {
+                        if (filteredWeekExpenseList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            financialRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredYearExpenseList,spinner1.getSelectedItem().toString(),selected);
+                        }
+                    }
+                }
+                LinearLayoutManager manager = new LinearLayoutManager(FinancialReportActivity.this);
+                financialRecyclerView.setLayoutManager(manager);
+                financialRecyclerView.setAdapter(financialAdapter);
+                financialRecyclerView.setVisibility(View.VISIBLE);
+                emptyTransaction.setVisibility(View.GONE);
+            } while (cursor.moveToNext());
+        } else {
+            incomeAndExpenseArrayList = new ArrayList<>();
+            financialRecyclerView.setVisibility(View.GONE);
+            emptyTransaction.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private ArrayList<IncomeAndExpense> filterCategories(ArrayList<IncomeAndExpense> incomeAndExpenses, String type) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            if (incomeAndExpense.getTag().equals(type)) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
+    }
+
+    private static ArrayList<IncomeAndExpense> filterIncomeListByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        Date currentDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = sdf.format(currentDate);
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            if (incomeAndExpense.getDate().equals(formattedDate)) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
+    }
+
+    private static ArrayList<IncomeAndExpense> filterIncomeListByCurrentWeek(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        Date startOfWeek = calendar.getTime();
+
+        calendar.add(Calendar.DAY_OF_WEEK, 6);
+        Date endOfWeek = calendar.getTime();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            String entryDateString = incomeAndExpense.getDate();
+            try {
+                Date entryDate = sdf.parse(entryDateString);
+                if (entryDate.after(startOfWeek) && entryDate.before(endOfWeek)) {
+                    filteredList.add(incomeAndExpense);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return filteredList;
+    }
+
+    private static ArrayList<IncomeAndExpense> filterIncomeListByCurrentMonth(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            String entryDate = incomeAndExpense.getDate();
+            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+            if (entryMonth == currentMonth) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
+    }
+
+    private static ArrayList<IncomeAndExpense> filterIncomeListByCurrentYear(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            String entryDate = incomeAndExpense.getDate();
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+            if (entryYear == currentYear) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
+    }
+
     private void init() {
         financialPieChart = findViewById(R.id.financial_pie_img);
         financialLineChart = findViewById(R.id.financial_line_img);
@@ -678,9 +939,10 @@ public class FinancialReportActivity extends AppCompatActivity {
         spinner1 = findViewById(R.id.financial_spinner1);
         chart = findViewById(R.id.financial_line_chart);
         pieChart = findViewById(R.id.financial_pie_chart);
-        financialRecyclerview = findViewById(R.id.financial_recyclerview);
+        financialRecyclerView = findViewById(R.id.financial_recyclerview);
         financialIncome = findViewById(R.id.financial_income);
         financialExpense = findViewById(R.id.financial_expense);
+        emptyTransaction = findViewById(R.id.empty_transaction);
         back = findViewById(R.id.back);
     }
 }

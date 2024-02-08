@@ -95,10 +95,16 @@
         <item>CSV</item>
         <item>PDF</item>
     </string-array>
+
     <string-array name="financial_report_type" translatable="false">
         <item>Today</item>
-        <item>Month</item>
         <item>Week</item>
+        <item>Month</item>
         <item>Year</item>
+    </string-array>
+
+    <string-array name="financial_report_transaction_type" translatable="false">
+        <item>Transaction</item>
+        <item>Category</item>
     </string-array>
 </resources>

@@ -56,24 +56,11 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-<<<<<<< Updated upstream:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryIncomeAdapter.java
-=======
-<<<<<<< HEAD:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryAdapter.java
-            public void onClick(View v) {
-                holder.checkbox.performClick();
-            }
-        });
-
-=======
->>>>>>> Stashed changes:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryAdapter.java
             public void onClick(View view) {
                 holder.checkbox.performClick();
             }
         });
-<<<<<<< Updated upstream:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryIncomeAdapter.java
-=======
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryIncomeAdapter.java
->>>>>>> Stashed changes:app/src/main/java/com/kmsoft/expensemanager/Adapter/AddCategoryAdapter.java
+
         holder.checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

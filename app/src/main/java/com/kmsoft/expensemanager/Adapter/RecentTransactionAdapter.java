@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +21,14 @@ import java.util.ArrayList;
 
 public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransactionAdapter.ViewHolder> {
 
-    HomeFragment homeFragment;
+    Context context;
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
+    String selected;
 
-    public RecentTransactionAdapter(HomeFragment homeFragment, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList) {
-        this.homeFragment = homeFragment;
+    public RecentTransactionAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList,String selected) {
+        this.context = context;
         this.incomeAndExpenseArrayList = incomeAndExpenseArrayList;
+        this.selected = selected;
     }
 
     @NonNull
@@ -40,8 +43,7 @@ public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransac
         IncomeAndExpense incomeAndExpense = incomeAndExpenseArrayList.get(position);
         holder.itemName.setText(incomeAndExpense.getCategoryName());
         holder.itemDescription.setText(incomeAndExpense.getDescription());
-        holder.itemAmount.setText(incomeAndExpense.getAmount());
-        holder.itemDate.setText(incomeAndExpense.getDate());
+        holder.itemDate.setText(incomeAndExpense.getTime());
 
         if (incomeAndExpense.getCategoryImage() == 0){
             holder.itemImage.setImageResource(R.drawable.i);
@@ -50,12 +52,20 @@ public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransac
             holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
         }
 
+        if (selected.equals("Income")){
+            holder.itemAmount.setText("+" + incomeAndExpense.getAmount());
+            holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
+        } else if (selected.equals("Expense")) {
+            holder.itemAmount.setText("-" + incomeAndExpense.getAmount());
+            holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
+        }
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(homeFragment.getContext(), DetailsTransactionActivity.class);
+                Intent intent = new Intent(context, DetailsTransactionActivity.class);
                 intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
-                homeFragment.getContext().startActivity(intent);
+                context.startActivity(intent);
             }
         });
 

@@ -20,6 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE = "data";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLUMN_CURRENTDATE = "currentdate";
     private static final String COLUMN_DATE = "date";
     private static final String COLUMN_DAY= "day";
     private static final String COLUMN_TIME = "time";
@@ -47,6 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "("
             + COLUMN_ID + " INTEGER PRIMARY KEY,"
             + COLUMN_AMOUNT + " TEXT,"
+            + COLUMN_CURRENTDATE + " TEXT,"
             + COLUMN_DATE + " TEXT,"
             + COLUMN_DAY + " TEXT,"
             + COLUMN_TIME + " TEXT,"
@@ -99,6 +101,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT, incomeAndExpense.getAmount());
+        contentValues.put(COLUMN_CURRENTDATE, incomeAndExpense.getCurrantDate());
         contentValues.put(COLUMN_DATE, incomeAndExpense.getDate());
         contentValues.put(COLUMN_DAY, incomeAndExpense.getDayName());
         contentValues.put(COLUMN_TIME, incomeAndExpense.getTime());
@@ -116,6 +119,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT, incomeAndExpense.getAmount());
+        contentValues.put(COLUMN_CURRENTDATE, incomeAndExpense.getCurrantDate());
         contentValues.put(COLUMN_DATE, incomeAndExpense.getDate());
         contentValues.put(COLUMN_DAY, incomeAndExpense.getDayName());
         contentValues.put(COLUMN_TIME, incomeAndExpense.getTime());
@@ -182,19 +186,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.delete(TABLE1, COLUMN_ID_SHOW + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
-
-
-<<<<<<< Updated upstream
-
-    // Category Crud
-=======
-<<<<<<< HEAD
-    // Budget Crud
-=======
-
-    // Category Crud
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
 
     //insert Data
     public void insertBudgetData(Budget budget) {

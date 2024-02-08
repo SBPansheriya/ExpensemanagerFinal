@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class IncomeAndExpense implements Serializable {
     int id;
     String amount;
+    String currantDate;
     String date;
     String dayName;
     String time;
@@ -17,9 +18,10 @@ public class IncomeAndExpense implements Serializable {
     public IncomeAndExpense() {
     }
 
-    public IncomeAndExpense(int id, String amount, String date, String dayName, String time, String categoryName, int categoryImage, String description, String addAttachment, String tag) {
+    public IncomeAndExpense(int id, String amount, String currantDate, String date, String dayName, String time, String categoryName, int categoryImage, String description, String addAttachment, String tag) {
         this.id = id;
         this.amount = amount;
+        this.currantDate = currantDate;
         this.date = date;
         this.dayName = dayName;
         this.time = time;
@@ -44,6 +46,14 @@ public class IncomeAndExpense implements Serializable {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public String getCurrantDate() {
+        return currantDate;
+    }
+
+    public void setCurrantDate(String currantDate) {
+        this.currantDate = currantDate;
     }
 
     public String getDate() {

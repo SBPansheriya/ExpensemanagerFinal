@@ -94,4 +94,77 @@
                 android:textSize="12sp" />
         </RelativeLayout>
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative1"
+        android:layout_marginVertical="5dp">
+
+        <RelativeLayout
+            android:id="@+id/title3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/titl"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:background="@drawable/border8"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="14sp"
+                    android:layout_height="14sp"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/green_dot" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:id="@+id/item_category_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:text="@string/shopping"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/item_category_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="20dp"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:text="@string/_10000"
+                android:textColor="@color/green"
+                android:textSize="18dp" />
+        </RelativeLayout>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/set_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title3"
+            android:layout_marginTop="-5dp"
+            android:textAlignment="center"
+            app:haloColor="@color/white"
+            app:labelBehavior="gone"
+            app:thumbColor="#DDDDDD"
+            app:thumbElevation="0dp"
+            app:thumbRadius="0dp"
+            app:trackColorActive="@color/green"
+            app:trackColorInactive="#DDDDDD"
+            app:trackHeight="15dp" />
+
+    </RelativeLayout>
 </RelativeLayout>

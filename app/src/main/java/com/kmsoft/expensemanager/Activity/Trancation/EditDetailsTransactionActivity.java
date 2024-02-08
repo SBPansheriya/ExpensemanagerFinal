@@ -39,14 +39,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kmsoft.expensemanager.Activity.FloatingButton.AddCategoryActivity;
-import com.kmsoft.expensemanager.Activity.FloatingButton.IncomeActivity;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
@@ -56,6 +54,7 @@ import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class EditDetailsTransactionActivity extends AppCompatActivity {
@@ -63,9 +62,9 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     DBHelper dbHelper;
     ImageView back, setEditImage, removeImage;
     RelativeLayout editSetImage;
-    LinearLayout editAddAttachment, expenseCategory;
+    LinearLayout editAddAttachment, editShowCategory;
     EditText editTotalBalance;
-    TextView editDescription, editCategory,editDate;
+    TextView editDescription, editCategory, editDate;
     IncomeAndExpense incomeAndExpense;
     Button editDetailsTransaction;
     ActivityResultLauncher<Intent> launchSomeActivity;
@@ -73,6 +72,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launchSomeActivityResult;
     private static final int CAMERA_REQUEST = 100;
     ImageView calendar;
+    String currantDate;
     int click;
     String selectedDate;
     String dayName;
@@ -81,6 +81,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     int imageResId;
     String categoryName;
     String addAttachmentImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,10 +118,12 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
 
         editTotalBalance.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -137,30 +140,32 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String amount = editTotalBalance.getText().toString();
                 String description = editDescription.getText().toString();
+                if (imageResId == 0) {
+                    imageResId = incomeAndExpense.getCategoryImage();
+                }
+                if (TextUtils.isEmpty(categoryName)) {
+                    categoryName = incomeAndExpense.getCategoryName();
+                }
+                if (TextUtils.isEmpty(selectedDate)) {
+                    selectedDate = incomeAndExpense.getDate();
+                    dayName = incomeAndExpense.getDayName();
+                    editAddTime = incomeAndExpense.getTime();
+                    currantDate = incomeAndExpense.getCurrantDate();
+                }
+                if (TextUtils.isEmpty(addAttachmentImage)) {
+                    addAttachmentImage = incomeAndExpense.getAddAttachment();
+                }
+
                 if (amount.equals("₹0") || amount.equals("₹")) {
                     Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(amount)){
+                } else if (TextUtils.isEmpty(amount)) {
                     Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(selectedDate)) {
                     Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(categoryName)) {
                     Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (imageResId == 0) {
-                        imageResId = incomeAndExpense.getCategoryImage();
-                    }
-                    if (TextUtils.isEmpty(categoryName)) {
-                        categoryName = incomeAndExpense.getCategoryName();
-                    }
-                    if (TextUtils.isEmpty(selectedDate)) {
-                        selectedDate = incomeAndExpense.getDate();
-                        dayName = incomeAndExpense.getDayName();
-                        editAddTime = incomeAndExpense.getTime();
-                    }
-                    if (TextUtils.isEmpty(addAttachmentImage)) {
-                        addAttachmentImage = incomeAndExpense.getAddAttachment();
-                    }
-                    incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
+                    incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.updateData(incomeAndExpense);
                     onBackPressed();
@@ -168,11 +173,11 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             }
         });
 
-        expenseCategory.setOnClickListener(new View.OnClickListener() {
+        editShowCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EditDetailsTransactionActivity.this, AddCategoryActivity.class);
-                intent.putExtra("clicked",incomeAndExpense.getTag());
+                intent.putExtra("clicked", incomeAndExpense.getTag());
                 launchSomeActivityResult.launch(intent);
             }
         });
@@ -229,12 +234,12 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         });
     }
 
-    private void setData(){
+    private void setData() {
         editTotalBalance.setText(incomeAndExpense.getAmount());
         editDate.setText(incomeAndExpense.getDate());
         editCategory.setText(incomeAndExpense.getCategoryName());
         editDescription.setText(incomeAndExpense.getDescription());
-        if (TextUtils.isEmpty(incomeAndExpense.getAddAttachment())){
+        if (TextUtils.isEmpty(incomeAndExpense.getAddAttachment())) {
             editAddAttachment.setVisibility(View.VISIBLE);
             editSetImage.setVisibility(View.GONE);
         } else {
@@ -263,7 +268,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         startActivityForResult(takePicture, CAMERA_REQUEST);
     }
 
-    private void showAttachmentBottomDialog(){
+    private void showAttachmentBottomDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(EditDetailsTransactionActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.add_attachment_bottomsheet_layout);
@@ -299,13 +304,14 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             showAttachmentBottomDialog();
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(EditDetailsTransactionActivity.this,CAMERA_REQUEST);
+            showPermissionDenyDialog(EditDetailsTransactionActivity.this, CAMERA_REQUEST);
         }
     }
 
@@ -348,8 +354,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 });
             }
             click = 1;
-        }
-        else if (click == 1) {
+        } else if (click == 1) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, CAMERA)) {
 
                 Dialog dialog = new Dialog(activity);
@@ -383,7 +388,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                         Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
                         intent.setData(uri);
-                        ActivityCompat.startActivityForResult(EditDetailsTransactionActivity.this,intent, requestCode,null);
+                        ActivityCompat.startActivityForResult(EditDetailsTransactionActivity.this, intent, requestCode, null);
                         dialog.dismiss();
                     }
                 });
@@ -401,7 +406,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         }
     }
 
-    private void showCalenderBottomDialog(){
+    private void showCalenderBottomDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(EditDetailsTransactionActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.calender_bottomsheet_layout);
@@ -418,6 +423,9 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 Calendar currentTime = Calendar.getInstance();
                 currentTime.set(year, month, dayOfMonth);
                 int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+                Date currentDate = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                currantDate = sdf.format(currentDate);
 
                 String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
                 dayName = daysOfWeek[dayOfWeek];
@@ -437,10 +445,10 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(selectedDate)){
+                if (TextUtils.isEmpty(selectedDate)) {
                     editDate.setText("");
                 } else {
-                    editDate.setText(""+selectedDate);
+                    editDate.setText("" + selectedDate);
                 }
                 dialog.dismiss();
             }
@@ -450,12 +458,12 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra("incomeAndExpense",incomeAndExpense);
+        intent.putExtra("incomeAndExpense", incomeAndExpense);
         setResult(RESULT_OK, intent);
         super.onBackPressed();
     }
 
-    private void init(){
+    private void init() {
         back = findViewById(R.id.back);
         editTotalBalance = findViewById(R.id.edit_amount);
         editDate = findViewById(R.id.edit_date);
@@ -466,7 +474,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         setEditImage = findViewById(R.id.set_edit_image);
         removeImage = findViewById(R.id.remove_image);
         calendar = findViewById(R.id.calendar);
-        expenseCategory = findViewById(R.id.expense_category);
+        editShowCategory = findViewById(R.id.edit_category);
         editSetImage = findViewById(R.id.edit_set_image);
     }
 }

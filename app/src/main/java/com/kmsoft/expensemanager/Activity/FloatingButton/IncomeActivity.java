@@ -60,6 +60,7 @@ import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class IncomeActivity extends AppCompatActivity {
@@ -75,6 +76,7 @@ public class IncomeActivity extends AppCompatActivity {
     LinearLayout incomeCategory, incomeAddAttachment;
     String selectedDate;
     String dayName;
+    String currantDate;
     Bitmap bitmap;
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
@@ -173,7 +175,7 @@ public class IncomeActivity extends AppCompatActivity {
                 } else {
                     String amount = incomeAddAmount.getText().toString();
                     String description = incomeDescription.getText().toString();
-                    incomeAndExpense = new IncomeAndExpense(0, amount, selectedDate, dayName,incomeAddTime,categoryName, imageResId, description, addAttachmentImage, "Income");
+                    incomeAndExpense = new IncomeAndExpense(0, amount, currantDate, selectedDate, dayName,incomeAddTime,categoryName, imageResId, description, addAttachmentImage, "Income");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
                     Dialog dialog = new Dialog(IncomeActivity.this);
@@ -414,10 +416,12 @@ public class IncomeActivity extends AppCompatActivity {
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar currentTime = Calendar.getInstance();
                 currentTime.set(year, month, dayOfMonth);
-                int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+                Date currentDate = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                currantDate = sdf.format(currentDate);
 
-                // Convert the numerical representation of day of week to string representation
-                String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
+                int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+                String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
                 dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
                 incomeAddTime = dateFormat.format(currentTime.getTime());

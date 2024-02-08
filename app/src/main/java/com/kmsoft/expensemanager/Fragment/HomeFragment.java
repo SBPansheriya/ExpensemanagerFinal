@@ -4,8 +4,10 @@ import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,9 +39,11 @@ import com.kmsoft.expensemanager.R;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -69,12 +73,10 @@ public class HomeFragment extends Fragment {
         see_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nestedScrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        nestedScrollView.fullScroll(NestedScrollView.FOCUS_DOWN);
-                    }
-                });
+                TransactionFragment transactionFragment = new TransactionFragment();
+                Bundle args = new Bundle();
+                transactionFragment.setArguments(args);
+                getFragmentManager().beginTransaction().add(R.id.framelayout, transactionFragment).commit();
             }
         });
 
@@ -108,97 +110,12 @@ public class HomeFragment extends Fragment {
 
                 selected = spinner.getSelectedItem().toString();
                 if (selected.equals("Income")) {
-                    today.setBackgroundResource(R.drawable.selected_home_background);
-                    week.setBackgroundResource(R.drawable.unselected_home_background);
-                    month.setBackgroundResource(R.drawable.unselected_home_background);
-                    year.setBackgroundResource(R.drawable.unselected_home_background);
-
-                    today.setTextColor(getResources().getColor(R.color.white));
-                    week.setTextColor(getResources().getColor(R.color.gray));
-                    month.setTextColor(getResources().getColor(R.color.gray));
-                    year.setTextColor(getResources().getColor(R.color.gray));
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-
-                    Calendar calendar = Calendar.getInstance();
-                    int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-                    int currentMonth = calendar.get(Calendar.MONTH) + 1;
-                    int currentYear = calendar.get(Calendar.YEAR);
-
-                    double[] totalAmountPerHour = new double[24];
-
-                    for (int i = 0; i < incomeList.size(); i++) {
-                        String entryDate = incomeList.get(i).getDate();
-                        int entryDay = Integer.parseInt(entryDate.split("/")[0]);
-                        int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-                        int entryYear = Integer.parseInt(entryDate.split("/")[2]);
-
-                        int hourOfDay = getHourOfDay(incomeList.get(i).getTime());
-                        String amountString = extractNumericPart(incomeList.get(i).getAmount());
-                        double amount = Double.parseDouble(amountString);
-                        if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
-                            if (hourOfDay >= 0 && hourOfDay < 24) {
-                                totalAmountPerHour[hourOfDay] += amount;
-                            }
-                        }
-                    }
-
-                    for (int i = 0; i < totalAmountPerHour.length; i++) {
-                        entries.add(new Entry(i, (float) totalAmountPerHour[i]));
-                    }
-                    final String[] days = {"1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12AM","1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM", "12PM"};
-
-                    setupLineChart(chart, days, entries);
+                    populateChartWithTodayIncomeData();
 
                     today.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            today.setBackgroundResource(R.drawable.selected_home_background);
-                            week.setBackgroundResource(R.drawable.unselected_home_background);
-                            month.setBackgroundResource(R.drawable.unselected_home_background);
-                            year.setBackgroundResource(R.drawable.unselected_home_background);
-
-                            today.setTextColor(getResources().getColor(R.color.white));
-                            week.setTextColor(getResources().getColor(R.color.gray));
-                            month.setTextColor(getResources().getColor(R.color.gray));
-                            year.setTextColor(getResources().getColor(R.color.gray));
-
-                            ArrayList<Entry> entries = new ArrayList<>();
-
-                            Calendar calendar = Calendar.getInstance();
-                            int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-                            int currentMonth = calendar.get(Calendar.MONTH) + 1;
-                            int currentYear = calendar.get(Calendar.YEAR);
-
-                            double[] totalAmountPerHour = new double[24];
-
-                            for (int i = 0; i < incomeList.size(); i++) {
-                                String entryDate = incomeList.get(i).getDate();
-                                int entryDay = Integer.parseInt(entryDate.split("/")[0]);
-                                int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
-
-                                int hourOfDay = getHourOfDay(incomeList.get(i).getTime());
-                                String amountString = extractNumericPart(incomeList.get(i).getAmount());
-                                double amount = Double.parseDouble(amountString);
-                                if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
-                                    if (hourOfDay >= 0 && hourOfDay < 24) {
-                                        totalAmountPerHour[hourOfDay] += amount;
-                                    }
-                                }
-                            }
-
-                            for (int i = 0; i < totalAmountPerHour.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerHour[i]));
-                            }
-                            final String[] days = {"1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12AM","1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM", "12PM"};
-
-                            chart.invalidate();
-
-                            chart.getAxisLeft().setEnabled(false);
-                            chart.getAxisRight().setEnabled(false);
-
-                            setupLineChart(chart, days, entries);
+                            populateChartWithTodayIncomeData();
                         }
                     });
 
@@ -235,7 +152,7 @@ public class HomeFragment extends Fragment {
                                         totalAmountPerDay[i] += amount;
                                         break;
                                     }
-                                    calendar.add(Calendar.DAY_OF_MONTH,1);
+                                    calendar.add(Calendar.DAY_OF_MONTH, 1);
                                 }
                             }
 
@@ -246,7 +163,7 @@ public class HomeFragment extends Fragment {
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                            final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
                             setupLineChart(chart, days, entries);
                         }
@@ -264,20 +181,27 @@ public class HomeFragment extends Fragment {
                             week.setTextColor(getResources().getColor(R.color.gray));
                             today.setTextColor(getResources().getColor(R.color.gray));
                             year.setTextColor(getResources().getColor(R.color.gray));
-                            ArrayList<Entry> entries = new ArrayList<>();
 
+                            ArrayList<Entry> entries = new ArrayList<>();
                             double[] totalAmountPerMonth = new double[12];
 
-                            for (int i = 0; i < incomeList.size(); i++) {
-                                int month = getMonthFromDateString(incomeList.get(i).getDate()); // Assuming getDate() returns a date string
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-                                String amountString = extractNumericPart(incomeList.get(i).getAmount());
-                                double amount = Double.parseDouble(amountString);
+                            for (IncomeAndExpense entry : incomeList) {
+                                String entryDate = entry.getDate();
+                                int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
 
-                                if (month >= 1 && month <= 12) {
-                                    totalAmountPerMonth[month - 1] += amount;
+                                Calendar calendar = Calendar.getInstance();
+                                int currentYear = calendar.get(Calendar.YEAR);
+
+                                if (currentYear == entryYear) {
+                                    String amountString = extractNumericPart(entry.getAmount());
+                                    double amount = Double.parseDouble(amountString);
+                                    totalAmountPerMonth[entryMonth - 1] += amount;
                                 }
                             }
+
                             for (int i = 0; i < totalAmountPerMonth.length; i++) {
                                 entries.add(new Entry(i, (float) totalAmountPerMonth[i]));
                             }
@@ -286,9 +210,9 @@ public class HomeFragment extends Fragment {
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aus", "Sep", "Oct", "Nov", "Dec"};
+                            final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-                            setupLineChart(chart, days, entries);
+                            setupLineChart(chart, months, entries);
                         }
                     });
 
@@ -304,149 +228,60 @@ public class HomeFragment extends Fragment {
                             week.setTextColor(getResources().getColor(R.color.gray));
                             month.setTextColor(getResources().getColor(R.color.gray));
                             today.setTextColor(getResources().getColor(R.color.gray));
-
                             ArrayList<Entry> entries = new ArrayList<>();
-                            int numYearsToShow = 5;
-                            int latestYear = getLatestYearFromData(incomeList);
-                            int year = 0;
-                            double[] totalAmountPerYear = new double[numYearsToShow];
 
-                            for (int i = 0; i < incomeList.size(); i++) {
-                                year = getYearFromDateString(incomeList.get(i).getDate()); // Assuming getDate() returns a date string
+                            Calendar calendar = Calendar.getInstance();
+                            int currentYear = calendar.get(Calendar.YEAR);
+                            int startYear = currentYear - 1;
+                            int endYear = currentYear + 1;
+                            double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
 
-                                String amountString = extractNumericPart(incomeList.get(i).getAmount());
-                                double amount = Double.parseDouble(amountString);
+                            for (IncomeAndExpense entry : incomeList) {
+                                String entryDate = entry.getDate();
+                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
 
-                                if (year >= latestYear - numYearsToShow + 1 && year <= latestYear) {
-                                    int index = latestYear - year;
+                                if (entryYear >= startYear && entryYear <= endYear) {
+                                    String amountString = extractNumericPart(entry.getAmount());
+                                    double amount = Double.parseDouble(amountString);
+                                    int index = entryYear - startYear;
 
-                                    totalAmountPerYear[index] += amount;
+                                    totalAmountPerYear1[index] += amount;
                                 }
                             }
 
-                            ArrayList<String> xAxisLabels = new ArrayList<>();
-                            for (int i = 0; i < numYearsToShow; i++) {
-                                xAxisLabels.add(String.valueOf(latestYear - numYearsToShow + 1 + i));
+                            for (int i = 0; i < totalAmountPerYear1.length; i++) {
+                                entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
                             }
 
-                            for (int i = 0; i < totalAmountPerYear.length; i++) {
-                                for (int j = 0; j < xAxisLabels.size(); j++) {
-                                    if (year == latestYear - numYearsToShow + 1 + j) {
-                                        entries.add(new Entry(j, (float) totalAmountPerYear[i]));
-                                    }
-                                }
-                            }
+                            final String currentYearStr = String.valueOf(currentYear);
 
-                            XAxis xAxis = chart.getXAxis();
-                            xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabels));
+                            // Calculate previous year
+                            calendar.add(Calendar.YEAR, -1);
+                            int previousYear = calendar.get(Calendar.YEAR);
+                            final String previousYearStr = String.valueOf(previousYear);
+
+                            // Calculate next year
+                            calendar.add(Calendar.YEAR, 2);
+                            int nextYear = calendar.get(Calendar.YEAR);
+                            final String nextYearStr = String.valueOf(nextYear);
+                            final String[] years = {previousYearStr, currentYearStr, nextYearStr};
 
                             chart.invalidate();
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
 
-                            LineDataSet dataSet = new LineDataSet(entries, "Income");
-                            dataSet.setCircleRadius(5f);
-                            dataSet.setValueTextSize(9);
-                            dataSet.setDrawFilled(true);
-                            dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                            dataSet.setCircleColor(getResources().getColor(R.color.green));
-                            dataSet.setFillColor(getResources().getColor(R.color.green));
-                            dataSet.setFillAlpha(30);
-                            dataSet.setValueTextColor(getResources().getColor(R.color.green));
-                            dataSet.setColor(getResources().getColor(R.color.green));
-
-                            LineData lineData = new LineData(dataSet);
-
-                            chart.setData(lineData);
+                            setupLineChart(chart, years, entries);
                         }
                     });
                 } else if (selected.equals("Expense")) {
-                    today.setBackgroundResource(R.drawable.selected_home_background);
-                    week.setBackgroundResource(R.drawable.unselected_home_background);
-                    month.setBackgroundResource(R.drawable.unselected_home_background);
-                    year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                    today.setTextColor(getResources().getColor(R.color.white));
-                    week.setTextColor(getResources().getColor(R.color.gray));
-                    month.setTextColor(getResources().getColor(R.color.gray));
-                    year.setTextColor(getResources().getColor(R.color.gray));
-
-                    ArrayList<Entry> entries = new ArrayList<>();
-
-                    Calendar calendar = Calendar.getInstance();
-                    int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-                    int currentMonth = calendar.get(Calendar.MONTH) + 1;
-                    int currentYear = calendar.get(Calendar.YEAR);
-
-                    double[] totalAmountPerHour = new double[24];
-
-                    for (int i = 0; i < expenseList.size(); i++) {
-                        String entryDate = expenseList.get(i).getDate();
-                        int entryDay = Integer.parseInt(entryDate.split("/")[0]);
-                        int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-                        int entryYear = Integer.parseInt(entryDate.split("/")[2]);
-
-                        int hourOfDay = getHourOfDay(expenseList.get(i).getTime());
-                        String amountString = extractNumericPart(expenseList.get(i).getAmount());
-                        double amount = Double.parseDouble(amountString);
-                        if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
-                            if (hourOfDay >= 0 && hourOfDay < 24) {
-                                totalAmountPerHour[hourOfDay] += amount;
-                            }
-                        }
-                    }
-
-                    for (int i = 0; i < totalAmountPerHour.length; i++) {
-                        entries.add(new Entry(i, (float) totalAmountPerHour[i]));
-                    }
-                    final String[] days = {"1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12AM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM", "12PM"};
-
-                    setupLineChart1(chart, days, entries);
+                    populateChartWithTodayExpenseData();
 
                     today.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            today.setBackgroundResource(R.drawable.selected_home_background);
-                            week.setBackgroundResource(R.drawable.unselected_home_background);
-                            month.setBackgroundResource(R.drawable.unselected_home_background);
-                            year.setBackgroundResource(R.drawable.unselected_home_background);
-
-                            today.setTextColor(getResources().getColor(R.color.white));
-                            week.setTextColor(getResources().getColor(R.color.gray));
-                            month.setTextColor(getResources().getColor(R.color.gray));
-                            year.setTextColor(getResources().getColor(R.color.gray));
-
-                            ArrayList<Entry> entries = new ArrayList<>();
-
-                            double[] totalAmountPerHour = new double[24];
-
-                            Calendar calendar = Calendar.getInstance();
-                            int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-                            int currentMonth = calendar.get(Calendar.MONTH) + 1;
-                            int currentYear = calendar.get(Calendar.YEAR);
-
-                            for (int i = 0; i < expenseList.size(); i++) {
-                                String entryDate = expenseList.get(i).getDate();
-                                int entryDay = Integer.parseInt(entryDate.split("/")[0]);
-                                int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
-
-                                int hourOfDay = getHourOfDay(expenseList.get(i).getTime());
-                                String amountString = extractNumericPart(expenseList.get(i).getAmount());
-                                double amount = Double.parseDouble(amountString);
-                                if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
-                                    if (hourOfDay >= 0 && hourOfDay < 24) {
-                                        totalAmountPerHour[hourOfDay] += amount;
-                                    }
-                                }
-                            }
-
-                            for (int i = 0; i < totalAmountPerHour.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerHour[i]));
-                            }
-                            final String[] days = {"1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12AM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM", "12PM"};
-                            setupLineChart1(chart, days, entries);
+                            populateChartWithTodayExpenseData();
                         }
                     });
 
@@ -484,7 +319,7 @@ public class HomeFragment extends Fragment {
                                         totalAmountPerDay[i] += amount;
                                         break;
                                     }
-                                    calendar.add(Calendar.DAY_OF_MONTH,1);
+                                    calendar.add(Calendar.DAY_OF_MONTH, 1);
                                 }
                             }
 
@@ -496,7 +331,7 @@ public class HomeFragment extends Fragment {
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                            final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
                             setupLineChart1(chart, days, entries);
                         }
@@ -557,18 +392,49 @@ public class HomeFragment extends Fragment {
                             today.setTextColor(getResources().getColor(R.color.gray));
 
                             ArrayList<Entry> entries = new ArrayList<>();
-                            entries.add(new Entry(0, 50));
-                            entries.add(new Entry(1, 20));
-                            entries.add(new Entry(2, 100));
-                            entries.add(new Entry(3, 60));
+
+                            Calendar calendar = Calendar.getInstance();
+                            int currentYear = calendar.get(Calendar.YEAR);
+                            int startYear = currentYear - 1;
+                            int endYear = currentYear + 1;
+                            double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
+
+                            for (IncomeAndExpense entry : expenseList) {
+                                String entryDate = entry.getDate();
+                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+                                if (entryYear >= startYear && entryYear <= endYear) {
+                                    String amountString = extractNumericPart(entry.getAmount());
+                                    double amount = Double.parseDouble(amountString);
+                                    int index = entryYear - startYear;
+
+                                    totalAmountPerYear1[index] += amount;
+                                }
+                            }
+
+                            for (int i = 0; i < totalAmountPerYear1.length; i++) {
+                                entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
+                            }
+
+                            final String currentYearStr = String.valueOf(currentYear);
+
+                            // Calculate previous year
+                            calendar.add(Calendar.YEAR, -1);
+                            int previousYear = calendar.get(Calendar.YEAR);
+                            final String previousYearStr = String.valueOf(previousYear);
+
+                            // Calculate next year
+                            calendar.add(Calendar.YEAR, 2);
+                            int nextYear = calendar.get(Calendar.YEAR);
+                            final String nextYearStr = String.valueOf(nextYear);
+                            final String[] years = {previousYearStr, currentYearStr, nextYearStr};
 
                             chart.invalidate();
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"2021", "2022", "2023", "2024"};
 
-                            setupLineChart1(chart, days, entries);
+                            setupLineChart1(chart, years, entries);
                         }
                     });
                 }
@@ -579,119 +445,117 @@ public class HomeFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
         return view;
-    }
-
-    private int getHourOfDay(String time) {
-        String[] parts = time.split(":");
-        if (parts.length == 2) {
-            try {
-                int hour = Integer.parseInt(parts[0]);
-                if (hour >= 0 && hour <= 12) {
-                    int minute = Integer.parseInt(parts[1].split("\\s+")[0]); // Extracting minutes
-                    String period = parts[1].split("\\s+")[1]; // Extracting AM/PM
-
-                    if (period.equalsIgnoreCase("AM")) {
-                        // If hour is 12 in AM, convert it to 0
-                        if (hour == 12) {
-                            return 0;
-                        }
-                    } else if (period.equalsIgnoreCase("PM")) {
-                        // If hour is less than 12 in PM, add 12 to it
-                        if (hour < 12) {
-                            hour += 12;
-                        }
-                    }
-
-                    if (minute >= 0 && minute < 60) {
-                        return hour;
-                    }
-                }
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-        return -1;
-    }
-
-
-    public int getLatestYearFromData(ArrayList<IncomeAndExpense> incomeList) {
-        int latestYear = Integer.MIN_VALUE; // Initialize with the smallest integer value
-
-        for (IncomeAndExpense income : incomeList) {
-            String date = income.getDate();
-            int year = getYearFromDateString(date);
-            if (year > latestYear) {
-                latestYear = year;
-            }
-        }
-        return latestYear;
-    }
-
-    public int getYearFromDateString(String dateString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Adjust the format as per your date string
-        try {
-            Date date = dateFormat.parse(dateString);
-
-            int year = date.getYear() + 1900; // Add 1900 to get the actual year
-            return year;
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    private int getDayIndex(String dayName) {
-        switch (dayName) {
-            case "Mon":
-                return 0;
-            case "Tue":
-                return 1;
-            case "Wed":
-                return 2;
-            case "Thu":
-                return 3;
-            case "Fri":
-                return 4;
-            case "Sat":
-                return 5;
-            case "Sun":
-                return 6;
-            default:
-                return -1; // Invalid day name
-        }
-    }
-
-    public int getMonthFromDateString(String dateString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-        try {
-            Date date = dateFormat.parse(dateString);
-
-            // Get the month from the Date object
-            // Note: Month starts from 0 (January) to 11 (December)
-            // You may want to add 1 to make it start from 1 to 12
-            int month = date.getMonth() + 1;
-            return month;
-        } catch (ParseException e) {
-            // Handle parsing exception
-            e.printStackTrace();
-            return -1; // Return
-        }
-    }
-
-    private String extractNumericPart(String input) {
-        return input.replaceAll("[^\\d.]", "");
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Display();
+        populateChartWithTodayIncomeData();
         calculateTotalExpense();
         calculateTotalIncome();
         calculateTotalIncomeAndExpense();
+    }
+
+    private void populateChartWithTodayIncomeData() {
+        today.setBackgroundResource(R.drawable.selected_home_background);
+        week.setBackgroundResource(R.drawable.unselected_home_background);
+        month.setBackgroundResource(R.drawable.unselected_home_background);
+        year.setBackgroundResource(R.drawable.unselected_home_background);
+
+        today.setTextColor(getResources().getColor(R.color.white));
+        week.setTextColor(getResources().getColor(R.color.gray));
+        month.setTextColor(getResources().getColor(R.color.gray));
+        year.setTextColor(getResources().getColor(R.color.gray));
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        double[] totalAmountPerHour = new double[12];
+
+        for (int i = 0; i < incomeList.size(); i++) {
+            String entryDate = incomeList.get(i).getDate();
+            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
+            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            int hourOfDay = getHourOfDay(incomeList.get(i).getTime());
+            String amountString = extractNumericPart(incomeList.get(i).getAmount());
+            double amount = Double.parseDouble(amountString);
+            if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
+                int index = hourOfDay / 2;
+                if (index >= 0 && index < totalAmountPerHour.length) {
+                    totalAmountPerHour[index] += amount;
+                }
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerHour.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerHour[i]));
+        }
+        final String[] days = {"1AM", "3AM", "5AM", "7AM", "9AM", "11AM", "1PM", "3PM", "5PM", "7PM", "9PM", "11PM"};
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+
+        setupLineChart(chart, days, entries);
+    }
+
+    private void populateChartWithTodayExpenseData() {
+        today.setBackgroundResource(R.drawable.selected_home_background);
+        week.setBackgroundResource(R.drawable.unselected_home_background);
+        month.setBackgroundResource(R.drawable.unselected_home_background);
+        year.setBackgroundResource(R.drawable.unselected_home_background);
+
+        today.setTextColor(getResources().getColor(R.color.white));
+        week.setTextColor(getResources().getColor(R.color.gray));
+        month.setTextColor(getResources().getColor(R.color.gray));
+        year.setTextColor(getResources().getColor(R.color.gray));
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        double[] totalAmountPerHour = new double[12];
+
+        for (int i = 0; i < expenseList.size(); i++) {
+            String entryDate = expenseList.get(i).getDate();
+            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
+            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+            int hourOfDay = getHourOfDay(expenseList.get(i).getTime());
+            String amountString = extractNumericPart(expenseList.get(i).getAmount());
+            double amount = Double.parseDouble(amountString);
+            if (entryYear == currentYear && entryMonth == currentMonth && entryDay == currentDay) {
+                int index = hourOfDay / 2;
+                if (index >= 0 && index < totalAmountPerHour.length) {
+                    totalAmountPerHour[index] += amount;
+                }
+            }
+        }
+
+        for (int i = 0; i < totalAmountPerHour.length; i++) {
+            entries.add(new Entry(i, (float) totalAmountPerHour[i]));
+        }
+        final String[] days = {"1AM", "3AM", "5AM", "7AM", "9AM", "11AM", "1PM", "3PM", "5PM", "7PM", "9PM", "11PM"};
+
+        chart.invalidate();
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+
+        setupLineChart1(chart, days, entries);
     }
 
     private void setupLineChart(LineChart chart, String[] days, ArrayList<Entry> entries) {
@@ -772,29 +636,78 @@ public class HomeFragment extends Fragment {
         return total.toString();
     }
 
+    private String extractNumericPart(String input) {
+        return input.replaceAll("[^\\d.]", "");
+    }
+
     private BigDecimal extractNumericAmount(String amount) {
         String numericString = amount.substring(1);
         return new BigDecimal(numericString);
     }
 
-    private void Display() {
+    private int getHourOfDay(String time) {
+        String[] parts = time.split(":");
+        if (parts.length == 2) {
+            try {
+                int hour = Integer.parseInt(parts[0]);
+                if (hour >= 0 && hour <= 12) {
+                    int minute = Integer.parseInt(parts[1].split("\\s+")[0]);
+                    String period = parts[1].split("\\s+")[1];
 
+                    if (period.equalsIgnoreCase("AM")) {
+                        if (hour == 12) {
+                            return 0;
+                        }
+                    } else if (period.equalsIgnoreCase("PM")) {
+                        if (hour < 12) {
+                            hour += 12;
+                        }
+                    }
+
+                    if (minute >= 0 && minute < 60) {
+                        return hour;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        return -1;
+    }
+
+    public int getMonthFromDateString(String dateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date date = dateFormat.parse(dateString);
+            int month = date.getMonth() + 1;
+            return month;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    private void Display() {
         Cursor cursor = dbHelper.getAllData();
         if (cursor != null && cursor.moveToFirst()) {
             incomeAndExpenseArrayList = new ArrayList<>();
+            Date currentDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = sdf.format(currentDate);
             do {
                 int id = cursor.getInt(0);
                 String incomeAmount = cursor.getString(1);
-                String incomeDate = cursor.getString(2);
-                String incomeDay = cursor.getString(3);
-                String incomeAddTime = cursor.getString(4);
-                String categoryName = cursor.getString(5);
-                int categoryImage = cursor.getInt(6);
-                String incomeDescription = cursor.getString(7);
-                String addAttachment = cursor.getString(8);
-                String tag = cursor.getString(9);
+                String currentdate = cursor.getString(2);
+                String incomeDate = cursor.getString(3);
+                String incomeDay = cursor.getString(4);
+                String incomeAddTime = cursor.getString(5);
+                String categoryName = cursor.getString(6);
+                int categoryImage = cursor.getInt(7);
+                String incomeDescription = cursor.getString(8);
+                String addAttachment = cursor.getString(9);
+                String tag = cursor.getString(10);
 
-                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
 
                 incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
@@ -803,28 +716,33 @@ public class HomeFragment extends Fragment {
                 recentTransactionRecyclerView.setVisibility(View.VISIBLE);
                 emptyTransaction.setVisibility(View.GONE);
 
+                ArrayList<IncomeAndExpense> filteredIncomeList = filterIncomeListByTodayDate(incomeList);
+                ArrayList<IncomeAndExpense> filteredExpenseList = filterIncomeListByTodayDate(expenseList);
+
                 if (TextUtils.equals(selected, "Income")) {
-                    if (incomeList.isEmpty()) {
-                        emptyTransaction.setVisibility(View.VISIBLE);
-                        recentTransactionRecyclerView.setVisibility(View.GONE);
-                    } else {
-                        recentTransactionRecyclerView.setVisibility(View.VISIBLE);
-                        emptyTransaction.setVisibility(View.GONE);
-                        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                        recentTransactionAdapter = new RecentTransactionAdapter(HomeFragment.this, incomeList);
-                        recentTransactionRecyclerView.setLayoutManager(manager);
-                        recentTransactionRecyclerView.setAdapter(recentTransactionAdapter);
-                    }
+                        if (filteredIncomeList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            recentTransactionRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            recentTransactionRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                            recentTransactionAdapter = new RecentTransactionAdapter(getContext(), filteredIncomeList,selected);
+                            recentTransactionRecyclerView.setLayoutManager(manager);
+                            recentTransactionRecyclerView.setAdapter(recentTransactionAdapter);
+                        }
                 } else if (TextUtils.equals(selected, "Expense")) {
-                    if (expenseList.isEmpty()) {
-                        emptyTransaction.setVisibility(View.VISIBLE);
-                        recentTransactionRecyclerView.setVisibility(View.GONE);
-                    } else {
-                        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                        recentTransactionAdapter = new RecentTransactionAdapter(HomeFragment.this, expenseList);
-                        recentTransactionRecyclerView.setLayoutManager(manager);
-                        recentTransactionRecyclerView.setAdapter(recentTransactionAdapter);
-                    }
+                        if (filteredExpenseList.isEmpty()) {
+                            emptyTransaction.setVisibility(View.VISIBLE);
+                            recentTransactionRecyclerView.setVisibility(View.GONE);
+                        } else {
+                            recentTransactionRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                            recentTransactionAdapter = new RecentTransactionAdapter(getContext(), filteredExpenseList,selected);
+                            recentTransactionRecyclerView.setLayoutManager(manager);
+                            recentTransactionRecyclerView.setAdapter(recentTransactionAdapter);
+                        }
                 }
             } while (cursor.moveToNext());
         } else {
@@ -838,6 +756,19 @@ public class HomeFragment extends Fragment {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
         for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
             if (incomeAndExpense.getTag().equals(type)) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
+    }
+
+    private static ArrayList<IncomeAndExpense> filterIncomeListByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        Date currentDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = sdf.format(currentDate);
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            if (incomeAndExpense.getCurrantDate().equals(formattedDate)) {
                 filteredList.add(incomeAndExpense);
             }
         }

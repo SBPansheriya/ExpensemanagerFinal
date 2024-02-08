@@ -79,11 +79,6 @@
                 android:textSize="50.0sp" />
 
             <TextView
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lexenddeca_medium"
@@ -96,7 +91,6 @@
                 android:visibility="gone"/>
 
             <TextView
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
                 android:id="@+id/show_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -18,12 +18,10 @@ import com.google.gson.Gson;
 import com.kmsoft.expensemanager.Activity.Budget.DetailsBudgetActivity;
 import com.kmsoft.expensemanager.Fragment.BudgetFragment;
 import com.kmsoft.expensemanager.Model.Budget;
-<<<<<<< Updated upstream
 import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
-=======
-<<<<<<< HEAD
+
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
@@ -31,24 +29,15 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-=======
+
 import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
 
 public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapter.ViewHolder> {
 
     BudgetFragment budgetFragment;
     ArrayList<Budget> budgetArrayList;
-<<<<<<< Updated upstream
-
-    public BudgetCreateAdapter(BudgetFragment budgetFragment, ArrayList<Budget> budgetArrayList) {
-        this.budgetFragment = budgetFragment;
-        this.budgetArrayList = budgetArrayList;
-=======
-<<<<<<< HEAD
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
     String remainingFinalAmount;
     String finalAmount;
@@ -59,13 +48,6 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
         this.budgetFragment = budgetFragment;
         this.budgetArrayList = budgetArrayList;
         this.incomeAndExpenseArrayList = incomeAndExpenseArrayList;
-=======
-
-    public BudgetCreateAdapter(BudgetFragment budgetFragment, ArrayList<Budget> budgetArrayList) {
-        this.budgetFragment = budgetFragment;
-        this.budgetArrayList = budgetArrayList;
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
     }
 
     @NonNull
@@ -79,12 +61,7 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
     public void onBindViewHolder(@NonNull BudgetCreateAdapter.ViewHolder holder, int position) {
         Budget budget = budgetArrayList.get(position);
         holder.setCategory.setText(budget.getCategoryNameBudget());
-<<<<<<< Updated upstream
-        holder.setRemainingAmount.setText("Remaining" + budget.getAmountBudget());
-        holder.setAmount.setText("₹1200 of ₹1000");
-        holder.setSlider.setValue(budget.getPercentageBudget());
-=======
-<<<<<<< HEAD
+
         double total = 0;
         for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
             String categoryName = incomeAndExpenseArrayList.get(i).getCategoryName();
@@ -104,49 +81,42 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                 double totalAmountValue = Double.parseDouble(onlyExceedAmount);
 
                 DecimalFormat df = new DecimalFormat("#");
-                String value = extractNumericPart(String.valueOf(total));
-                double value1 = Double.parseDouble(value);
-                finalAmount = df.format(value1);
+                finalAmount = df.format(total);
 
-                holder.setIncomeExpenseAmount.setText("₹" + finalAmount);
-
-                double remainingAmount = budgetAmountValue - value1;
+                double remainingAmount = budgetAmountValue - total;
                 remainingFinalAmount = df.format(remainingAmount);
                 holder.setRemainingAmount.setText("Remaining " + "₹" + remainingFinalAmount);
 
-                if (totalAmountValue >= budgetAmountValue) {
+                int total1 = (int) total;
+                holder.setIncomeExpenseAmount.setText("₹" + total1);
+
+                if (total1 >= budgetAmountValue) {
                     holder.setSlider.setValueFrom(0);
                     holder.setSlider.setValueTo((float) budgetAmountValue);
                     holder.setSlider.setValue((float) budgetAmountValue);
                     holder.setWarning.setVisibility(View.VISIBLE);
                     holder.setExceedAmount.setVisibility(View.VISIBLE);
                 } else {
-                    holder.setSlider.setValueFrom(0);
-                    holder.setSlider.setValueTo((float) budgetAmountValue);
-                    holder.setSlider.setValue((float) value1);
+                    if (total1 < totalAmountValue) {
+                        holder.setSlider.setValueFrom((float) total1);
+                        holder.setSlider.setValueTo((float) budgetAmountValue);
+                        holder.setSlider.setValue((float) total1);
+                        break;
+                    } else {
+                        holder.setSlider.setValueFrom(0);
+                        holder.setSlider.setValueTo((float) budgetAmountValue);
+                        holder.setSlider.setValue((float) total1);
+                    }
                     holder.setWarning.setVisibility(View.GONE);
                     holder.setExceedAmount.setVisibility(View.GONE);
                 }
-
                 remainingFinalAmountMap.put(position, remainingFinalAmount);
                 finalAmountMap.put(position, finalAmount);
             }
         }
-
-//        ArrayList<String> value = new ArrayList<>();
-//
-//        for (int i = 0; i < budgetArrayList.size(); i++) {
-//
-//        }
+        holder.setSlider.setEnabled(false);
 
         holder.setAmount.setText(" of " + budget.getAmountBudget());
-=======
-        holder.setRemainingAmount.setText("Remaining" + budget.getAmountBudget());
-        holder.setAmount.setText("₹1200 of ₹1000");
-        holder.setSlider.setValue(budget.getPercentageBudget());
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
-        holder.setSlider.setEnabled(false);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,33 +124,17 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                 String clickedRemainingFinalAmount = remainingFinalAmountMap.get(position);
                 String clickedFinalAmount = finalAmountMap.get(position);
                 Intent intent = new Intent(budgetFragment.getContext(), DetailsBudgetActivity.class);
-<<<<<<< Updated upstream
-                intent.putExtra("budget",budgetArrayList.get(position));
-=======
-<<<<<<< HEAD
                 intent.putExtra("budget", budgetArrayList.get(position));
                 intent.putExtra("remainingFinalAmount", clickedRemainingFinalAmount);
                 intent.putExtra("finalAmount", clickedFinalAmount);
                 Gson gson = new Gson();
                 String list = gson.toJson(budgetArrayList);
                 intent.putExtra("budgetArrayList", list);
-=======
-                intent.putExtra("budget",budgetArrayList.get(position));
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
                 budgetFragment.getContext().startActivity(intent);
             }
         });
 
-<<<<<<< Updated upstream
-        if (position == budgetArrayList.size()) {
-=======
-<<<<<<< HEAD
-        if (position == budgetArrayList.size()-1) {
-=======
-        if (position == budgetArrayList.size()) {
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
+        if (position == budgetArrayList.size() - 1) {
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(0, 20, 0, 330);
             holder.reletive.setLayoutParams(layoutParams);

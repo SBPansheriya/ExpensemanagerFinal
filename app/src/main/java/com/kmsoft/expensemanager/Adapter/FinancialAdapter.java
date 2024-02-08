@@ -1,49 +1,109 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.kmsoft.expensemanager.Activity.Trancation.FinancialReportActivity;
+import com.google.android.material.slider.Slider;
+import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
+import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
+
+import java.util.ArrayList;
 
 public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.ViewHolder> {
 
-    FinancialReportActivity financialReportActivity;
+    Context context;
+    ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
+    String spinner;
+    String selected;
 
-    public FinancialAdapter(FinancialReportActivity financialReportActivity) {
-        this.financialReportActivity = financialReportActivity;
+    public FinancialAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList,String spinner,String selected) {
+        this.context = context;
+        this.incomeAndExpenseArrayList = incomeAndExpenseArrayList;
+        this.spinner = spinner;
+        this.selected = selected;
     }
 
     @NonNull
     @Override
     public FinancialAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout, parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_financial_transaction_layout,parent,false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FinancialAdapter.ViewHolder holder, int position) {
-        holder.itemName.setText("Subscription");
-        holder.itemDescription.setText("Disney+ Annual..");
-        holder.itemAmount.setText("- ₹80");
-        holder.itemDate.setText("03:30 PM");
+        IncomeAndExpense incomeAndExpense = incomeAndExpenseArrayList.get(position);
+        if (spinner.equals("Transaction")) {
+            holder.itemName.setText(incomeAndExpense.getCategoryName());
+            holder.itemDescription.setText(incomeAndExpense.getDescription());
+            holder.itemDate.setText(incomeAndExpense.getDate());
+
+            if (selected.equals("Income")){
+                holder.itemAmount.setText("+" + incomeAndExpense.getAmount());
+                holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
+            } else if (selected.equals("Expense")) {
+                holder.itemAmount.setText("-" + incomeAndExpense.getAmount());
+                holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
+            }
+
+            if (incomeAndExpense.getCategoryImage() == 0) {
+                holder.itemImage.setImageResource(R.drawable.i);
+            } else {
+                holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
+            }
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, DetailsTransactionActivity.class);
+                    intent.putExtra("incomeAndExpense", incomeAndExpenseArrayList.get(position));
+                    context.startActivity(intent);
+                }
+            });
+
+            if (position == incomeAndExpenseArrayList.size() - 1) {
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.setMargins(0, 20, 0, 170);
+                holder.relative.setLayoutParams(layoutParams);
+            }
+            holder.relative1.setVisibility(View.VISIBLE);
+            holder.relative2.setVisibility(View.GONE);
+        } else if (spinner.equals("Category")) {
+            holder.itemCategoryName.setText(incomeAndExpense.getCategoryName());
+            if (selected.equals("Income")){
+                holder.itemCategoryAmount.setText("+" + incomeAndExpense.getAmount());
+                holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.green));
+            } else if (selected.equals("Expense")) {
+                holder.itemCategoryAmount.setText("-" + incomeAndExpense.getAmount());
+                holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.red));
+            }
+            holder.setSlider.setEnabled(false);
+
+            holder.relative1.setVisibility(View.GONE);
+            holder.relative2.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return incomeAndExpenseArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
-        TextView itemName, itemDescription, itemAmount, itemDate;
-
+        RelativeLayout relative,relative1,relative2;
+        Slider setSlider;
+        TextView itemName,itemDescription,itemAmount,itemDate, itemCategoryName, itemCategoryAmount;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.item_image);
@@ -51,6 +111,12 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
             itemDescription = itemView.findViewById(R.id.item_description);
             itemAmount = itemView.findViewById(R.id.item_amount);
             itemDate = itemView.findViewById(R.id.item_date);
+            relative = itemView.findViewById(R.id.relative);
+            relative1 = itemView.findViewById(R.id.relative1);
+            relative2 = itemView.findViewById(R.id.relative2);
+            itemCategoryName = itemView.findViewById(R.id.item_category_name);
+            itemCategoryAmount = itemView.findViewById(R.id.item_category_amount);
+            setSlider = itemView.findViewById(R.id.set_slider);
         }
     }
 }

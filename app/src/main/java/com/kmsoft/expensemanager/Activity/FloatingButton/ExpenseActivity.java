@@ -53,6 +53,7 @@ import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class ExpenseActivity extends AppCompatActivity {
@@ -66,6 +67,7 @@ public class ExpenseActivity extends AppCompatActivity {
     Button expenseAdded;
     RelativeLayout expenseSetImage;
     LinearLayout expenseCategory, expenseAddAttachment;
+    String currantDate;
     String selectedDate;
     String dayName;
     Bitmap bitmap;
@@ -167,7 +169,7 @@ public class ExpenseActivity extends AppCompatActivity {
                 } else {
                     String amount = expenseAddAmount.getText().toString();
                     String description = expenseDescription.getText().toString();
-                    incomeAndExpense = new IncomeAndExpense(0, amount, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
+                    incomeAndExpense = new IncomeAndExpense(0, amount, currantDate, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
                     Dialog dialog = new Dialog(ExpenseActivity.this);
@@ -409,9 +411,12 @@ public class ExpenseActivity extends AppCompatActivity {
                 Calendar currentTime = Calendar.getInstance();
                 currentTime.set(year, month, dayOfMonth);
                 int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+                Date currentDate = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                currantDate = sdf.format(currentDate);
 
                 // Convert the numerical representation of day of week to string representation
-                String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
+                String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
                 dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
                 expenseAddTime = dateFormat.format(currentTime.getTime());

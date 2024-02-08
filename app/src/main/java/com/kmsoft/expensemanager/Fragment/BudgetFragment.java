@@ -1,21 +1,10 @@
 package com.kmsoft.expensemanager.Fragment;
 
-<<<<<<< Updated upstream
-import static com.kmsoft.expensemanager.Constant.budgetArrayList;
-import static com.kmsoft.expensemanager.Constant.categoryArrayList;
-
-=======
-<<<<<<< HEAD
 
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.app.Activity;
-=======
-import static com.kmsoft.expensemanager.Constant.budgetArrayList;
-import static com.kmsoft.expensemanager.Constant.categoryArrayList;
 
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -26,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,20 +24,10 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kmsoft.expensemanager.Activity.Budget.CreateBudgetActivity;
-import com.kmsoft.expensemanager.Activity.FloatingButton.AddCategoryActivity;
-import com.kmsoft.expensemanager.Adapter.AddCategoryIncomeAdapter;
 import com.kmsoft.expensemanager.Adapter.BudgetCreateAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Budget;
-<<<<<<< Updated upstream
-import com.kmsoft.expensemanager.Model.Category;
-=======
-<<<<<<< HEAD
-import com.kmsoft.expensemanager.Model.IncomeAndExpense;
-=======
-import com.kmsoft.expensemanager.Model.Category;
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
+
 import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
@@ -63,15 +41,9 @@ public class BudgetFragment extends Fragment {
     BudgetCreateAdapter budgetCreateAdapter;
     Budget budget;
     ArrayList<Budget> budgetArrayList = new ArrayList<>();
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
     ActivityResultLauncher<Intent> launchSomeActivity;
     Gson gson;
-=======
->>>>>>> Stashed changes
 
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -80,9 +52,7 @@ public class BudgetFragment extends Fragment {
         init(view);
 
         dbHelper = new DBHelper(BudgetFragment.this.getContext());
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
+
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 Intent data = result.getData();
@@ -93,10 +63,7 @@ public class BudgetFragment extends Fragment {
                 }
             }
         });
-=======
->>>>>>> Stashed changes
 
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
         createBudget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,15 +105,8 @@ public class BudgetFragment extends Fragment {
                     emptyBudget.setVisibility(View.GONE);
 
                     LinearLayoutManager manager = new LinearLayoutManager(getContext());
-<<<<<<< Updated upstream
-                    budgetCreateAdapter = new BudgetCreateAdapter(BudgetFragment.this, budgetArrayList);
-=======
-<<<<<<< HEAD
+
                     budgetCreateAdapter = new BudgetCreateAdapter(BudgetFragment.this, budgetArrayList,incomeAndExpenseArrayList);
-=======
-                    budgetCreateAdapter = new BudgetCreateAdapter(BudgetFragment.this, budgetArrayList);
->>>>>>> d485a6ca209ec19aec2cd48c442a90780c3cf271
->>>>>>> Stashed changes
                     budgetRecyclerview.setLayoutManager(manager);
                     budgetRecyclerview.setAdapter(budgetCreateAdapter);
                 }

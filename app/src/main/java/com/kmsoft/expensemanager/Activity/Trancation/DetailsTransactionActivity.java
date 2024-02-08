@@ -86,7 +86,7 @@ public class DetailsTransactionActivity extends AppCompatActivity {
 
     private void setData() {
         showTotalBalance.setText(incomeAndExpense.getAmount());
-        showDate.setText(incomeAndExpense.getDayName() + "," + incomeAndExpense.getTime());
+        showDate.setText(incomeAndExpense.getDayName() + "," + incomeAndExpense.getDate());
         showType.setText(incomeAndExpense.getTag());
         showCategory.setText(incomeAndExpense.getCategoryName());
         showTime.setText(incomeAndExpense.getTime());

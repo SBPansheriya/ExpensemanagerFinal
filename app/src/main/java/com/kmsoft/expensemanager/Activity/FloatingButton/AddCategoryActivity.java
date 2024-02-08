@@ -154,36 +154,6 @@ public class AddCategoryActivity extends AppCompatActivity {
         });
     }
 
-    private boolean isDatabaseEmpty() {
-        Cursor cursor = dbHelper.getAllCategoryData();
-        int count = cursor.getCount();
-        cursor.close();
-        return count == 0;
-    }
-
-    private void insertInitialCategories() {
-        dbHelper.insertCategoryData(new Category(0,"Shopping", R.drawable.i47, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Food", R.drawable.i12, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Birthday", R.drawable.i11, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Party", R.drawable.i7, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Medicine", R.drawable.i18, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Books", R.drawable.i1, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Sports", R.drawable.i43, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Traveling", R.drawable.i17, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Education", R.drawable.i22, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Transportation", R.drawable.i38, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Entertainment", R.drawable.i15, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Gifts", R.drawable.i9, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Health & Fitness", R.drawable.i41, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Investments", R.drawable.i37, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Pets", R.drawable.i39, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Games", R.drawable.i34, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Car", R.drawable.i25, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Donation", R.drawable.i38, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Shipping", R.drawable.i30, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Diamond & Jewellery", R.drawable.i19, "Expense"));
-    }
-
     @Override
     protected void onResume() {
         super.onResume();

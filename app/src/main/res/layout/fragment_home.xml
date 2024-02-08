@@ -388,7 +388,7 @@
             android:layout_marginHorizontal="40dp"
             android:fontFamily="@font/lexenddeca_medium"
             android:textColor="@color/gray"
-            android:text="You don’t have a any transaction . Let’s make one so you in control." />
+            android:text="You don’t have a any recents transaction . Let’s make one so you in control." />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recentTransactionRecyclerView"
