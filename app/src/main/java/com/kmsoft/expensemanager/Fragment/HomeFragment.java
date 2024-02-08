@@ -4,6 +4,7 @@ import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -22,15 +23,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.kmsoft.expensemanager.Activity.Profile.EditProfileActivity;
 import com.kmsoft.expensemanager.Activity.Profile.NotificationActivity;
+import com.kmsoft.expensemanager.Activity.Trancation.EditDetailsTransactionActivity;
 import com.kmsoft.expensemanager.Adapter.RecentTransactionAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
@@ -138,7 +144,7 @@ public class HomeFragment extends Fragment {
 
                             for (IncomeAndExpense entry : incomeList) {
                                 Calendar calendar = Calendar.getInstance();
-                                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
                                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                                 calendar.set(Calendar.MINUTE, 0);
                                 calendar.set(Calendar.SECOND, 0);
@@ -163,7 +169,7 @@ public class HomeFragment extends Fragment {
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+                            final String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
                             setupLineChart(chart, days, entries);
                         }
@@ -305,7 +311,7 @@ public class HomeFragment extends Fragment {
 
                             for (IncomeAndExpense entry : expenseList) {
                                 Calendar calendar = Calendar.getInstance();
-                                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
                                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                                 calendar.set(Calendar.MINUTE, 0);
                                 calendar.set(Calendar.SECOND, 0);
@@ -331,7 +337,7 @@ public class HomeFragment extends Fragment {
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+                            final String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
                             setupLineChart1(chart, days, entries);
                         }
@@ -480,9 +486,9 @@ public class HomeFragment extends Fragment {
 
         for (int i = 0; i < incomeList.size(); i++) {
             String entryDate = incomeList.get(i).getDate();
-            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[0]);
             int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+            int entryDay = Integer.parseInt(entryDate.split("/")[2]);
 
             int hourOfDay = getHourOfDay(incomeList.get(i).getTime());
             String amountString = extractNumericPart(incomeList.get(i).getAmount());
@@ -530,9 +536,9 @@ public class HomeFragment extends Fragment {
 
         for (int i = 0; i < expenseList.size(); i++) {
             String entryDate = expenseList.get(i).getDate();
-            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[0]);
             int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+            int entryDay = Integer.parseInt(entryDate.split("/")[2]);
 
             int hourOfDay = getHourOfDay(expenseList.get(i).getTime());
             String amountString = extractNumericPart(expenseList.get(i).getAmount());
@@ -563,8 +569,23 @@ public class HomeFragment extends Fragment {
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.setDescription(null);
+        Legend legend = chart.getLegend();
+        legend.setEnabled(false);
+
+//        chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+//            @Override
+//            public void onValueSelected(Entry e, Highlight h) {
+//                Toast.makeText(getContext(), "123", Toast.LENGTH_SHORT).show();
+//            }
+//            @Override
+//            public void onNothingSelected() {
+//
+//            }
+//        });
 
         LineDataSet dataSet = new LineDataSet(entries, "Income");
+
         dataSet.setCircleRadius(5f);
         dataSet.setValueTextSize(9);
         dataSet.setDrawFilled(true);
@@ -576,7 +597,6 @@ public class HomeFragment extends Fragment {
         dataSet.setColor(getResources().getColor(R.color.green));
 
         LineData lineData = new LineData(dataSet);
-
         chart.setData(lineData);
     }
 
@@ -585,6 +605,9 @@ public class HomeFragment extends Fragment {
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.setDescription(null);
+        Legend legend = chart.getLegend();
+        legend.setEnabled(false);
 
         LineDataSet dataSet = new LineDataSet(entries, "Expense");
         dataSet.setCircleRadius(5f);
@@ -597,10 +620,7 @@ public class HomeFragment extends Fragment {
         dataSet.setValueTextColor(getResources().getColor(R.color.red));
         dataSet.setColor(getResources().getColor(R.color.red));
 
-        // Create LineData and set the dataset
         LineData lineData = new LineData(dataSet);
-
-        // Set LineData to the chart
         chart.setData(lineData);
     }
 
@@ -631,7 +651,7 @@ public class HomeFragment extends Fragment {
     public String calculateTotalIncomeAndExpense() {
         BigDecimal totalIncome = calculateTotalIncome();
         BigDecimal totalExpense = calculateTotalExpense();
-        BigDecimal total = totalIncome.add(totalExpense);
+        BigDecimal total = totalIncome.subtract(totalExpense);
         showBalance.setText("₹" + total.toString());
         return total.toString();
     }
@@ -697,17 +717,19 @@ public class HomeFragment extends Fragment {
             do {
                 int id = cursor.getInt(0);
                 String incomeAmount = cursor.getString(1);
-                String currentdate = cursor.getString(2);
-                String incomeDate = cursor.getString(3);
-                String incomeDay = cursor.getString(4);
-                String incomeAddTime = cursor.getString(5);
-                String categoryName = cursor.getString(6);
-                int categoryImage = cursor.getInt(7);
-                String incomeDescription = cursor.getString(8);
-                String addAttachment = cursor.getString(9);
-                String tag = cursor.getString(10);
+                double currantDateTimeStamp = cursor.getDouble(2);
+                double selectedDateTimeStamp = cursor.getDouble(3);
+                String currentdate = cursor.getString(4);
+                String incomeDate = cursor.getString(5);
+                String incomeDay = cursor.getString(6);
+                String incomeAddTime = cursor.getString(7);
+                String categoryName = cursor.getString(8);
+                int categoryImage = cursor.getInt(9);
+                String incomeDescription = cursor.getString(10);
+                String addAttachment = cursor.getString(11);
+                String tag = cursor.getString(12);
 
-                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp,selectedDateTimeStamp,currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
 
                 incomeList = filterCategories(incomeAndExpenseArrayList, "Income");

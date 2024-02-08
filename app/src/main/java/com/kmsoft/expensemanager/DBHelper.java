@@ -20,6 +20,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE = "data";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLUMN_CURRENTDATETIMESTAMP = "currentdatetimestamp";
+    private static final String COLUMN_SELECTEDDATETIMESTAMP = "selecteddatetimestamp";
     private static final String COLUMN_CURRENTDATE = "currentdate";
     private static final String COLUMN_DATE = "date";
     private static final String COLUMN_DAY= "day";
@@ -48,6 +50,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "("
             + COLUMN_ID + " INTEGER PRIMARY KEY,"
             + COLUMN_AMOUNT + " TEXT,"
+            + COLUMN_CURRENTDATETIMESTAMP + " TEXT,"
+            + COLUMN_SELECTEDDATETIMESTAMP + " TEXT,"
             + COLUMN_CURRENTDATE + " TEXT,"
             + COLUMN_DATE + " TEXT,"
             + COLUMN_DAY + " TEXT,"
@@ -101,6 +105,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT, incomeAndExpense.getAmount());
+        contentValues.put(COLUMN_CURRENTDATETIMESTAMP, incomeAndExpense.getCurrantDateTimeStamp());
+        contentValues.put(COLUMN_SELECTEDDATETIMESTAMP, incomeAndExpense.getSelectedDateTimeStamp());
         contentValues.put(COLUMN_CURRENTDATE, incomeAndExpense.getCurrantDate());
         contentValues.put(COLUMN_DATE, incomeAndExpense.getDate());
         contentValues.put(COLUMN_DAY, incomeAndExpense.getDayName());
@@ -119,6 +125,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT, incomeAndExpense.getAmount());
+        contentValues.put(COLUMN_CURRENTDATETIMESTAMP, incomeAndExpense.getCurrantDateTimeStamp());
+        contentValues.put(COLUMN_SELECTEDDATETIMESTAMP, incomeAndExpense.getSelectedDateTimeStamp());
         contentValues.put(COLUMN_CURRENTDATE, incomeAndExpense.getCurrantDate());
         contentValues.put(COLUMN_DATE, incomeAndExpense.getDate());
         contentValues.put(COLUMN_DAY, incomeAndExpense.getDayName());

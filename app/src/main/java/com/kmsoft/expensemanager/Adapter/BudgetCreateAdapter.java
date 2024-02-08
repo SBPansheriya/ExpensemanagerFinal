@@ -71,14 +71,10 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                 String numericAmount = extractNumericPart(amountString);
                 double amount = Double.parseDouble(numericAmount);
 
-                if (tag.equals("Income")) {
+                if (tag.equals("Expense")) {
                     total += amount;
-                } else if (tag.equals("Expense")) {
-                    total -= amount;
                 }
                 double budgetAmountValue = Double.parseDouble(extractNumericPart(budget.getAmountBudget()));
-                String onlyExceedAmount = extractNumericPart(String.valueOf(total));
-                double totalAmountValue = Double.parseDouble(onlyExceedAmount);
 
                 DecimalFormat df = new DecimalFormat("#");
                 finalAmount = df.format(total);
@@ -86,6 +82,9 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                 double remainingAmount = budgetAmountValue - total;
                 remainingFinalAmount = df.format(remainingAmount);
                 holder.setRemainingAmount.setText("Remaining " + "₹" + remainingFinalAmount);
+
+                remainingFinalAmountMap.put(position, remainingFinalAmount);
+                finalAmountMap.put(position, finalAmount);
 
                 int total1 = (int) total;
                 holder.setIncomeExpenseAmount.setText("₹" + total1);
@@ -97,21 +96,19 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                     holder.setWarning.setVisibility(View.VISIBLE);
                     holder.setExceedAmount.setVisibility(View.VISIBLE);
                 } else {
-                    if (total1 < totalAmountValue) {
-                        holder.setSlider.setValueFrom((float) total1);
+                    if (total1 < 0) {
+                        holder.setSlider.setValueFrom((float) total);
                         holder.setSlider.setValueTo((float) budgetAmountValue);
-                        holder.setSlider.setValue((float) total1);
+                        holder.setSlider.setValue((float) total);
                         break;
                     } else {
                         holder.setSlider.setValueFrom(0);
                         holder.setSlider.setValueTo((float) budgetAmountValue);
-                        holder.setSlider.setValue((float) total1);
+                        holder.setSlider.setValue((float) total);
                     }
                     holder.setWarning.setVisibility(View.GONE);
                     holder.setExceedAmount.setVisibility(View.GONE);
                 }
-                remainingFinalAmountMap.put(position, remainingFinalAmount);
-                finalAmountMap.put(position, finalAmount);
             }
         }
         holder.setSlider.setEnabled(false);

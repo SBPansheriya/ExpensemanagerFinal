@@ -3,7 +3,7 @@ package com.kmsoft.expensemanager.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab, fab1, fab2;
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
     boolean isOpen = false;
+    public boolean isStep = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,21 +88,25 @@ public class MainActivity extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.home) {
                     fragment = "home";
+                    isStep = true;
                     openFragment(new HomeFragment());
                     return true;
                 }
                 if (item.getItemId() == R.id.transaction) {
                     fragment = "transaction";
+                    isStep = true;
                     openFragment(new TransactionFragment());
                     return true;
                 }
                 if (item.getItemId() == R.id.budget) {
                     fragment = "budget";
+                    isStep = true;
                     openFragment(new BudgetFragment());
                     return true;
                 }
                 if (item.getItemId() == R.id.profile) {
                     fragment = "profile";
+                    isStep = true;
                     openFragment(new ProfileFragment());
                     return true;
                 }
@@ -137,11 +142,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.getBackStackEntryCount() > 0) {
-            fm.popBackStack();
-        } else {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.framelayout);
+        if (fragment instanceof HomeFragment) {
             super.onBackPressed();
+        } else {
+            if (isStep) {
+                super.onBackPressed();
+            }
+            else {
+                Fragment mFragment = new HomeFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.framelayout, mFragment).setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+            }
         }
     }
 

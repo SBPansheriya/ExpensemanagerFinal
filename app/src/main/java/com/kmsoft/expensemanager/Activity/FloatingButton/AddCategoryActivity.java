@@ -395,6 +395,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     public void getData(String name1, int image1) {
         name = name1;
         image = image1;
+        onBackPressed();
     }
 
     @Override

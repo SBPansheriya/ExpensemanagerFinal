@@ -68,7 +68,7 @@ public class IncomeActivity extends AppCompatActivity {
     DBHelper dbHelper;
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
     IncomeAndExpense incomeAndExpense = new IncomeAndExpense();
-    ImageView back,calender, setIncomeImage, removeIncomeImage;
+    ImageView back, calender, setIncomeImage, removeIncomeImage;
     TextView showIncomeDate, incomeCategoryName;
     EditText incomeAddAmount, incomeDescription;
     Button incomeAdded;
@@ -81,9 +81,10 @@ public class IncomeActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
     ActivityResultLauncher<Intent> launchSomeActivityResult;
-    private static final int CAMERA_REQUEST = 100;
+    private static final int CAMERA_REQUEST = 101;
     int click;
     int imageResId;
+    double selectedDateTimeStamp;
     String categoryName;
     String incomeAddTime;
     String addAttachmentImage;
@@ -97,6 +98,11 @@ public class IncomeActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         init();
+
+//        Date currentDate = new Date();
+//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//        String currantDate1 = sdf.format(currentDate);
+//        showIncomeDate.setText(currantDate1);
 
         dbHelper = new DBHelper(this);
         incomeAndExpenseArrayList = new ArrayList<>();
@@ -131,7 +137,7 @@ public class IncomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(IncomeActivity.this, AddCategoryActivity.class);
-                intent.putExtra("clicked","Income");
+                intent.putExtra("clicked", "Income");
                 launchSomeActivityResult.launch(intent);
             }
         });
@@ -145,10 +151,12 @@ public class IncomeActivity extends AppCompatActivity {
 
         incomeAddAmount.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -166,7 +174,7 @@ public class IncomeActivity extends AppCompatActivity {
                 String editTextValue = incomeAddAmount.getText().toString();
                 if (editTextValue.equals("₹0") || editTextValue.equals("₹")) {
                     Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(editTextValue)){
+                } else if (TextUtils.isEmpty(editTextValue)) {
                     Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(showIncomeDate.getText().toString())) {
                     Toast.makeText(IncomeActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
@@ -175,7 +183,9 @@ public class IncomeActivity extends AppCompatActivity {
                 } else {
                     String amount = incomeAddAmount.getText().toString();
                     String description = incomeDescription.getText().toString();
-                    incomeAndExpense = new IncomeAndExpense(0, amount, currantDate, selectedDate, dayName,incomeAddTime,categoryName, imageResId, description, addAttachmentImage, "Income");
+//                    String selectedDate = showIncomeDate.getText().toString();
+                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
+                    incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, description, addAttachmentImage, "Income");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
                     Dialog dialog = new Dialog(IncomeActivity.this);
@@ -191,7 +201,6 @@ public class IncomeActivity extends AppCompatActivity {
 
                     TextView txt = dialog.findViewById(R.id.txt);
                     txt.setText("Income has been successfully added");
-
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -235,11 +244,12 @@ public class IncomeActivity extends AppCompatActivity {
                 if (bitmap != null) {
                     setIncomeImage.setImageBitmap(bitmap);
                 }
+                incomeAddAttachment.setVisibility(View.GONE);
+                incomeSetImage.setVisibility(View.VISIBLE);
             } else {
-                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                incomeAddAttachment.setVisibility(View.VISIBLE);
+                incomeSetImage.setVisibility(View.GONE);
             }
-            incomeAddAttachment.setVisibility(View.GONE);
-            incomeSetImage.setVisibility(View.VISIBLE);
         });
     }
 
@@ -262,7 +272,7 @@ public class IncomeActivity extends AppCompatActivity {
         startActivityForResult(takePicture, CAMERA_REQUEST);
     }
 
-    private void showAttachmentBottomDialog(){
+    private void showAttachmentBottomDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(IncomeActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.add_attachment_bottomsheet_layout);
@@ -298,13 +308,14 @@ public class IncomeActivity extends AppCompatActivity {
             showAttachmentBottomDialog();
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(IncomeActivity.this,CAMERA_REQUEST);
+            showPermissionDenyDialog(IncomeActivity.this, CAMERA_REQUEST);
         }
     }
 
@@ -347,8 +358,7 @@ public class IncomeActivity extends AppCompatActivity {
                 });
             }
             click = 1;
-        }
-        else if (click == 1) {
+        } else if (click == 1) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, CAMERA)) {
 
                 Dialog dialog = new Dialog(activity);
@@ -382,7 +392,7 @@ public class IncomeActivity extends AppCompatActivity {
                         Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
                         intent.setData(uri);
-                        ActivityCompat.startActivityForResult(IncomeActivity.this,intent, requestCode,null);
+                        ActivityCompat.startActivityForResult(IncomeActivity.this, intent, requestCode, null);
                         dialog.dismiss();
                     }
                 });
@@ -397,10 +407,16 @@ public class IncomeActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
             checkPermissionsForCamera();
+        } else if (requestCode == CAMERA_REQUEST) {
+            bitmap = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+            startCrop(Uri.parse(path));
         }
     }
 
-    private void showCalenderBottomDialog(){
+    private void showCalenderBottomDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(IncomeActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.calender_bottomsheet_layout);
@@ -410,6 +426,8 @@ public class IncomeActivity extends AppCompatActivity {
         TextView cancel = dialog.findViewById(R.id.cancel);
         TextView ok = dialog.findViewById(R.id.ok);
         CalendarView calendarView = dialog.findViewById(R.id.trans_calenderView);
+
+        calendarView.setDate(System.currentTimeMillis());
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -425,10 +443,12 @@ public class IncomeActivity extends AppCompatActivity {
                 dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
                 incomeAddTime = dateFormat.format(currentTime.getTime());
+
                 Calendar selectedDateCalendar = Calendar.getInstance();
                 selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
             }
         });
 
@@ -442,10 +462,25 @@ public class IncomeActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(selectedDate)){
-                    showIncomeDate.setText("");
+                if (TextUtils.isEmpty(selectedDate)) {
+                    Calendar currentTime = Calendar.getInstance();
+                    Date currentDate = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    currantDate = sdf.format(currentDate);
+
+                    int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+                    String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
+                    dayName = daysOfWeek[dayOfWeek];
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                    incomeAddTime = dateFormat.format(currentTime.getTime());
+
+                    Calendar selectedDateCalendar = Calendar.getInstance();
+                    SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                    selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+                    showIncomeDate.setText(selectedDate);
                 } else {
-                    showIncomeDate.setText(""+selectedDate);
+                    showIncomeDate.setText("" + selectedDate);
                 }
                 dialog.dismiss();
             }
@@ -456,7 +491,7 @@ public class IncomeActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent();
-        intent.putExtra("incomeAndExpense",incomeAndExpense);
+        intent.putExtra("incomeAndExpense", incomeAndExpense);
         setResult(RESULT_OK, intent);
     }
 

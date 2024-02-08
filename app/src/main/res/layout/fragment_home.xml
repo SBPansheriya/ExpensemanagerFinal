@@ -134,7 +134,6 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
                             android:layout_marginStart="10dp"
                             android:layout_toEndOf="@+id/home_income"
                             android:orientation="vertical">
@@ -181,13 +180,11 @@
                             android:id="@+id/home_expense"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:layout_centerInParent="true"
                             android:src="@drawable/home_expenses" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
                             android:layout_marginStart="10dp"
                             android:layout_toEndOf="@+id/home_expense"
                             android:orientation="vertical">
@@ -384,7 +381,6 @@
             android:layout_centerInParent="true"
             android:textSize="16dp"
             android:visibility="gone"
-            android:layout_marginTop="10dp"
             android:layout_marginHorizontal="40dp"
             android:fontFamily="@font/lexenddeca_medium"
             android:textColor="@color/gray"

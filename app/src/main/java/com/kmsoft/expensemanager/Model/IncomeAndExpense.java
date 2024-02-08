@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class IncomeAndExpense implements Serializable {
     int id;
     String amount;
+    double currantDateTimeStamp;
+    double selectedDateTimeStamp;
     String currantDate;
     String date;
     String dayName;
@@ -18,9 +20,11 @@ public class IncomeAndExpense implements Serializable {
     public IncomeAndExpense() {
     }
 
-    public IncomeAndExpense(int id, String amount, String currantDate, String date, String dayName, String time, String categoryName, int categoryImage, String description, String addAttachment, String tag) {
+    public IncomeAndExpense(int id, String amount, double currantDateTimeStamp,double selectedDateTimeStamp,String currantDate, String date, String dayName, String time, String categoryName, int categoryImage, String description, String addAttachment, String tag) {
         this.id = id;
         this.amount = amount;
+        this.currantDateTimeStamp = currantDateTimeStamp;
+        this.selectedDateTimeStamp = selectedDateTimeStamp;
         this.currantDate = currantDate;
         this.date = date;
         this.dayName = dayName;
@@ -46,6 +50,22 @@ public class IncomeAndExpense implements Serializable {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public double getCurrantDateTimeStamp() {
+        return currantDateTimeStamp;
+    }
+
+    public void setCurrantDateTimeStamp(double currantDateTimeStamp) {
+        this.currantDateTimeStamp = currantDateTimeStamp;
+    }
+
+    public double getSelectedDateTimeStamp() {
+        return selectedDateTimeStamp;
+    }
+
+    public void setSelectedDateTimeStamp(double selectedDateTimeStamp) {
+        this.selectedDateTimeStamp = selectedDateTimeStamp;
     }
 
     public String getCurrantDate() {

@@ -84,10 +84,17 @@ public class DetailsBudgetActivity extends AppCompatActivity {
             showPercentage.setValue(num1);
             showExceedAmount.setVisibility(View.VISIBLE);
         } else {
-            showPercentage.setValueTo(Float.parseFloat(valueTo));
-            showPercentage.setValueFrom(0);
-            showPercentage.setValue(exceedAmount);
-            showExceedAmount.setVisibility(View.GONE);
+            if (exceedAmount < 0) {
+                showPercentage.setValueTo(Float.parseFloat(valueTo));
+                showPercentage.setValueFrom(exceedAmount);
+                showPercentage.setValue(exceedAmount);
+                showExceedAmount.setVisibility(View.GONE);
+            } else {
+                showPercentage.setValueTo(Float.parseFloat(valueTo));
+                showPercentage.setValueFrom(0);
+                showPercentage.setValue(exceedAmount);
+                showExceedAmount.setVisibility(View.GONE);
+            }
         }
         showPercentage.setEnabled(false);
 

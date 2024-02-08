@@ -152,6 +152,33 @@
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/border2"
+        android:gravity="center"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true">
 
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/export" />
+        <View
+            android:layout_width="10dp"
+            android:layout_height="0dp"/>
 
+        <TextView
+            android:id="@+id/edit_budget_continue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lexenddeca_regular"
+            android:gravity="center"
+            android:text="@string/export"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:backgroundTint="@null" />
+    </LinearLayout>
 </RelativeLayout>

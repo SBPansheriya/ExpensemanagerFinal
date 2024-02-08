@@ -71,6 +71,7 @@
     <string name="about">About</string>
     <string name="export_data">Export Data</string>
     <string name="edit_transaction">Edit Transaction</string>
+    <string name="export">Export</string>
 
     <string-array name="spendFrequency" translatable="false">
         <item>Income</item>

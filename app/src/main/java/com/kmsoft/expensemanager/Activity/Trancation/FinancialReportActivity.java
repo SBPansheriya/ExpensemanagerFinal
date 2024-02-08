@@ -7,12 +7,12 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -39,14 +41,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 public class FinancialReportActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
-    ImageView financialLineChart, financialPieChart,back;
+    ImageView financialLineChart, financialPieChart, back;
     Spinner spinner, spinner1;
-    TextView financialIncome, financialExpense,emptyTransaction;
+    TextView financialIncome, financialExpense, emptyTransaction;
     LineChart chart;
     PieChart pieChart;
     int click = 1;
@@ -188,13 +193,13 @@ public class FinancialReportActivity extends AppCompatActivity {
                     }
                 } else if (spinner.getSelectedItem().toString().equals("Week")) {
                     if (click == 1) {
-                       populateChartWithWeekIncomeData();
+                        populateChartWithWeekIncomeData();
                     } else if (click == 2) {
                         populateChartWithWeekExpenseData();
                     }
                 } else if (spinner.getSelectedItem().toString().equals("Month")) {
                     if (click == 1) {
-                       populateChartWithMonthIncomeData();
+                        populateChartWithMonthIncomeData();
                     } else if (click == 2) {
                         populateChartWithMonthExpenseData();
                     }
@@ -202,13 +207,15 @@ public class FinancialReportActivity extends AppCompatActivity {
                     if (click == 1) {
                         populateChartWithYearIncomeData();
                     } else if (click == 2) {
-                       populateChartWithYearExpenseData();
+                        populateChartWithYearExpenseData();
                     }
                 }
                 Display();
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -276,8 +283,9 @@ public class FinancialReportActivity extends AppCompatActivity {
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart(chart, days, entries,pieEntries);
+        setupLineChart(chart, days, entries, pieEntries);
     }
+
     private void populateChartWithTodayExpenseData() {
 
         ArrayList<Entry> entries = new ArrayList<>();
@@ -317,14 +325,14 @@ public class FinancialReportActivity extends AppCompatActivity {
         chart.getAxisRight().setEnabled(false);
 
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new PieEntry(30f, "Label 1"));
-        pieEntries.add(new PieEntry(20f, "Label 2"));
-        pieEntries.add(new PieEntry(50f, "Label 3"));
+        pieEntries.add(new PieEntry(500f, "Label 4"));
+        pieEntries.add(new PieEntry(200f, "Label 5"));
+        pieEntries.add(new PieEntry(50f, "Label 6"));
 
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart1(chart, days, entries,pieEntries);
+        setupLineChart1(chart, days, entries, pieEntries);
     }
 
     private void populateChartWithWeekIncomeData() {
@@ -336,7 +344,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         for (IncomeAndExpense entry : incomeList) {
             Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
@@ -361,7 +369,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         chart.getAxisLeft().setEnabled(false);
         chart.getAxisRight().setEnabled(false);
-        final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        final String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         pieEntries.add(new PieEntry(30f, "Label 1"));
@@ -371,8 +379,9 @@ public class FinancialReportActivity extends AppCompatActivity {
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart(chart, days, entries,pieEntries);
+        setupLineChart(chart, days, entries, pieEntries);
     }
+
     private void populateChartWithWeekExpenseData() {
 
         ArrayList<Entry> entries = new ArrayList<>();
@@ -382,7 +391,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         for (IncomeAndExpense entry : expenseList) {
             Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
@@ -407,7 +416,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         chart.getAxisLeft().setEnabled(false);
         chart.getAxisRight().setEnabled(false);
-        final String[] days = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        final String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         pieEntries.add(new PieEntry(30f, "Label 1"));
@@ -417,7 +426,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart1(chart, days, entries,pieEntries);
+        setupLineChart1(chart, days, entries, pieEntries);
     }
 
     private void populateChartWithMonthIncomeData() {
@@ -459,8 +468,9 @@ public class FinancialReportActivity extends AppCompatActivity {
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart(chart, months, entries,pieEntries);
+        setupLineChart(chart, months, entries, pieEntries);
     }
+
     private void populateChartWithMonthExpenseData() {
 
         ArrayList<Entry> entries = new ArrayList<>();
@@ -500,7 +510,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart1(chart, months, entries,pieEntries);
+        setupLineChart1(chart, months, entries, pieEntries);
     }
 
     private void populateChartWithYearIncomeData() {
@@ -556,8 +566,9 @@ public class FinancialReportActivity extends AppCompatActivity {
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart(chart, years, entries,pieEntries);
+        setupLineChart(chart, years, entries, pieEntries);
     }
+
     private void populateChartWithYearExpenseData() {
 
         ArrayList<Entry> entries = new ArrayList<>();
@@ -611,7 +622,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         // Refresh chart
         pieChart.invalidate();
 
-        setupLineChart1(chart, years, entries,pieEntries);
+        setupLineChart1(chart, years, entries, pieEntries);
     }
 
     private String extractNumericPart(String input) {
@@ -654,6 +665,9 @@ public class FinancialReportActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(Color.BLACK);
+        chart.setDescription(null);
+        Legend legend = chart.getLegend();
+        legend.setEnabled(false);
 
         LineDataSet dataSet = new LineDataSet(entries, "Income");
         dataSet.setCircleRadius(5f);
@@ -666,16 +680,16 @@ public class FinancialReportActivity extends AppCompatActivity {
         dataSet.setValueTextColor(getResources().getColor(R.color.green));
         dataSet.setColor(getResources().getColor(R.color.green));
 
-        // Create LineData and set the dataset
         LineData lineData = new LineData(dataSet);
-
-        // Set LineData to the chart
         chart.setData(lineData);
 
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
         pieDataSet.setColors(getColor(R.color.green), getColor(R.color.lightDarkGreen), getColor(R.color.lightGreen));
+        Description description = pieChart.getDescription();
+        description.setText("");
+        legend = pieChart.getLegend();
+        legend.setEnabled(false);
 
-        // Set up the data for the PieChart
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueTextSize(9);
 
@@ -697,6 +711,9 @@ public class FinancialReportActivity extends AppCompatActivity {
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.setDescription(null);
+        Legend legend = chart.getLegend();
+        legend.setEnabled(false);
 
         LineDataSet dataSet = new LineDataSet(entries, "Expense");
         dataSet.setCircleRadius(5f);
@@ -709,16 +726,15 @@ public class FinancialReportActivity extends AppCompatActivity {
         dataSet.setValueTextColor(getResources().getColor(R.color.red));
         dataSet.setColor(getResources().getColor(R.color.red));
 
-        // Create LineData and set the dataset
         LineData lineData = new LineData(dataSet);
-
-        // Set LineData to the chart
         chart.setData(lineData);
 
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
         pieDataSet.setColors(getColor(R.color.green), getColor(R.color.lightDarkGreen), getColor(R.color.lightGreen));
-
-        // Set up the data for the PieChart
+        Description description = pieChart.getDescription();
+        description.setText("");
+        legend = pieChart.getLegend();
+        legend.setEnabled(false);
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueTextSize(9);
 
@@ -742,38 +758,49 @@ public class FinancialReportActivity extends AppCompatActivity {
             do {
                 int id = cursor.getInt(0);
                 String incomeAmount = cursor.getString(1);
-                String currentdate = cursor.getString(2);
-                String  incomeDate = cursor.getString(3);
-                String incomeDay = cursor.getString(4);
-                String incomeAddTime = cursor.getString(5);
-                String categoryName = cursor.getString(6);
-                int categoryImage = cursor.getInt(7);
-                String incomeDescription = cursor.getString(8);
-                String addAttachment = cursor.getString(9);
-                String tag = cursor.getString(10);
+                double currantDateTimeStamp = cursor.getDouble(2);
+                double selectedDateTimeStamp = cursor.getDouble(3);
+                String currentdate = cursor.getString(4);
+                String incomeDate = cursor.getString(5);
+                String incomeDay = cursor.getString(6);
+                String incomeAddTime = cursor.getString(7);
+                String categoryName = cursor.getString(8);
+                int categoryImage = cursor.getInt(9);
+                String incomeDescription = cursor.getString(10);
+                String addAttachment = cursor.getString(11);
+                String tag = cursor.getString(12);
 
-                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp,selectedDateTimeStamp,currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
+
+                Collections.sort(incomeAndExpenseArrayList, new Comparator<IncomeAndExpense>() {
+                    @Override
+                    public int compare(IncomeAndExpense o1, IncomeAndExpense o2) {
+                        return o1.getDate().compareTo(o2.getDate());
+                    }
+                });
 
                 incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
                 expenseList = filterCategories(incomeAndExpenseArrayList, "Expense");
 
-                ArrayList<IncomeAndExpense> filteredTodayIncomeList = filterIncomeListByTodayDate(incomeList);
-                ArrayList<IncomeAndExpense> filteredTodayExpenseList = filterIncomeListByTodayDate(expenseList);
-                ArrayList<IncomeAndExpense> filteredWeekIncomeList = filterIncomeListByCurrentWeek(incomeList);
-                ArrayList<IncomeAndExpense> filteredWeekExpenseList = filterIncomeListByCurrentWeek(expenseList);
-                ArrayList<IncomeAndExpense> filteredMonthIncomeList = filterIncomeListByCurrentMonth(incomeList);
-                ArrayList<IncomeAndExpense> filteredMonthExpenseList = filterIncomeListByCurrentMonth(expenseList);
-                ArrayList<IncomeAndExpense> filteredYearIncomeList = filterIncomeListByCurrentYear(incomeList);
-                ArrayList<IncomeAndExpense> filteredYearExpenseList = filterIncomeListByCurrentYear(expenseList);
+                ArrayList<IncomeAndExpense> filteredTodayIncomeList = filterByTodayDate(incomeList);
+                ArrayList<IncomeAndExpense> filteredTodayExpenseList = filterByTodayDate(expenseList);
+                ArrayList<IncomeAndExpense> filteredWeekIncomeList = filterByCurrentWeek(incomeList);
+                ArrayList<IncomeAndExpense> filteredWeekExpenseList = filterByCurrentWeek(expenseList);
+                ArrayList<IncomeAndExpense> filteredMonthIncomeList = filterByCurrentMonth(incomeList);
+                ArrayList<IncomeAndExpense> filteredMonthExpenseList = filterByCurrentMonth(expenseList);
+                ArrayList<IncomeAndExpense> filteredYearIncomeList = filterByCurrentYear(incomeList);
+                ArrayList<IncomeAndExpense> filteredYearExpenseList = filterByCurrentYear(expenseList);
 
-                if (TextUtils.equals(spinner.getSelectedItem().toString(),"Today")) {
+                if (TextUtils.equals(spinner.getSelectedItem().toString(), "Today")) {
                     if (TextUtils.equals(selected, "Income")) {
                         if (filteredTodayIncomeList.isEmpty()) {
                             emptyTransaction.setVisibility(View.VISIBLE);
                             financialRecyclerView.setVisibility(View.GONE);
                         } else {
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredTodayIncomeList,spinner1.getSelectedItem().toString(),selected);
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredTodayIncomeList, spinner1.getSelectedItem().toString(), selected);
 
                         }
                     } else if (TextUtils.equals(selected, "Expense")) {
@@ -781,11 +808,12 @@ public class FinancialReportActivity extends AppCompatActivity {
                             emptyTransaction.setVisibility(View.VISIBLE);
                             financialRecyclerView.setVisibility(View.GONE);
                         } else {
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredTodayExpenseList,spinner1.getSelectedItem().toString(),selected);
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredTodayExpenseList, spinner1.getSelectedItem().toString(), selected);
                         }
                     }
-                }
-                else if (spinner.getSelectedItem().toString().equals("Week")) {
+                } else if (spinner.getSelectedItem().toString().equals("Week")) {
                     if (TextUtils.equals(selected, "Income")) {
                         if (filteredWeekIncomeList.isEmpty()) {
                             emptyTransaction.setVisibility(View.VISIBLE);
@@ -793,14 +821,16 @@ public class FinancialReportActivity extends AppCompatActivity {
                         } else {
                             financialRecyclerView.setVisibility(View.VISIBLE);
                             emptyTransaction.setVisibility(View.GONE);
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredWeekIncomeList,spinner1.getSelectedItem().toString(),selected);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredWeekIncomeList, spinner1.getSelectedItem().toString(), selected);
                         }
                     } else if (TextUtils.equals(selected, "Expense")) {
                         if (filteredWeekExpenseList.isEmpty()) {
                             emptyTransaction.setVisibility(View.VISIBLE);
                             financialRecyclerView.setVisibility(View.GONE);
                         } else {
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredWeekExpenseList,spinner1.getSelectedItem().toString(),selected);
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredWeekExpenseList, spinner1.getSelectedItem().toString(), selected);
                         }
                     }
                 } else if (spinner.getSelectedItem().toString().equals("Month")) {
@@ -811,14 +841,16 @@ public class FinancialReportActivity extends AppCompatActivity {
                         } else {
                             financialRecyclerView.setVisibility(View.VISIBLE);
                             emptyTransaction.setVisibility(View.GONE);
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredMonthIncomeList,spinner1.getSelectedItem().toString(),selected);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredMonthIncomeList, spinner1.getSelectedItem().toString(), selected);
                         }
                     } else if (TextUtils.equals(selected, "Expense")) {
                         if (filteredWeekExpenseList.isEmpty()) {
                             emptyTransaction.setVisibility(View.VISIBLE);
                             financialRecyclerView.setVisibility(View.GONE);
                         } else {
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredMonthExpenseList,spinner1.getSelectedItem().toString(),selected);
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredMonthExpenseList, spinner1.getSelectedItem().toString(), selected);
                         }
                     }
                 } else if (spinner.getSelectedItem().toString().equals("Year")) {
@@ -829,22 +861,22 @@ public class FinancialReportActivity extends AppCompatActivity {
                         } else {
                             financialRecyclerView.setVisibility(View.VISIBLE);
                             emptyTransaction.setVisibility(View.GONE);
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredYearIncomeList,spinner1.getSelectedItem().toString(),selected);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredYearIncomeList, spinner1.getSelectedItem().toString(), selected);
                         }
                     } else if (TextUtils.equals(selected, "Expense")) {
                         if (filteredWeekExpenseList.isEmpty()) {
                             emptyTransaction.setVisibility(View.VISIBLE);
                             financialRecyclerView.setVisibility(View.GONE);
                         } else {
-                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredYearExpenseList,spinner1.getSelectedItem().toString(),selected);
+                            financialRecyclerView.setVisibility(View.VISIBLE);
+                            emptyTransaction.setVisibility(View.GONE);
+                            financialAdapter = new FinancialAdapter(FinancialReportActivity.this, filteredYearExpenseList, spinner1.getSelectedItem().toString(), selected);
                         }
                     }
                 }
                 LinearLayoutManager manager = new LinearLayoutManager(FinancialReportActivity.this);
                 financialRecyclerView.setLayoutManager(manager);
                 financialRecyclerView.setAdapter(financialAdapter);
-                financialRecyclerView.setVisibility(View.VISIBLE);
-                emptyTransaction.setVisibility(View.GONE);
             } while (cursor.moveToNext());
         } else {
             incomeAndExpenseArrayList = new ArrayList<>();
@@ -863,7 +895,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         return filteredList;
     }
 
-    private static ArrayList<IncomeAndExpense> filterIncomeListByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+    private static ArrayList<IncomeAndExpense> filterByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
         Date currentDate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -876,18 +908,24 @@ public class FinancialReportActivity extends AppCompatActivity {
         return filteredList;
     }
 
-    private static ArrayList<IncomeAndExpense> filterIncomeListByCurrentWeek(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+    private static ArrayList<IncomeAndExpense> filterByCurrentWeek(ArrayList<IncomeAndExpense> incomeAndExpenses) {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
 
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
         Date startOfWeek = calendar.getTime();
 
         calendar.add(Calendar.DAY_OF_WEEK, 6);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
         Date endOfWeek = calendar.getTime();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
             String entryDateString = incomeAndExpense.getDate();
@@ -904,7 +942,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         return filteredList;
     }
 
-    private static ArrayList<IncomeAndExpense> filterIncomeListByCurrentMonth(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+    private static ArrayList<IncomeAndExpense> filterByCurrentMonth(ArrayList<IncomeAndExpense> incomeAndExpenses) {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
@@ -918,7 +956,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         return filteredList;
     }
 
-    private static ArrayList<IncomeAndExpense> filterIncomeListByCurrentYear(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+    private static ArrayList<IncomeAndExpense> filterByCurrentYear(ArrayList<IncomeAndExpense> incomeAndExpenses) {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         int currentYear = calendar.get(Calendar.YEAR);

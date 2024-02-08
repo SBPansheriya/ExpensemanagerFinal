@@ -3,6 +3,7 @@ package com.kmsoft.expensemanager.Activity.Trancation;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,11 +29,12 @@ import com.kmsoft.expensemanager.R;
 public class DetailsTransactionActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
-    ImageView delete, back, showAddAttachment;
+    ImageView delete, back, showAddAttachment,placeHolder;
     TextView showTotalBalance, showDescription, showType, showCategory, showTime, showDate;
     IncomeAndExpense incomeAndExpense;
     ActivityResultLauncher<Intent> launchSomeActivity;
     Button editDetailsTransaction;
+    CardView cardView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +92,20 @@ public class DetailsTransactionActivity extends AppCompatActivity {
         showType.setText(incomeAndExpense.getTag());
         showCategory.setText(incomeAndExpense.getCategoryName());
         showTime.setText(incomeAndExpense.getTime());
-        showDescription.setText(incomeAndExpense.getDescription());
-        if (TextUtils.isEmpty(incomeAndExpense.getAddAttachment())) {
-            showAddAttachment.setImageResource(R.drawable.placeholder);
+        if (TextUtils.isEmpty(incomeAndExpense.getDescription())){
+            showDescription.setText("No description");
         } else {
+            showDescription.setText(incomeAndExpense.getDescription());
+        }
+        if (TextUtils.isEmpty(incomeAndExpense.getAddAttachment())) {
+            showAddAttachment.setVisibility(View.GONE);
+            placeHolder.setVisibility(View.VISIBLE);
+            cardView.setVisibility(View.GONE);
+            placeHolder.setImageResource(R.drawable.placeholder);
+        } else {
+            showAddAttachment.setVisibility(View.VISIBLE);
+            placeHolder.setVisibility(View.GONE);
+            cardView.setVisibility(View.VISIBLE);
             Glide.with(this).load(incomeAndExpense.getAddAttachment())
                     .into(showAddAttachment);
         }
@@ -158,5 +170,7 @@ public class DetailsTransactionActivity extends AppCompatActivity {
         showType = findViewById(R.id.show_type);
         showDescription = findViewById(R.id.show_description);
         editDetailsTransaction = findViewById(R.id.show_edit_details_transaction);
+        placeHolder = findViewById(R.id.placeholder);
+        cardView = findViewById(R.id.cardView);
     }
 }

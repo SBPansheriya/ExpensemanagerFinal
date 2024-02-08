@@ -54,7 +54,7 @@ public class EditProfileActivity extends AppCompatActivity {
     Bitmap bitmap;
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
-    private static final int CAMERA_REQUEST = 100;
+    private static final int CAMERA_REQUEST = 101;
     int click;
 
     @Override
@@ -102,7 +102,6 @@ public class EditProfileActivity extends AppCompatActivity {
                     setImage.setImageBitmap(bitmap);
                 }
             } else {
-                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -262,6 +261,12 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
             checkPermissionsForCamera();
+        } else if (requestCode == CAMERA_REQUEST) {
+            bitmap = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+            startCrop(Uri.parse(path));
         }
     }
 

@@ -48,6 +48,7 @@ import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -74,9 +75,10 @@ public class ExpenseActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
     ActivityResultLauncher<Intent> launchSomeActivityResult;
-    private static final int CAMERA_REQUEST = 100;
+    private static final int CAMERA_REQUEST = 101;
     int click;
     int imageResId;
+    double selectedDateTimeStamp;
     String categoryName;
     String expenseAddTime;
     String addAttachmentImage;
@@ -169,7 +171,8 @@ public class ExpenseActivity extends AppCompatActivity {
                 } else {
                     String amount = expenseAddAmount.getText().toString();
                     String description = expenseDescription.getText().toString();
-                    incomeAndExpense = new IncomeAndExpense(0, amount, currantDate, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
+                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
+                    incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp,selectedDateTimeStamp,currantDate, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
                     Dialog dialog = new Dialog(ExpenseActivity.this);
@@ -229,11 +232,12 @@ public class ExpenseActivity extends AppCompatActivity {
                 if (bitmap != null) {
                     setExpenseImage.setImageBitmap(bitmap);
                 }
+                expenseAddAttachment.setVisibility(View.GONE);
+                expenseSetImage.setVisibility(View.VISIBLE);
             } else {
-                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                expenseAddAttachment.setVisibility(View.VISIBLE);
+                expenseSetImage.setVisibility(View.GONE);
             }
-            expenseAddAttachment.setVisibility(View.GONE);
-            expenseSetImage.setVisibility(View.VISIBLE);
         });
     }
 
@@ -391,6 +395,12 @@ public class ExpenseActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
             checkPermissionsForCamera();
+        } else if (requestCode == CAMERA_REQUEST) {
+            bitmap = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+            startCrop(Uri.parse(path));
         }
     }
 
@@ -410,20 +420,22 @@ public class ExpenseActivity extends AppCompatActivity {
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar currentTime = Calendar.getInstance();
                 currentTime.set(year, month, dayOfMonth);
-                int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
                 Date currentDate = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 currantDate = sdf.format(currentDate);
 
-                // Convert the numerical representation of day of week to string representation
+                int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
                 String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
                 dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
                 expenseAddTime = dateFormat.format(currentTime.getTime());
+
                 Calendar selectedDateCalendar = Calendar.getInstance();
                 selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                selectedDate = dateFormat1.format(selectedDateCalendar.getTime());            }
+                selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+            }
         });
 
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -437,7 +449,22 @@ public class ExpenseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(selectedDate)){
-                    showExpenseDate.setText("");
+                    Calendar currentTime = Calendar.getInstance();
+                    Date currentDate = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    currantDate = sdf.format(currentDate);
+
+                    int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+                    String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
+                    dayName = daysOfWeek[dayOfWeek];
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                    expenseAddTime = dateFormat.format(currentTime.getTime());
+
+                    Calendar selectedDateCalendar = Calendar.getInstance();
+                    SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                    selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+                    showExpenseDate.setText(selectedDate);
                 } else {
                     showExpenseDate.setText(""+selectedDate);
                 }

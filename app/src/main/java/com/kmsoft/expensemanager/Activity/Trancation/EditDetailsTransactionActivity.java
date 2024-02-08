@@ -50,6 +50,7 @@ import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -79,6 +80,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     String editAddTime;
     Bitmap bitmap;
     int imageResId;
+    double selectedDateTimeStamp;
     String categoryName;
     String addAttachmentImage;
 
@@ -151,11 +153,11 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                     dayName = incomeAndExpense.getDayName();
                     editAddTime = incomeAndExpense.getTime();
                     currantDate = incomeAndExpense.getCurrantDate();
+                    selectedDateTimeStamp = incomeAndExpense.getSelectedDateTimeStamp();
                 }
                 if (TextUtils.isEmpty(addAttachmentImage)) {
                     addAttachmentImage = incomeAndExpense.getAddAttachment();
                 }
-
                 if (amount.equals("₹0") || amount.equals("₹")) {
                     Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(amount)) {
@@ -165,7 +167,8 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 } else if (TextUtils.isEmpty(categoryName)) {
                     Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
                 } else {
-                    incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
+                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
+                    incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp,currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.updateData(incomeAndExpense);
                     onBackPressed();
@@ -226,11 +229,12 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 if (bitmap != null) {
                     Picasso.get().load(addAttachmentImage).into(setEditImage);
                 }
+                editAddAttachment.setVisibility(View.GONE);
+                editSetImage.setVisibility(View.VISIBLE);
             } else {
-                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+                editAddAttachment.setVisibility(View.VISIBLE);
+                editSetImage.setVisibility(View.GONE);
             }
-            editAddAttachment.setVisibility(View.GONE);
-            editSetImage.setVisibility(View.VISIBLE);
         });
     }
 
@@ -403,6 +407,12 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
             checkPermissionsForCamera();
+        } else if (requestCode == CAMERA_REQUEST) {
+            bitmap = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+            startCrop(Uri.parse(path));
         }
     }
 
@@ -431,7 +441,12 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 dayName = daysOfWeek[dayOfWeek];
                 SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
                 editAddTime = dateFormat.format(currentTime.getTime());
-                selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                Calendar selectedDateCalendar = Calendar.getInstance();
+                selectedDateCalendar.set(year, month, dayOfMonth);
+                SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+
             }
         });
 
