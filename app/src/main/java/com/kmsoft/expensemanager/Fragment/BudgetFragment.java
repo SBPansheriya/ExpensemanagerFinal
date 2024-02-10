@@ -106,7 +106,7 @@ public class BudgetFragment extends Fragment {
 
                     LinearLayoutManager manager = new LinearLayoutManager(getContext());
 
-                    budgetCreateAdapter = new BudgetCreateAdapter(BudgetFragment.this, budgetArrayList,incomeAndExpenseArrayList);
+                    budgetCreateAdapter = new BudgetCreateAdapter(BudgetFragment.this, budgetArrayList, incomeAndExpenseArrayList);
                     budgetRecyclerview.setLayoutManager(manager);
                     budgetRecyclerview.setAdapter(budgetCreateAdapter);
                 }

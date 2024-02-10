@@ -58,14 +58,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, DetailsTransactionActivity.class);
-                intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
-                context.startActivity(intent);
-            }
-        });
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(context, DetailsTransactionActivity.class);
+//                intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
+//                context.startActivity(intent);
+//            }
+//        });
 
 //        if (position == 9) {
 //            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

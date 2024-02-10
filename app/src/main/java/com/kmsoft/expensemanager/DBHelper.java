@@ -210,7 +210,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Retrieve All Data
     public Cursor getAllBudgetData() {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE2, null);
     }
 

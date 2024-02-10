@@ -71,7 +71,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
     ActivityResultLauncher<Intent> launchSomeActivityResult;
-    private static final int CAMERA_REQUEST = 100;
+    private static final int CAMERA_REQUEST = 101;
     ImageView calendar;
     String currantDate;
     int click;
@@ -232,8 +232,10 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 editAddAttachment.setVisibility(View.GONE);
                 editSetImage.setVisibility(View.VISIBLE);
             } else {
-                editAddAttachment.setVisibility(View.VISIBLE);
-                editSetImage.setVisibility(View.GONE);
+                Picasso.get().load(incomeAndExpense.getAddAttachment()).into(setEditImage);
+
+                editAddAttachment.setVisibility(View.GONE);
+                editSetImage.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -315,7 +317,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(EditDetailsTransactionActivity.this, CAMERA_REQUEST);
+            showPermissionDenyDialog(EditDetailsTransactionActivity.this, 100);
         }
     }
 
@@ -408,11 +410,15 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         if (requestCode == 100) {
             checkPermissionsForCamera();
         } else if (requestCode == CAMERA_REQUEST) {
-            bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
-            startCrop(Uri.parse(path));
+            if (data != null && data.getExtras() != null && data.getExtras().containsKey("data")) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+                if (bitmap != null) {
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                    startCrop(Uri.parse(path));
+                }
+            } else {
+                Toast.makeText(this, "No image data found in the intent.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

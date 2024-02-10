@@ -302,7 +302,7 @@ public class ExpenseActivity extends AppCompatActivity {
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(ExpenseActivity.this,CAMERA_REQUEST);
+            showPermissionDenyDialog(ExpenseActivity.this,100);
         }
     }
 
@@ -396,11 +396,15 @@ public class ExpenseActivity extends AppCompatActivity {
         if (requestCode == 100) {
             checkPermissionsForCamera();
         } else if (requestCode == CAMERA_REQUEST) {
-            bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
-            startCrop(Uri.parse(path));
+            if (data != null && data.getExtras() != null && data.getExtras().containsKey("data")) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+                if (bitmap != null) {
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                    startCrop(Uri.parse(path));
+                }
+            } else {
+                Toast.makeText(this, "No image data found in the intent.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

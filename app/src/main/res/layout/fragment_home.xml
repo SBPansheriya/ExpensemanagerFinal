@@ -380,7 +380,8 @@
             android:gravity="center"
             android:layout_centerInParent="true"
             android:textSize="16dp"
-            android:visibility="gone"
+            android:visibility="visible"
+            android:layout_marginBottom="30dp"
             android:layout_marginHorizontal="40dp"
             android:fontFamily="@font/lexenddeca_medium"
             android:textColor="@color/gray"
@@ -393,8 +394,8 @@
             android:layout_marginVertical="10dp"
             android:layout_marginHorizontal="20dp"
             android:layout_below="@+id/title5"
+            android:visibility="gone"
             tools:listitem="@layout/item_recent_transaction_layout"/>
-
     </RelativeLayout>
 </androidx.core.widget.NestedScrollView>
 </FrameLayout>

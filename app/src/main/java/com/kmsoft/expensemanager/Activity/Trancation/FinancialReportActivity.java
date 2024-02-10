@@ -579,7 +579,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         int endYear = currentYear + 1;
         double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
 
-        for (IncomeAndExpense entry : incomeList) {
+        for (IncomeAndExpense entry : expenseList) {
             String entryDate = entry.getDate();
             int entryYear = Integer.parseInt(entryDate.split("/")[2]);
 

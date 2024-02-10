@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
@@ -22,6 +23,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -31,6 +33,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +47,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.canhub.cropper.CropImage;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
@@ -55,6 +59,8 @@ import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -99,11 +105,6 @@ public class IncomeActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         init();
-
-//        Date currentDate = new Date();
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//        String currantDate1 = sdf.format(currentDate);
-//        showIncomeDate.setText(currantDate1);
 
         dbHelper = new DBHelper(this);
         incomeAndExpenseArrayList = new ArrayList<>();
@@ -184,7 +185,7 @@ public class IncomeActivity extends AppCompatActivity {
                 } else {
                     String amount = incomeAddAmount.getText().toString();
                     String description = incomeDescription.getText().toString();
-                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis()/1000;
+                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
                     incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, description, addAttachmentImage, "Income");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
@@ -408,12 +409,14 @@ public class IncomeActivity extends AppCompatActivity {
         if (requestCode == 100) {
             checkPermissionsForCamera();
         } else if (requestCode == CAMERA_REQUEST) {
-            if (bitmap != null) {
+            if (data != null && data.getExtras() != null && data.getExtras().containsKey("data")) {
                 bitmap = (Bitmap) data.getExtras().get("data");
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
-                startCrop(Uri.parse(path));
+                if (bitmap != null) {
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                    startCrop(Uri.parse(path));
+                }
+            } else {
+                Toast.makeText(this, "No image data found in the intent.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -451,7 +454,7 @@ public class IncomeActivity extends AppCompatActivity {
                 selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
+                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis() / 1000;
             }
         });
 
@@ -480,7 +483,7 @@ public class IncomeActivity extends AppCompatActivity {
                     Calendar selectedDateCalendar = Calendar.getInstance();
                     SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                     selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
+                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis() / 1000;
                     showIncomeDate.setText(selectedDate);
                 } else {
                     showIncomeDate.setText("" + selectedDate);

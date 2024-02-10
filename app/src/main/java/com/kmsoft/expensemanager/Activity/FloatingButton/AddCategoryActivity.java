@@ -10,21 +10,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
 import com.kmsoft.expensemanager.Adapter.AddCategoryAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Category;
@@ -162,16 +168,49 @@ public class AddCategoryActivity extends AppCompatActivity {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-
-                if (firstVisibleItemPosition > lastFirstVisiblePosition) {
-                    addNewCategoryBtn.setVisibility(View.GONE);
-
-                } else if (firstVisibleItemPosition < lastFirstVisiblePosition) {
-                    addNewCategoryBtn.setVisibility(View.VISIBLE);
+                int last = layoutManager.findLastVisibleItemPosition();
+                if (TextUtils.equals(tagFind, "Income")) {
+                    if (last == incomeCategoryList.size() - 1) {
+                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
+                                RecyclerView.LayoutParams.MATCH_PARENT,
+                                RecyclerView.LayoutParams.MATCH_PARENT
+                        );
+                        marginLayoutParams.setMargins(80, 10, 80, 300);
+                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
+                    } else {
+                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
+                                RecyclerView.LayoutParams.MATCH_PARENT,
+                                RecyclerView.LayoutParams.MATCH_PARENT
+                        );
+                        marginLayoutParams.setMargins(80, 40, 80, 40);
+                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
+                    }
+                } else {
+                    if (last == expenseCategoryList.size() - 1) {
+                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
+                                RecyclerView.LayoutParams.MATCH_PARENT,
+                                RecyclerView.LayoutParams.MATCH_PARENT
+                        );
+                        marginLayoutParams.setMargins(80, 10, 80, 300);
+                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
+                    } else {
+                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
+                                RecyclerView.LayoutParams.MATCH_PARENT,
+                                RecyclerView.LayoutParams.MATCH_PARENT
+                        );
+                        marginLayoutParams.setMargins(80, 40, 80, 40);
+                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
+                    }
                 }
-
-                lastFirstVisiblePosition = firstVisibleItemPosition;
+//                int firstVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+//
+//                if (firstVisibleItemPosition > lastFirstVisiblePosition) {
+//                    addNewCategoryBtn.setVisibility(View.GONE);
+//                } else if (firstVisibleItemPosition < lastFirstVisiblePosition) {
+//                    addNewCategoryBtn.setVisibility(View.VISIBLE);
+//                }
+//
+//                lastFirstVisiblePosition = firstVisibleItemPosition;
             }
         });
     }
@@ -279,7 +318,6 @@ public class AddCategoryActivity extends AppCompatActivity {
             }
         });
 
-
         editCategory.setText(getcategory.getCategoryName());
 
         editNewCategoryImage.setOnClickListener(new View.OnClickListener() {
@@ -295,17 +333,69 @@ public class AddCategoryActivity extends AppCompatActivity {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tagFind.equals("Income")) {
-                    dbHelper.deleteCategoryData(getcategory.getId());
-                    incomeCategoryList.remove(position);
-                    addCategoryIncomeAdapter.updateData(incomeCategoryList);
-                } else if (tagFind.equals("Expense")) {
-                    dbHelper.deleteCategoryData(getcategory.getId());
-                    expenseCategoryList.remove(position);
-                    addCategoryIncomeAdapter.updateData(expenseCategoryList);
-                }
-                categoryArrayList.remove(position);
                 dialog1.dismiss();
+
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(AddCategoryActivity.this);
+                bottomSheetDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                bottomSheetDialog.setContentView(R.layout.delete_bottomsheet_layout);
+                bottomSheetDialog.setCancelable(false);
+                bottomSheetDialog.show();
+
+                TextView no = bottomSheetDialog.findViewById(R.id.no);
+                TextView yes = bottomSheetDialog.findViewById(R.id.yes);
+                TextView txt = bottomSheetDialog.findViewById(R.id.txt);
+                TextView txt1 = bottomSheetDialog.findViewById(R.id.txt1);
+
+                txt.setText(R.string.remove_this_category);
+                txt1.setText(R.string.are_you_sure_do_you_wanna_remove_this_category);
+
+                no.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        bottomSheetDialog.dismiss();
+                        dialog1.show();
+                    }
+                });
+
+                yes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (tagFind.equals("Income")) {
+                            dbHelper.deleteCategoryData(getcategory.getId());
+                            incomeCategoryList.remove(position);
+                            addCategoryIncomeAdapter.updateData(incomeCategoryList);
+                        } else if (tagFind.equals("Expense")) {
+                            dbHelper.deleteCategoryData(getcategory.getId());
+                            expenseCategoryList.remove(position);
+                            addCategoryIncomeAdapter.updateData(expenseCategoryList);
+                        }
+                        categoryArrayList.remove(position);
+                        bottomSheetDialog.dismiss();
+
+                        Dialog dialog = new Dialog(AddCategoryActivity.this);
+                        if (dialog.getWindow() != null) {
+                            dialog.getWindow().setGravity(Gravity.CENTER);
+                            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                            dialog.setCancelable(true);
+                        }
+                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                        dialog.setContentView(R.layout.dailog_removed_layout);
+                        dialog.setCancelable(true);
+                        dialog.show();
+
+                        TextView text = dialog.findViewById(R.id.txt);
+                        text.setText("Category has been successfully removed");
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog.isShowing()) {
+                                    dialog.dismiss();
+                                }
+                            }
+                        }, 1000);
+                    }
+                });
             }
         });
 

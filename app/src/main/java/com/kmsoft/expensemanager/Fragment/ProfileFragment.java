@@ -1,12 +1,22 @@
 package com.kmsoft.expensemanager.Fragment;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_NAME;
+
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,15 +26,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.kmsoft.expensemanager.Activity.Budget.DetailsBudgetActivity;
 import com.kmsoft.expensemanager.Activity.Profile.EditProfileActivity;
 import com.kmsoft.expensemanager.Activity.Profile.ExportDataActivity;
 import com.kmsoft.expensemanager.Activity.Profile.SettingsActivity;
 import com.kmsoft.expensemanager.R;
+import com.squareup.picasso.Picasso;
 
 public class ProfileFragment extends Fragment {
 
-    ImageView editUserDetails,exportData,settings,logout;
+    ImageView editUserDetails,exportData,settings,logout, profileImage;
+    TextView username;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    ActivityResultLauncher<Intent> launchSomeActivity;
+    String userName;
+    String image;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,11 +49,30 @@ public class ProfileFragment extends Fragment {
 
         init(view);
 
+        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        userName = sharedPreferences.getString(USER_NAME,"");
+        image = sharedPreferences.getString(USER_IMAGE,"");
+
+        setData();
+
+        launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    userName = data.getStringExtra("userName");
+                    image = data.getStringExtra("userImage");
+                }
+                setData();
+            }
+        });
+
         editUserDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                startActivity(intent);
+                launchSomeActivity.launch(intent);
             }
         });
 
@@ -65,6 +100,20 @@ public class ProfileFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void setData(){
+        if (TextUtils.isEmpty(username.getText())){
+            username.setText("Your name");
+        } else {
+            username.setText(userName);
+        }
+
+        if (TextUtils.isEmpty(image)){
+            profileImage.setImageResource(R.drawable.profile);
+        } else {
+            Picasso.get().load(image).into(profileImage);
+        }
     }
 
     private void showLogoutBottomDialog(){
@@ -121,5 +170,7 @@ public class ProfileFragment extends Fragment {
         exportData = view.findViewById(R.id.export_data);
         settings = view.findViewById(R.id.settings);
         logout = view.findViewById(R.id.logout);
+        username = view.findViewById(R.id.username);
+        profileImage = view.findViewById(R.id.profile_image);
     }
 }

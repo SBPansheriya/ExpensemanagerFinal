@@ -70,16 +70,19 @@
             android:textSize="17sp" />
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title4">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/incomeCategoryRecyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        android:layout_below="@+id/title4"
         tools:listitem="@layout/item_add_category_layout"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-
+    </RelativeLayout>
     <Button
         android:id="@+id/add_new_category"
         android:layout_width="match_parent"

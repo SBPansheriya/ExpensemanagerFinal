@@ -16,6 +16,10 @@ public class SplashActivity extends AppCompatActivity {
 
     public static final String PREFS_NAME = "MyPrefsFile";
     public static final String CLICK_KEY = "click";
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    public static String USER_NAME = "userName";
+    public static String USER_IMAGE = "userImage";
     ImageView getStarted;
 
     @Override
@@ -26,7 +30,8 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         getStarted = findViewById(R.id.get_started);
 

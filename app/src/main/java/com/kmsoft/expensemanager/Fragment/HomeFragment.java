@@ -1,12 +1,20 @@
 package com.kmsoft.expensemanager.Fragment;
 
 import static com.kmsoft.expensemanager.Activity.MainActivity.isStep;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_NAME;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +44,7 @@ import com.kmsoft.expensemanager.Adapter.RecentTransactionAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
+import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -61,6 +70,10 @@ public class HomeFragment extends Fragment {
     ArrayList<IncomeAndExpense> incomeList = new ArrayList<>();
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
     NestedScrollView nestedScrollView;
+    SharedPreferences sharedPreferences;
+    ActivityResultLauncher<Intent> launchSomeActivity;
+    String profileImage;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,7 +82,31 @@ public class HomeFragment extends Fragment {
 
         init(view);
 
+        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+
+        profileImage = sharedPreferences.getString(USER_IMAGE,"");
+
+        if (TextUtils.isEmpty(profileImage)){
+            homeProfileImage.setImageResource(R.drawable.profile);
+        } else {
+            Picasso.get().load(profileImage).into(homeProfileImage);
+        }
+
         dbHelper = new DBHelper(getContext());
+
+        launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    profileImage = data.getStringExtra("userImage");
+                }
+                if (TextUtils.isEmpty(profileImage)){
+                    homeProfileImage.setImageResource(R.drawable.profile);
+                } else {
+                    Picasso.get().load(profileImage).into(homeProfileImage);
+                }
+            }
+        });
 
         see_all.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +131,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                startActivity(intent);
+                launchSomeActivity.launch(intent);
             }
         });
 
@@ -257,12 +294,10 @@ public class HomeFragment extends Fragment {
 
                             final String currentYearStr = String.valueOf(currentYear);
 
-                            // Calculate previous year
                             calendar.add(Calendar.YEAR, -1);
                             int previousYear = calendar.get(Calendar.YEAR);
                             final String previousYearStr = String.valueOf(previousYear);
 
-                            // Calculate next year
                             calendar.add(Calendar.YEAR, 2);
                             int nextYear = calendar.get(Calendar.YEAR);
                             final String nextYearStr = String.valueOf(nextYear);
@@ -742,30 +777,30 @@ public class HomeFragment extends Fragment {
                 recentTransactionRecyclerView.setVisibility(View.VISIBLE);
                 emptyTransaction.setVisibility(View.GONE);
 
-                ArrayList<IncomeAndExpense> filteredIncomeList = filterIncomeListByTodayDate(incomeList);
-                ArrayList<IncomeAndExpense> filteredExpenseList = filterIncomeListByTodayDate(expenseList);
+//                ArrayList<IncomeAndExpense> filteredIncomeList = filterIncomeListByTodayDate(incomeList);
+//                ArrayList<IncomeAndExpense> filteredExpenseList = filterIncomeListByTodayDate(expenseList);
 
                 if (TextUtils.equals(selected, "Income")) {
-                    if (filteredIncomeList.isEmpty()) {
+                    if (incomeList.isEmpty()) {
                         emptyTransaction.setVisibility(View.VISIBLE);
                         recentTransactionRecyclerView.setVisibility(View.GONE);
                     } else {
                         recentTransactionRecyclerView.setVisibility(View.VISIBLE);
                         emptyTransaction.setVisibility(View.GONE);
                         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                        homeAdapter = new HomeAdapter(getContext(), filteredIncomeList, selected);
+                        homeAdapter = new HomeAdapter(getContext(), incomeList, selected);
                         recentTransactionRecyclerView.setLayoutManager(manager);
                         recentTransactionRecyclerView.setAdapter(homeAdapter);
                     }
                 } else if (TextUtils.equals(selected, "Expense")) {
-                    if (filteredExpenseList.isEmpty()) {
+                    if (expenseList.isEmpty()) {
                         emptyTransaction.setVisibility(View.VISIBLE);
                         recentTransactionRecyclerView.setVisibility(View.GONE);
                     } else {
                         recentTransactionRecyclerView.setVisibility(View.VISIBLE);
                         emptyTransaction.setVisibility(View.GONE);
                         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                        homeAdapter = new HomeAdapter(getContext(), filteredExpenseList, selected);
+                        homeAdapter = new HomeAdapter(getContext(), expenseList, selected);
                         recentTransactionRecyclerView.setLayoutManager(manager);
                         recentTransactionRecyclerView.setAdapter(homeAdapter);
                     }
@@ -788,18 +823,18 @@ public class HomeFragment extends Fragment {
         return filteredList;
     }
 
-    private static ArrayList<IncomeAndExpense> filterIncomeListByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {
-        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
-        Date currentDate = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = sdf.format(currentDate);
-        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
-            if (incomeAndExpense.getCurrantDate().equals(formattedDate)) {
-                filteredList.add(incomeAndExpense);
-            }
-        }
-        return filteredList;
-    }
+//    private static ArrayList<IncomeAndExpense> filterIncomeListByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+//        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+//        Date currentDate = new Date();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        String formattedDate = sdf.format(currentDate);
+//        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+//            if (incomeAndExpense.getDate().equals(formattedDate)) {
+//                filteredList.add(incomeAndExpense);
+//            }
+//        }
+//        return filteredList;
+//    }
 
     private void init(View view) {
         spinner = view.findViewById(R.id.spinner);

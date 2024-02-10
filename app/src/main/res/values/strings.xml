@@ -75,6 +75,8 @@
     <string name="_10_00_am">10:00 AM</string>
     <string name="_12000000">- ₹12000000</string>
     <string name="all">All</string>
+    <string name="remove_this_category">Remove this category?</string>
+    <string name="are_you_sure_do_you_wanna_remove_this_category">Are you sure do you wanna remove this category?</string>
 
     <string-array name="spendFrequency" translatable="false">
         <item>Income</item>

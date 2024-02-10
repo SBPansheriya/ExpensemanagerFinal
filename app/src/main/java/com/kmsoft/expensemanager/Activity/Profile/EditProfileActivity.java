@@ -1,10 +1,11 @@
 package com.kmsoft.expensemanager.Activity.Profile;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission_group.CAMERA;
 
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_NAME;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -16,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -23,9 +25,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,20 +43,24 @@ import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kmsoft.expensemanager.R;
+import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class EditProfileActivity extends AppCompatActivity {
 
     ImageView editProfileImg, setImage,back;
     EditText editProfileUsername;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     Button editProfile;
     Bitmap bitmap;
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
     private static final int CAMERA_REQUEST = 101;
     int click;
+    String userImage;
+    String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,24 @@ public class EditProfileActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
         init();
+
+        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        userName = sharedPreferences.getString(USER_NAME,"");
+        userImage = sharedPreferences.getString(USER_IMAGE,"");
+
+        if (TextUtils.isEmpty(userName)) {
+            editProfileUsername.setText("Your name");
+        } else {
+            editProfileUsername.setText(userName);
+        }
+
+        if (TextUtils.isEmpty(userImage)){
+            setImage.setImageResource(R.drawable.profile);
+        } else {
+            Picasso.get().load(userImage).into(setImage);
+        }
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +101,17 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkPermissionsForCamera();
+            }
+        });
+
+        editProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userName = editProfileUsername.getText().toString();
+                userImage = (MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title1", null));
+                editor.putString(USER_NAME, userName).apply();
+                editor.putString(USER_IMAGE, userImage).apply();
+                onBackPressed();
             }
         });
 
@@ -94,16 +128,28 @@ public class EditProfileActivity extends AppCompatActivity {
                 bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriContent);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 if (bitmap != null) {
                     setImage.setImageBitmap(bitmap);
+//                    Picasso.get().load(userImage).into(setImage);
                 }
             } else {
+                setImage.setImageResource(R.drawable.profile);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent();
+        intent.putExtra("userImage", userImage);
+        intent.putExtra("userName",userName);
+        setResult(RESULT_OK, intent);
+
     }
 
     private void startCrop(Uri selectedImageUri) {
@@ -147,7 +193,6 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openImagePicker();
-
                 dialog.dismiss();
             }
         });
@@ -262,11 +307,15 @@ public class EditProfileActivity extends AppCompatActivity {
         if (requestCode == 100) {
             checkPermissionsForCamera();
         } else if (requestCode == CAMERA_REQUEST) {
-            bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
-            startCrop(Uri.parse(path));
+            if (data != null && data.getExtras() != null && data.getExtras().containsKey("data")) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+                if (bitmap != null) {
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                    startCrop(Uri.parse(path));
+                }
+            } else {
+                Toast.makeText(this, "No image data found in the intent.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
