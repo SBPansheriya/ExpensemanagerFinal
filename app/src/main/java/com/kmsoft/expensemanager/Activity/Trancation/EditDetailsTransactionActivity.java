@@ -427,6 +427,9 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         TextView ok = dialog.findViewById(R.id.ok);
         CalendarView calendarView = dialog.findViewById(R.id.trans_calenderView);
 
+        long currentDateMillis = System.currentTimeMillis();
+        calendarView.setMaxDate(currentDateMillis);
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
@@ -445,7 +448,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
 
             }
         });

@@ -4,6 +4,7 @@ import static com.kmsoft.expensemanager.Constant.categoryArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,7 +39,6 @@ public class AddCategoryActivity extends AppCompatActivity {
     ImageView back;
     AddCategoryAdapter addCategoryIncomeAdapter;
     RecyclerView incomeCategoryRecyclerview;
-    RecyclerView expenseCategoryRecyclerview;
     Button addNewCategoryBtn;
     int addCategoryImage;
     int editCategoryImage;
@@ -57,6 +57,8 @@ public class AddCategoryActivity extends AppCompatActivity {
     ArrayList<Category> expenseCategoryList = new ArrayList<>();
     ImageView editNewCategoryImage;
     ImageView addNewCategoryImage;
+    private int lastFirstVisiblePosition = 0;
+    LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,8 @@ public class AddCategoryActivity extends AppCompatActivity {
         init();
 
         dbHelper = new DBHelper(this);
+
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         if (isDatabaseEmpty()) {
             insertInitialCategories();
@@ -150,6 +154,24 @@ public class AddCategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showAddNewCategoryBottomDialog();
+            }
+        });
+
+        incomeCategoryRecyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                if (firstVisibleItemPosition > lastFirstVisiblePosition) {
+                    addNewCategoryBtn.setVisibility(View.GONE);
+
+                } else if (firstVisibleItemPosition < lastFirstVisiblePosition) {
+                    addNewCategoryBtn.setVisibility(View.VISIBLE);
+                }
+
+                lastFirstVisiblePosition = firstVisibleItemPosition;
             }
         });
     }
@@ -331,26 +353,26 @@ public class AddCategoryActivity extends AppCompatActivity {
     }
 
     private void insertInitialCategories() {
-        dbHelper.insertCategoryData(new Category(0,"Shopping", R.drawable.i47, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Food", R.drawable.i12, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Birthday", R.drawable.i11, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Party", R.drawable.i7, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Medicine", R.drawable.i18, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Books", R.drawable.i1, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Sports", R.drawable.i43, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Traveling", R.drawable.i17, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Education", R.drawable.i22, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Transportation", R.drawable.i38, "Income"));
-        dbHelper.insertCategoryData(new Category(0,"Entertainment", R.drawable.i15, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Gifts", R.drawable.i9, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Health & Fitness", R.drawable.i41, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Investments", R.drawable.i37, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Pets", R.drawable.i39, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Games", R.drawable.i34, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Car", R.drawable.i25, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Donation", R.drawable.i38, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Shipping", R.drawable.i30, "Expense"));
-        dbHelper.insertCategoryData(new Category(0,"Diamond & Jewellery", R.drawable.i19, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Shopping", R.drawable.i47, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Food", R.drawable.i12, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Birthday", R.drawable.i11, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Party", R.drawable.i7, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Medicine", R.drawable.i18, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Books", R.drawable.i1, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Sports", R.drawable.i43, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Traveling", R.drawable.i17, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Education", R.drawable.i22, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Transportation", R.drawable.i38, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Entertainment", R.drawable.i15, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Gifts", R.drawable.i9, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Health & Fitness", R.drawable.i41, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Investments", R.drawable.i37, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Pets", R.drawable.i39, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Games", R.drawable.i34, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Car", R.drawable.i25, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Donation", R.drawable.i38, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Shipping", R.drawable.i30, "Expense"));
+        dbHelper.insertCategoryData(new Category(0, "Diamond & Jewellery", R.drawable.i19, "Expense"));
     }
 
     private void Display() {
@@ -370,7 +392,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                 expenseCategoryList = filterCategories(categoryArrayList, "Expense");
 
                 if (TextUtils.equals(tagFind, "Income")) {
-                    incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+                    incomeCategoryRecyclerview.setLayoutManager(layoutManager);
                     addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList);
                     incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 } else if (TextUtils.equals(tagFind, "Expense")) {
@@ -378,6 +400,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                     addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList);
                     incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 }
+
             } while (cursor.moveToNext());
         }
     }
@@ -411,7 +434,6 @@ public class AddCategoryActivity extends AppCompatActivity {
         income = findViewById(R.id.category_income);
         expense = findViewById(R.id.category_expense);
         incomeCategoryRecyclerview = findViewById(R.id.incomeCategoryRecyclerview);
-        expenseCategoryRecyclerview = findViewById(R.id.expenseCategoryRecyclerview);
         addNewCategoryBtn = findViewById(R.id.add_new_category);
         back = findViewById(R.id.back);
     }

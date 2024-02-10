@@ -10,39 +10,34 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
-import com.kmsoft.expensemanager.Fragment.TransactionFragment;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
-import com.kmsoft.expensemanager.Model.ListDateModel;
 import com.kmsoft.expensemanager.R;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
-public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransactionAdapter.ViewHolder> {
-
+public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     Context context;
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
+    String selected;
 
-    public ShowTransactionAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList) {
+    public HomeAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList,String selected) {
         this.context = context;
         this.incomeAndExpenseArrayList = incomeAndExpenseArrayList;
+        this.selected = selected;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HomeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout,parent,false);
-        return new ViewHolder(view);
+        return new HomeAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull HomeAdapter.ViewHolder holder, int position) {
         IncomeAndExpense incomeAndExpense = incomeAndExpenseArrayList.get(position);
         holder.itemName.setText(incomeAndExpense.getCategoryName());
         holder.itemDescription.setText(incomeAndExpense.getDescription());
@@ -55,10 +50,10 @@ public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransaction
             holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
         }
 
-        if (incomeAndExpense.getTag().equals("Income")){
+        if (selected.equals("Income")){
             holder.itemAmount.setText("+" + incomeAndExpense.getAmount());
             holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
-        } else if (incomeAndExpense.getTag().equals("Expense")) {
+        } else if (selected.equals("Expense")) {
             holder.itemAmount.setText("-" + incomeAndExpense.getAmount());
             holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
         }
@@ -71,11 +66,17 @@ public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransaction
                 context.startActivity(intent);
             }
         });
+
+//        if (position == 9) {
+//            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            layoutParams.setMargins(0, 20, 0, 170);
+//            holder.relative.setLayoutParams(layoutParams);
+//        }
     }
 
     @Override
     public int getItemCount() {
-        return incomeAndExpenseArrayList.size();
+        return Math.min(incomeAndExpenseArrayList.size(), 10);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

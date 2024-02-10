@@ -72,6 +72,9 @@
     <string name="export_data">Export Data</string>
     <string name="edit_transaction">Edit Transaction</string>
     <string name="export">Export</string>
+    <string name="_10_00_am">10:00 AM</string>
+    <string name="_12000000">- ₹12000000</string>
+    <string name="all">All</string>
 
     <string-array name="spendFrequency" translatable="false">
         <item>Income</item>

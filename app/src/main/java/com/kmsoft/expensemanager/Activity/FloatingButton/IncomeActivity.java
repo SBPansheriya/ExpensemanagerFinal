@@ -89,6 +89,7 @@ public class IncomeActivity extends AppCompatActivity {
     String incomeAddTime;
     String addAttachmentImage;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -183,8 +184,7 @@ public class IncomeActivity extends AppCompatActivity {
                 } else {
                     String amount = incomeAddAmount.getText().toString();
                     String description = incomeDescription.getText().toString();
-//                    String selectedDate = showIncomeDate.getText().toString();
-                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
+                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis()/1000;
                     incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, description, addAttachmentImage, "Income");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
@@ -315,7 +315,7 @@ public class IncomeActivity extends AppCompatActivity {
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(IncomeActivity.this, CAMERA_REQUEST);
+            showPermissionDenyDialog(IncomeActivity.this, 100);
         }
     }
 
@@ -408,11 +408,13 @@ public class IncomeActivity extends AppCompatActivity {
         if (requestCode == 100) {
             checkPermissionsForCamera();
         } else if (requestCode == CAMERA_REQUEST) {
-            bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
-            startCrop(Uri.parse(path));
+            if (bitmap != null) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                startCrop(Uri.parse(path));
+            }
         }
     }
 
@@ -427,7 +429,8 @@ public class IncomeActivity extends AppCompatActivity {
         TextView ok = dialog.findViewById(R.id.ok);
         CalendarView calendarView = dialog.findViewById(R.id.trans_calenderView);
 
-        calendarView.setDate(System.currentTimeMillis());
+        long currentDateMillis = System.currentTimeMillis();
+        calendarView.setMaxDate(currentDateMillis);
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -448,7 +451,7 @@ public class IncomeActivity extends AppCompatActivity {
                 selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
             }
         });
 
@@ -477,7 +480,7 @@ public class IncomeActivity extends AppCompatActivity {
                     Calendar selectedDateCalendar = Calendar.getInstance();
                     SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                     selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
                     showIncomeDate.setText(selectedDate);
                 } else {
                     showIncomeDate.setText("" + selectedDate);

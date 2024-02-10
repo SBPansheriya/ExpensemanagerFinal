@@ -171,7 +171,7 @@ public class ExpenseActivity extends AppCompatActivity {
                 } else {
                     String amount = expenseAddAmount.getText().toString();
                     String description = expenseDescription.getText().toString();
-                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
+                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis()/1000;
                     incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp,selectedDateTimeStamp,currantDate, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
                     incomeAndExpenseArrayList.add(incomeAndExpense);
                     dbHelper.insertData(incomeAndExpense);
@@ -415,6 +415,9 @@ public class ExpenseActivity extends AppCompatActivity {
         TextView ok = dialog.findViewById(R.id.ok);
         CalendarView calendarView = dialog.findViewById(R.id.trans_calenderView);
 
+        long currentDateMillis = System.currentTimeMillis();
+        calendarView.setMaxDate(currentDateMillis);
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
@@ -434,7 +437,7 @@ public class ExpenseActivity extends AppCompatActivity {
                 selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
             }
         });
 
@@ -463,7 +466,7 @@ public class ExpenseActivity extends AppCompatActivity {
                     Calendar selectedDateCalendar = Calendar.getInstance();
                     SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                     selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis();
+                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
                     showExpenseDate.setText(selectedDate);
                 } else {
                     showExpenseDate.setText(""+selectedDate);

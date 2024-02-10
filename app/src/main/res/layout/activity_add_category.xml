@@ -77,17 +77,8 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
         android:layout_below="@+id/title4"
-        tools:listitem="@layout/item_add_category_layout"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/expenseCategoryRecyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="20dp"
-        android:visibility="gone"
-        android:layout_marginVertical="10dp"
-        android:layout_below="@+id/title4"
-        tools:listitem="@layout/item_add_category_layout"/>
+        tools:listitem="@layout/item_add_category_layout"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     <Button
         android:id="@+id/add_new_category"

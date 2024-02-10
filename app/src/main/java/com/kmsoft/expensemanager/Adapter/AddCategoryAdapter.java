@@ -70,11 +70,11 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
             }
         });
 
-        if (holder.getAdapterPosition() == categoryArrayList.size() - 1) {
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(0, 20, 0, 350);
-            holder.relative.setLayoutParams(layoutParams);
-        }
+//        if (holder.getAdapterPosition() == categoryArrayList.size() - 1) {
+//            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            layoutParams.setMargins(0, 20, 0, 350);
+//            holder.relative.setLayoutParams(layoutParams);
+//        }
     }
 
     public void updateData(ArrayList<Category> categoryArrayList) {

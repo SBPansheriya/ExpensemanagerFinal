@@ -52,7 +52,7 @@ public class IncomeAndExpense implements Serializable {
         this.amount = amount;
     }
 
-    public double getCurrantDateTimeStamp() {
+    public Double getCurrantDateTimeStamp() {
         return currantDateTimeStamp;
     }
 
@@ -60,7 +60,7 @@ public class IncomeAndExpense implements Serializable {
         this.currantDateTimeStamp = currantDateTimeStamp;
     }
 
-    public double getSelectedDateTimeStamp() {
+    public Double getSelectedDateTimeStamp() {
         return selectedDateTimeStamp;
     }
 
@@ -138,5 +138,10 @@ public class IncomeAndExpense implements Serializable {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public double getAmountValue() {
+        // Parse the amount string to extract the numerical value
+        return Double.parseDouble(amount.replace("₹", ""));
     }
 }

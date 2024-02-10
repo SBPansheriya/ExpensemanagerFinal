@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab, fab1, fab2;
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
     boolean isOpen = false;
-    public boolean isStep = false;
+    public static boolean isStep = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.home) {
                     fragment = "home";
-                    isStep = true;
                     openFragment(new HomeFragment());
                     return true;
                 }
@@ -100,13 +99,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (item.getItemId() == R.id.budget) {
                     fragment = "budget";
-                    isStep = true;
                     openFragment(new BudgetFragment());
                     return true;
                 }
                 if (item.getItemId() == R.id.profile) {
                     fragment = "profile";
-                    isStep = true;
                     openFragment(new ProfileFragment());
                     return true;
                 }
@@ -143,9 +140,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.framelayout);
-        if (fragment instanceof HomeFragment) {
-            super.onBackPressed();
-        } else {
+        if (fragment instanceof TransactionFragment){
             if (isStep) {
                 super.onBackPressed();
             }
@@ -153,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
                 Fragment mFragment = new HomeFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.framelayout, mFragment).setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
             }
+        } else {
+            super.onBackPressed();
         }
     }
 

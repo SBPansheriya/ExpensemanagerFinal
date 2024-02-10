@@ -64,13 +64,28 @@
             android:layout_marginTop="16dp"
             android:layout_below="@+id/txt">
             <TextView
+                android:id="@+id/trans_all"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/all"
+                android:gravity="center"
+                android:textColor="@color/green"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:textSize="16sp"/>
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="0dp"/>
+
+            <TextView
                 android:id="@+id/trans_income"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:layout_weight="1"
                 android:text="@string/income"
                 android:gravity="center"
-                android:textColor="@color/green"
+                android:textColor="@color/black"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:textSize="16sp"/>
 
@@ -111,11 +126,11 @@
             android:layout_marginTop="16dp"
             android:layout_below="@+id/txt1">
             <TextView
-                android:id="@+id/trans_highest"
+                android:id="@+id/trans_newest"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:layout_weight="1"
-                android:text="@string/highest"
+                android:text="@string/newest"
                 android:gravity="center"
                 android:textColor="@color/green"
                 android:fontFamily="@font/lexenddeca_semibold"
@@ -125,11 +140,11 @@
                 android:layout_width="20dp"
                 android:layout_height="0dp"/>
             <TextView
-                android:id="@+id/trans_lowest"
+                android:id="@+id/trans_oldest"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:layout_weight="1"
-                android:text="@string/lowest"
+                android:text="@string/oldest"
                 android:gravity="center"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:textSize="16sp"/>
@@ -138,11 +153,11 @@
                 android:layout_width="20dp"
                 android:layout_height="0dp"/>
             <TextView
-                android:id="@+id/trans_newest"
+                android:id="@+id/trans_highest"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
                 android:layout_weight="1"
-                android:text="@string/newest"
+                android:text="@string/highest"
                 android:gravity="center"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:textSize="16sp"/>
@@ -155,11 +170,11 @@
             android:layout_below="@+id/title">
 
         <TextView
-            android:id="@+id/trans_oldest"
+            android:id="@+id/trans_lowest"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:layout_weight="1"
-            android:text="@string/oldest"
+            android:text="@string/lowest"
             android:gravity="center"
             android:fontFamily="@font/lexenddeca_semibold"
             android:textSize="16sp"/>

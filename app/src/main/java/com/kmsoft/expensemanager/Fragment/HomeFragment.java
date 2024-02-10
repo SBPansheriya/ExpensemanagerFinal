@@ -1,14 +1,12 @@
 package com.kmsoft.expensemanager.Fragment;
 
+import static com.kmsoft.expensemanager.Activity.MainActivity.isStep;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,7 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -32,11 +29,9 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.kmsoft.expensemanager.Activity.Profile.EditProfileActivity;
 import com.kmsoft.expensemanager.Activity.Profile.NotificationActivity;
-import com.kmsoft.expensemanager.Activity.Trancation.EditDetailsTransactionActivity;
+import com.kmsoft.expensemanager.Adapter.HomeAdapter;
 import com.kmsoft.expensemanager.Adapter.RecentTransactionAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
@@ -45,11 +40,11 @@ import com.kmsoft.expensemanager.R;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -57,7 +52,7 @@ public class HomeFragment extends Fragment {
     LineChart chart;
     ImageView homeProfileImage, homeNotification;
     RecyclerView recentTransactionRecyclerView;
-    RecentTransactionAdapter recentTransactionAdapter;
+    HomeAdapter homeAdapter;
     Spinner spinner;
     String selected;
     String totalIncomeAmount, totalExpenseAmount;
@@ -79,6 +74,7 @@ public class HomeFragment extends Fragment {
         see_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isStep = false;
                 TransactionFragment transactionFragment = new TransactionFragment();
                 Bundle args = new Bundle();
                 transactionFragment.setArguments(args);
@@ -169,7 +165,7 @@ public class HomeFragment extends Fragment {
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                            final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
                             setupLineChart(chart, days, entries);
                         }
@@ -337,7 +333,7 @@ public class HomeFragment extends Fragment {
 
                             chart.getAxisLeft().setEnabled(false);
                             chart.getAxisRight().setEnabled(false);
-                            final String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                            final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
                             setupLineChart1(chart, days, entries);
                         }
@@ -486,9 +482,9 @@ public class HomeFragment extends Fragment {
 
         for (int i = 0; i < incomeList.size(); i++) {
             String entryDate = incomeList.get(i).getDate();
-            int entryYear = Integer.parseInt(entryDate.split("/")[0]);
+            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
             int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-            int entryDay = Integer.parseInt(entryDate.split("/")[2]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
 
             int hourOfDay = getHourOfDay(incomeList.get(i).getTime());
             String amountString = extractNumericPart(incomeList.get(i).getAmount());
@@ -536,9 +532,9 @@ public class HomeFragment extends Fragment {
 
         for (int i = 0; i < expenseList.size(); i++) {
             String entryDate = expenseList.get(i).getDate();
-            int entryYear = Integer.parseInt(entryDate.split("/")[0]);
+            int entryDay = Integer.parseInt(entryDate.split("/")[0]);
             int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-            int entryDay = Integer.parseInt(entryDate.split("/")[2]);
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
 
             int hourOfDay = getHourOfDay(expenseList.get(i).getTime());
             String amountString = extractNumericPart(expenseList.get(i).getAmount());
@@ -729,9 +725,17 @@ public class HomeFragment extends Fragment {
                 String addAttachment = cursor.getString(11);
                 String tag = cursor.getString(12);
 
-                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp,selectedDateTimeStamp,currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
 
+                Collections.sort(incomeAndExpenseArrayList, new Comparator<IncomeAndExpense>() {
+                    @Override
+                    public int compare(IncomeAndExpense o1, IncomeAndExpense o2) {
+                        return o1.getCurrantDateTimeStamp().compareTo(o2.getCurrantDateTimeStamp());
+                    }
+                });
+
+                Collections.reverse(incomeAndExpenseArrayList);
                 incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
                 expenseList = filterCategories(incomeAndExpenseArrayList, "Expense");
 
@@ -742,29 +746,29 @@ public class HomeFragment extends Fragment {
                 ArrayList<IncomeAndExpense> filteredExpenseList = filterIncomeListByTodayDate(expenseList);
 
                 if (TextUtils.equals(selected, "Income")) {
-                        if (filteredIncomeList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            recentTransactionRecyclerView.setVisibility(View.GONE);
-                        } else {
-                            recentTransactionRecyclerView.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                            recentTransactionAdapter = new RecentTransactionAdapter(getContext(), filteredIncomeList,selected);
-                            recentTransactionRecyclerView.setLayoutManager(manager);
-                            recentTransactionRecyclerView.setAdapter(recentTransactionAdapter);
-                        }
+                    if (filteredIncomeList.isEmpty()) {
+                        emptyTransaction.setVisibility(View.VISIBLE);
+                        recentTransactionRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        recentTransactionRecyclerView.setVisibility(View.VISIBLE);
+                        emptyTransaction.setVisibility(View.GONE);
+                        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                        homeAdapter = new HomeAdapter(getContext(), filteredIncomeList, selected);
+                        recentTransactionRecyclerView.setLayoutManager(manager);
+                        recentTransactionRecyclerView.setAdapter(homeAdapter);
+                    }
                 } else if (TextUtils.equals(selected, "Expense")) {
-                        if (filteredExpenseList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            recentTransactionRecyclerView.setVisibility(View.GONE);
-                        } else {
-                            recentTransactionRecyclerView.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                            recentTransactionAdapter = new RecentTransactionAdapter(getContext(), filteredExpenseList,selected);
-                            recentTransactionRecyclerView.setLayoutManager(manager);
-                            recentTransactionRecyclerView.setAdapter(recentTransactionAdapter);
-                        }
+                    if (filteredExpenseList.isEmpty()) {
+                        emptyTransaction.setVisibility(View.VISIBLE);
+                        recentTransactionRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        recentTransactionRecyclerView.setVisibility(View.VISIBLE);
+                        emptyTransaction.setVisibility(View.GONE);
+                        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                        homeAdapter = new HomeAdapter(getContext(), filteredExpenseList, selected);
+                        recentTransactionRecyclerView.setLayoutManager(manager);
+                        recentTransactionRecyclerView.setAdapter(homeAdapter);
+                    }
                 }
             } while (cursor.moveToNext());
         } else {

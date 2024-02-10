@@ -62,15 +62,6 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
                 holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
             }
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, DetailsTransactionActivity.class);
-                    intent.putExtra("incomeAndExpense", incomeAndExpenseArrayList.get(position));
-                    context.startActivity(intent);
-                }
-            });
-
             if (position == incomeAndExpenseArrayList.size() - 1) {
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.setMargins(0, 20, 0, 170);

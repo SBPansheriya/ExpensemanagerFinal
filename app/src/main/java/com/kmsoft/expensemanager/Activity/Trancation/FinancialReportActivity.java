@@ -776,7 +776,7 @@ public class FinancialReportActivity extends AppCompatActivity {
                 Collections.sort(incomeAndExpenseArrayList, new Comparator<IncomeAndExpense>() {
                     @Override
                     public int compare(IncomeAndExpense o1, IncomeAndExpense o2) {
-                        return o1.getDate().compareTo(o2.getDate());
+                        return o2.getDate().compareTo(o1.getDate());
                     }
                 });
 
