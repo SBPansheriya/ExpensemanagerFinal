@@ -12,8 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
-import com.kmsoft.expensemanager.Fragment.HomeFragment;
+import com.kmsoft.expensemanager.Activity.Transaction.DetailsTransactionActivity;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 

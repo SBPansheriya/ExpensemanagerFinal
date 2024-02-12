@@ -35,13 +35,10 @@ public class SplashActivity extends AppCompatActivity {
 
         getStarted = findViewById(R.id.get_started);
 
-        getStarted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        getStarted.setOnClickListener(v -> {
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 }

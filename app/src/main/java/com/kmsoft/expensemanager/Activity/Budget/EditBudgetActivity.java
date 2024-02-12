@@ -65,7 +65,7 @@ public class EditBudgetActivity extends AppCompatActivity {
 
         budget = (Budget) getIntent().getSerializableExtra("budget");
 
-        editBudgetAmount.setText("" + budget.getAmountBudget());
+        editBudgetAmount.setText(String.format("%s", budget.getAmountBudget()));
         editBudgetSlider.setValue(budget.getPercentageBudget());
 
         String listGet = getIntent().getStringExtra("budgetArrayList");
@@ -73,8 +73,8 @@ public class EditBudgetActivity extends AppCompatActivity {
         budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {
         }.getType());
 
-        editBudgetAmount.setText("" + budget.getAmountBudget());
-        editBudgetCategoryName.setText("" + budget.getCategoryNameBudget());
+        editBudgetAmount.setText(String.format("%s", budget.getAmountBudget()));
+        editBudgetCategoryName.setText(String.format("%s", budget.getCategoryNameBudget()));
 
         launchSomeActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -83,26 +83,18 @@ public class EditBudgetActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     if (!TextUtils.isEmpty(categoryName)) {
-                        editBudgetCategoryName.setText("" + categoryName);
+                        editBudgetCategoryName.setText(String.format("%s", categoryName));
                     }
                 }
             }
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(v -> onBackPressed());
 
-        editBudgetCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(EditBudgetActivity.this, AddCategoryActivity.class);
-                intent.putExtra("clicked", "Income");
-                launchSomeActivityResult.launch(intent);
-            }
+        editBudgetCategory.setOnClickListener(v -> {
+            Intent intent = new Intent(EditBudgetActivity.this, AddCategoryActivity.class);
+            intent.putExtra("clicked", "Income");
+            launchSomeActivityResult.launch(intent);
         });
 
         editBudgetAmount.addTextChangedListener(new TextWatcher() {
@@ -118,55 +110,52 @@ public class EditBudgetActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
                 if (!input.startsWith("₹")) {
-                    editBudgetAmount.setText("₹" + input);
+                    editBudgetAmount.setText(String.format("₹%s", input));
                     editBudgetAmount.setSelection(editBudgetAmount.getText().length());
                 }
             }
         });
 
-        editBudget.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String amount = editBudgetAmount.getText().toString();
-                int percentage = (int) editBudgetSlider.getValue();
+        editBudget.setOnClickListener(view -> {
+            String amount = editBudgetAmount.getText().toString();
+            int percentage = (int) editBudgetSlider.getValue();
 
-                if (TextUtils.isEmpty(categoryName)) {
-                    categoryName = budget.getCategoryNameBudget();
-                }
-                if (amount.equals("₹0") || amount.equals("₹")) {
-                    Toast.makeText(EditBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(amount)) {
-                    Toast.makeText(EditBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(categoryName)) {
-                    Toast.makeText(EditBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
-                } else {
+            if (TextUtils.isEmpty(categoryName)) {
+                categoryName = budget.getCategoryNameBudget();
+            }
+            if (amount.equals("₹0") || amount.equals("₹")) {
+                Toast.makeText(EditBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(amount)) {
+                Toast.makeText(EditBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(categoryName)) {
+                Toast.makeText(EditBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+            } else {
 
-                    boolean categoryFound = false;
-                    int existingId = budget.getId();
-                    String existingCategoryName = budget.getCategoryNameBudget();
+                boolean categoryFound = false;
+                int existingId = budget.getId();
+                String existingCategoryName = budget.getCategoryNameBudget();
 
-                    for (int i = 0; i < budgetArrayList.size(); i++) {
-                        if (budgetArrayList.get(i).getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
-                            if (!existingCategoryName.equalsIgnoreCase(budgetArrayList.get(i).getCategoryNameBudget())) {
-                                budget = new Budget(budgetArrayList.get(i).getId(), amount, categoryName, imageResId, percentage);
-                                dbHelper.updateBudgetData(budget);
-                                dbHelper.deleteBudgetData(existingId);
-                            } else {
-                                budget = new Budget(existingId, amount, categoryName, imageResId, percentage);
-                                dbHelper.updateBudgetData(budget);
-                            }
-                            categoryFound = true;
-                            break;
+                for (int i = 0; i < budgetArrayList.size(); i++) {
+                    if (budgetArrayList.get(i).getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
+                        if (!existingCategoryName.equalsIgnoreCase(budgetArrayList.get(i).getCategoryNameBudget())) {
+                            budget = new Budget(budgetArrayList.get(i).getId(), amount, categoryName, imageResId, percentage);
+                            dbHelper.updateBudgetData(budget);
+                            dbHelper.deleteBudgetData(existingId);
+                        } else {
+                            budget = new Budget(existingId, amount, categoryName, imageResId, percentage);
+                            dbHelper.updateBudgetData(budget);
                         }
+                        categoryFound = true;
+                        break;
                     }
-
-                    if (!categoryFound) {
-                        budget = new Budget(budget.getId(), amount, categoryName, imageResId, percentage);
-                        dbHelper.updateBudgetData(budget);
-                    }
-                    budgetArrayList.add(budget);
-                    onBackPressed();
                 }
+
+                if (!categoryFound) {
+                    budget = new Budget(budget.getId(), amount, categoryName, imageResId, percentage);
+                    dbHelper.updateBudgetData(budget);
+                }
+                budgetArrayList.add(budget);
+                onBackPressed();
             }
         });
     }

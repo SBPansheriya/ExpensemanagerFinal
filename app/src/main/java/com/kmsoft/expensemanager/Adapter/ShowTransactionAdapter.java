@@ -10,19 +10,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
 
-import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
-import com.kmsoft.expensemanager.Fragment.TransactionFragment;
+import com.kmsoft.expensemanager.Activity.Transaction.DetailsTransactionActivity;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
-import com.kmsoft.expensemanager.Model.ListDateModel;
 import com.kmsoft.expensemanager.R;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransactionAdapter.ViewHolder> {
 

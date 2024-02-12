@@ -6,12 +6,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
 import com.kmsoft.expensemanager.Adapter.AddCategoryAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Category;
@@ -63,7 +62,6 @@ public class AddCategoryActivity extends AppCompatActivity {
     ArrayList<Category> expenseCategoryList = new ArrayList<>();
     ImageView editNewCategoryImage;
     ImageView addNewCategoryImage;
-    private int lastFirstVisiblePosition = 0;
     LinearLayoutManager layoutManager;
 
     @Override
@@ -108,8 +106,8 @@ public class AddCategoryActivity extends AppCompatActivity {
             income.setBackgroundResource(R.drawable.selected_category);
             expense.setBackgroundResource(R.drawable.unselected_category);
 
-            income.setTextColor(getResources().getColor(R.color.white));
-            expense.setTextColor(getResources().getColor(R.color.black));
+            income.setTextColor(ContextCompat.getColor(this,R.color.white));
+            expense.setTextColor(ContextCompat.getColor(this,R.color.black));
         } else if (clicked.equals("Expense")) {
             tagFind = "Expense";
 
@@ -117,51 +115,35 @@ public class AddCategoryActivity extends AppCompatActivity {
             income.setBackgroundResource(R.drawable.unselected_category);
             expense.setBackgroundResource(R.drawable.selected_category);
 
-            income.setTextColor(getResources().getColor(R.color.black));
-            expense.setTextColor(getResources().getColor(R.color.white));
+            income.setTextColor(ContextCompat.getColor(this,R.color.black));
+            expense.setTextColor(ContextCompat.getColor(this,R.color.white));
         }
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+        back.setOnClickListener(v -> onBackPressed());
+
+        income.setOnClickListener(v -> {
+            tagFind = "Income";
+
+            Display();
+            income.setBackgroundResource(R.drawable.selected_category);
+            expense.setBackgroundResource(R.drawable.unselected_category);
+
+            income.setTextColor(ContextCompat.getColor(this,R.color.white));
+            expense.setTextColor(ContextCompat.getColor(this,R.color.black));
         });
 
-        income.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tagFind = "Income";
+        expense.setOnClickListener(v -> {
+            tagFind = "Expense";
 
-                Display();
-                income.setBackgroundResource(R.drawable.selected_category);
-                expense.setBackgroundResource(R.drawable.unselected_category);
+            Display();
+            expense.setBackgroundResource(R.drawable.selected_category);
+            income.setBackgroundResource(R.drawable.unselected_category);
 
-                income.setTextColor(getResources().getColor(R.color.white));
-                expense.setTextColor(getResources().getColor(R.color.black));
-            }
+            expense.setTextColor(ContextCompat.getColor(this,R.color.white));
+            income.setTextColor(ContextCompat.getColor(this,R.color.black));
         });
 
-        expense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tagFind = "Expense";
-
-                Display();
-                expense.setBackgroundResource(R.drawable.selected_category);
-                income.setBackgroundResource(R.drawable.unselected_category);
-
-                expense.setTextColor(getResources().getColor(R.color.white));
-                income.setTextColor(getResources().getColor(R.color.black));
-            }
-        });
-
-        addNewCategoryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddNewCategoryBottomDialog();
-            }
-        });
+        addNewCategoryBtn.setOnClickListener(v -> showAddNewCategoryBottomDialog());
 
         incomeCategoryRecyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -244,46 +226,35 @@ public class AddCategoryActivity extends AppCompatActivity {
             addNewCategoryImage.setImageResource(addCategoryImage);
         }
 
-        addNewCategoryImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findClick = "Add";
-                Intent intent = new Intent(AddCategoryActivity.this, IconActivity.class);
-                intent.putExtra("name", addNewCategory.getText().toString());
-                launchSomeActivity.launch(intent);
-                dialog.dismiss();
-            }
+        addNewCategoryImage.setOnClickListener(v -> {
+            findClick = "Add";
+            Intent intent = new Intent(AddCategoryActivity.this, IconActivity.class);
+            intent.putExtra("name", addNewCategory.getText().toString());
+            launchSomeActivity.launch(intent);
+            dialog.dismiss();
         });
 
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                addCategoryImage = 0;
-            }
-        });
+        dialog.setOnDismissListener(dialog -> addCategoryImage = 0);
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(addNewCategory.getText().toString())) {
-                    Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+        save.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(addNewCategory.getText().toString())) {
+                Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+            } else {
+                addCategoryName = addNewCategory.getText().toString();
+                category = new Category(0, addCategoryName, addCategoryImage, tagFind);
+                categoryArrayList.add(category);
+                dbHelper.insertCategoryData(category);
+                if (tagFind.equals("Income")) {
+                    incomeCategoryList.add(category);
+                    addCategoryIncomeAdapter.updateData(incomeCategoryList);
+                } else if (tagFind.equals("Expense")) {
+                    expenseCategoryList.add(category);
+                    addCategoryIncomeAdapter.updateData(expenseCategoryList);
                 } else {
-                    addCategoryName = addNewCategory.getText().toString();
-                    category = new Category(0, addCategoryName, addCategoryImage, tagFind);
-                    categoryArrayList.add(category);
-                    dbHelper.insertCategoryData(category);
-                    if (tagFind.equals("Income")) {
-                        incomeCategoryList.add(category);
-                        addCategoryIncomeAdapter.updateData(incomeCategoryList);
-                    } else if (tagFind.equals("Expense")) {
-                        expenseCategoryList.add(category);
-                        addCategoryIncomeAdapter.updateData(expenseCategoryList);
-                    } else {
-                        Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
-                    }
-                    addCategoryImage = 0;
-                    dialog.dismiss();
+                    Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
                 }
+                addCategoryImage = 0;
+                dialog.dismiss();
             }
         });
         dialog.show();
@@ -311,126 +282,103 @@ public class AddCategoryActivity extends AppCompatActivity {
             }
         }
 
-        dialog1.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                editCategoryImage = 0;
-            }
-        });
+        dialog1.setOnDismissListener(dialog -> editCategoryImage = 0);
 
         editCategory.setText(getcategory.getCategoryName());
 
-        editNewCategoryImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findClick = "Edit";
-                Intent intent = new Intent(AddCategoryActivity.this, IconActivity.class);
-                launchSomeActivity.launch(intent);
-                dialog1.dismiss();
-            }
+        editNewCategoryImage.setOnClickListener(v -> {
+            findClick = "Edit";
+            Intent intent = new Intent(AddCategoryActivity.this, IconActivity.class);
+            launchSomeActivity.launch(intent);
+            dialog1.dismiss();
         });
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog1.dismiss();
+        delete.setOnClickListener(v -> {
+            dialog1.dismiss();
 
-                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(AddCategoryActivity.this);
-                bottomSheetDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                bottomSheetDialog.setContentView(R.layout.delete_bottomsheet_layout);
-                bottomSheetDialog.setCancelable(false);
-                bottomSheetDialog.show();
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(AddCategoryActivity.this);
+            bottomSheetDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            bottomSheetDialog.setContentView(R.layout.delete_bottomsheet_layout);
+            bottomSheetDialog.setCancelable(false);
+            bottomSheetDialog.show();
 
-                TextView no = bottomSheetDialog.findViewById(R.id.no);
-                TextView yes = bottomSheetDialog.findViewById(R.id.yes);
-                TextView txt = bottomSheetDialog.findViewById(R.id.txt);
-                TextView txt1 = bottomSheetDialog.findViewById(R.id.txt1);
+            TextView no = bottomSheetDialog.findViewById(R.id.no);
+            TextView yes = bottomSheetDialog.findViewById(R.id.yes);
+            TextView txt = bottomSheetDialog.findViewById(R.id.txt);
+            TextView txt1 = bottomSheetDialog.findViewById(R.id.txt1);
 
-                txt.setText(R.string.remove_this_category);
-                txt1.setText(R.string.are_you_sure_do_you_wanna_remove_this_category);
+            txt.setText(R.string.remove_this_category);
+            txt1.setText(R.string.are_you_sure_do_you_wanna_remove_this_category);
 
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        bottomSheetDialog.dismiss();
-                        dialog1.show();
-                    }
-                });
+            no.setOnClickListener(v1 -> {
+                bottomSheetDialog.dismiss();
+                dialog1.show();
+            });
 
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (tagFind.equals("Income")) {
-                            dbHelper.deleteCategoryData(getcategory.getId());
-                            incomeCategoryList.remove(position);
-                            addCategoryIncomeAdapter.updateData(incomeCategoryList);
-                        } else if (tagFind.equals("Expense")) {
-                            dbHelper.deleteCategoryData(getcategory.getId());
-                            expenseCategoryList.remove(position);
-                            addCategoryIncomeAdapter.updateData(expenseCategoryList);
-                        }
-                        categoryArrayList.remove(position);
-                        bottomSheetDialog.dismiss();
-
-                        Dialog dialog = new Dialog(AddCategoryActivity.this);
-                        if (dialog.getWindow() != null) {
-                            dialog.getWindow().setGravity(Gravity.CENTER);
-                            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                            dialog.setCancelable(true);
-                        }
-                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        dialog.setContentView(R.layout.dailog_removed_layout);
-                        dialog.setCancelable(true);
-                        dialog.show();
-
-                        TextView text = dialog.findViewById(R.id.txt);
-                        text.setText("Category has been successfully removed");
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (dialog.isShowing()) {
-                                    dialog.dismiss();
-                                }
-                            }
-                        }, 1000);
-                    }
-                });
-            }
-        });
-
-        update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(editCategory.getText().toString())) {
-                    Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
-                } else {
-                    addCategoryName = editCategory.getText().toString();
-                    category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind);
-                    categoryArrayList.add(category);
-                    if (tagFind.equals("Income")) {
-                        for (int i = 0; i < incomeCategoryList.size(); i++) {
-                            if (incomeCategoryList.get(i).getId() == getcategory.getId()) {
-                                incomeCategoryList.set(i, category);
-                                break;
-                            }
-                        }
-                        addCategoryIncomeAdapter.updateData(incomeCategoryList);
-                    } else if (tagFind.equals("Expense")) {
-                        for (int i = 0; i < expenseCategoryList.size(); i++) {
-                            if (expenseCategoryList.get(i).getId() == getcategory.getId()) {
-                                expenseCategoryList.set(i, category);
-                                break;
-                            }
-                        }
-                        addCategoryIncomeAdapter.updateData(expenseCategoryList);
-                    } else {
-                        Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
-                    }
-                    dbHelper.updateCategoryData(AddCategoryActivity.this.category);
-                    editCategoryImage = 0;
-                    dialog1.dismiss();
+            yes.setOnClickListener(v12 -> {
+                if (tagFind.equals("Income")) {
+                    dbHelper.deleteCategoryData(getcategory.getId());
+                    incomeCategoryList.remove(position);
+                    addCategoryIncomeAdapter.updateData(incomeCategoryList);
+                } else if (tagFind.equals("Expense")) {
+                    dbHelper.deleteCategoryData(getcategory.getId());
+                    expenseCategoryList.remove(position);
+                    addCategoryIncomeAdapter.updateData(expenseCategoryList);
                 }
+                categoryArrayList.remove(position);
+                bottomSheetDialog.dismiss();
+
+                Dialog dialog = new Dialog(AddCategoryActivity.this);
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().setGravity(Gravity.CENTER);
+                    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                    dialog.setCancelable(true);
+                }
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                dialog.setContentView(R.layout.dailog_removed_layout);
+                dialog.setCancelable(true);
+                dialog.show();
+
+                TextView text = dialog.findViewById(R.id.txt);
+                text.setText(R.string.category_has_been_successfully_removed);
+
+                new Handler().postDelayed(() -> {
+                    if (dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                }, 1000);
+            });
+        });
+
+        update.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(editCategory.getText().toString())) {
+                Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+            } else {
+                addCategoryName = editCategory.getText().toString();
+                category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind);
+                categoryArrayList.add(category);
+                if (tagFind.equals("Income")) {
+                    for (int i = 0; i < incomeCategoryList.size(); i++) {
+                        if (incomeCategoryList.get(i).getId() == getcategory.getId()) {
+                            incomeCategoryList.set(i, category);
+                            break;
+                        }
+                    }
+                    addCategoryIncomeAdapter.updateData(incomeCategoryList);
+                } else if (tagFind.equals("Expense")) {
+                    for (int i = 0; i < expenseCategoryList.size(); i++) {
+                        if (expenseCategoryList.get(i).getId() == getcategory.getId()) {
+                            expenseCategoryList.set(i, category);
+                            break;
+                        }
+                    }
+                    addCategoryIncomeAdapter.updateData(expenseCategoryList);
+                } else {
+                    Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
+                }
+                dbHelper.updateCategoryData(AddCategoryActivity.this.category);
+                editCategoryImage = 0;
+                dialog1.dismiss();
             }
         });
     }

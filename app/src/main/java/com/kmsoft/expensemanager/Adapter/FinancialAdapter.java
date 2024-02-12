@@ -1,7 +1,6 @@
 package com.kmsoft.expensemanager.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
-import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
@@ -60,12 +58,6 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
                 holder.itemImage.setImageResource(R.drawable.i);
             } else {
                 holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
-            }
-
-            if (position == incomeAndExpenseArrayList.size() - 1) {
-                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.setMargins(0, 20, 0, 170);
-                holder.relative.setLayoutParams(layoutParams);
             }
             holder.relative1.setVisibility(View.VISIBLE);
             holder.relative2.setVisibility(View.GONE);

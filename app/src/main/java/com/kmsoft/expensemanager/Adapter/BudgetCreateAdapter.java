@@ -138,12 +138,6 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
         }
     }
 
-    public void updateData(ArrayList<Budget> budgetList, ArrayList<IncomeAndExpense> incomeAndExpenseList) {
-        this.budgetArrayList = budgetList;
-        this.incomeAndExpenseArrayList = incomeAndExpenseList;
-        notifyDataSetChanged();
-    }
-
     private String extractNumericPart(String input) {
         return input.replaceAll("[^\\d.]", "");
     }

@@ -16,8 +16,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,12 +61,7 @@ public class CreateBudgetActivity extends AppCompatActivity {
         gson = new Gson();
         budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {}.getType());
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(v -> onBackPressed());
 
         launchSomeActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -77,7 +70,7 @@ public class CreateBudgetActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     if (!TextUtils.isEmpty(categoryName)) {
-                        budgetCategoryName.setText("" + categoryName);
+                        budgetCategoryName.setText(String.format("%s", categoryName));
                     }
                 }
             }
@@ -94,54 +87,48 @@ public class CreateBudgetActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
                 if (!input.startsWith("₹")) {
-                    createBudgetAmount.setText("₹" + input);
+                    createBudgetAmount.setText(String.format("₹%s", input));
                     createBudgetAmount.setSelection(createBudgetAmount.getText().length());
                 }
             }
         });
 
-        createBudgetContinue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String budgetAmount = createBudgetAmount.getText().toString();
-                int percentageBudget = (int) createSlider.getValue();
-                if (budgetAmount.equals("₹0") || budgetAmount.equals("₹")) {
-                    Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(budgetAmount)){
-                    Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(categoryName)) {
-                    Toast.makeText(CreateBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
-                } else {
-                    boolean categoryFound = false;
+        createBudgetContinue.setOnClickListener(v -> {
+            String budgetAmount = createBudgetAmount.getText().toString();
+            int percentageBudget = (int) createSlider.getValue();
+            if (budgetAmount.equals("₹0") || budgetAmount.equals("₹")) {
+                Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(budgetAmount)){
+                Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(categoryName)) {
+                Toast.makeText(CreateBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+            } else {
+                boolean categoryFound = false;
 
-                    if (budgetArrayList.size() != 0) {
-                        for (int i = 0; i < budgetArrayList.size(); i++) {
-                            if (budgetArrayList.get(i).getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
-                                budget = new Budget(budgetArrayList.get(i).getId(), budgetAmount, categoryName, imageResId, percentageBudget);
-                                dbHelper.updateBudgetData(budget);
-                                categoryFound = true;
-                                break;
-                            }
+                if (budgetArrayList.size() != 0) {
+                    for (int i = 0; i < budgetArrayList.size(); i++) {
+                        if (budgetArrayList.get(i).getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
+                            budget = new Budget(budgetArrayList.get(i).getId(), budgetAmount, categoryName, imageResId, percentageBudget);
+                            dbHelper.updateBudgetData(budget);
+                            categoryFound = true;
+                            break;
                         }
                     }
-
-                    if (!categoryFound) {
-                        budget = new Budget(0, budgetAmount, categoryName, imageResId, percentageBudget);
-                        dbHelper.insertBudgetData(budget);
-                    }
-                    budgetArrayList.add(budget);
-                    onBackPressed();
                 }
+
+                if (!categoryFound) {
+                    budget = new Budget(0, budgetAmount, categoryName, imageResId, percentageBudget);
+                    dbHelper.insertBudgetData(budget);
+                }
+                budgetArrayList.add(budget);
+                onBackPressed();
             }
         });
 
-        budgetCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CreateBudgetActivity.this, AddCategoryActivity.class);
-                intent.putExtra("clicked", "Income");
-                launchSomeActivityResult.launch(intent);
-            }
+        budgetCategory.setOnClickListener(v -> {
+            Intent intent = new Intent(CreateBudgetActivity.this, AddCategoryActivity.class);
+            intent.putExtra("clicked", "Income");
+            launchSomeActivityResult.launch(intent);
         });
     }
 

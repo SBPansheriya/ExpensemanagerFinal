@@ -93,7 +93,7 @@
             android:background="@drawable/bottom_border">
 
             <LinearLayout
-                android:id="@+id/title1"
+                android:id="@+id/date_selected"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
@@ -127,7 +127,7 @@
                 android:id="@+id/income_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/title1"
+                android:layout_below="@+id/date_selected"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/border1"

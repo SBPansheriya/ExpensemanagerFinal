@@ -4,6 +4,7 @@ import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_NAME;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -68,42 +69,29 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        editUserDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                launchSomeActivity.launch(intent);
-            }
+        editUserDetails.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            launchSomeActivity.launch(intent);
         });
 
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(intent);
-            }
+        settings.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(intent);
         });
 
-        exportData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ExportDataActivity.class);
-                startActivity(intent);
-            }
+        exportData.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ExportDataActivity.class);
+            startActivity(intent);
         });
 
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showLogoutBottomDialog();
-            }
-        });
+        logout.setOnClickListener(v -> showLogoutBottomDialog());
 
         return view;
     }
 
+    @SuppressLint("SetTextI18n")
     private void setData(){
-        if (TextUtils.isEmpty(username.getText())){
+        if (TextUtils.isEmpty(userName)){
             username.setText("Your name");
         } else {
             username.setText(userName);
@@ -126,41 +114,30 @@ public class ProfileFragment extends Fragment {
         TextView no = bottomSheetDialog.findViewById(R.id.no);
         TextView yes = bottomSheetDialog.findViewById(R.id.yes);
 
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.dismiss();
-            }
-        });
+        no.setOnClickListener(v -> bottomSheetDialog.dismiss());
 
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        yes.setOnClickListener(v -> {
 
-                bottomSheetDialog.dismiss();
-                Dialog dialog = new Dialog(getContext());
-                if (dialog.getWindow() != null) {
-                    dialog.getWindow().setGravity(Gravity.CENTER);
-                    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    dialog.setCancelable(true);
-                }
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                dialog.setContentView(R.layout.dailog_removed_layout);
+            bottomSheetDialog.dismiss();
+            Dialog dialog = new Dialog(getContext());
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setGravity(Gravity.CENTER);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 dialog.setCancelable(true);
-                dialog.show();
-
-                TextView txt = dialog.findViewById(R.id.txt);
-                txt.setText("Budget has been successfully removed");
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing()) {
-                            dialog.dismiss();
-                        }
-                    }
-                }, 2000);
             }
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.setContentView(R.layout.dailog_removed_layout);
+            dialog.setCancelable(true);
+            dialog.show();
+
+            TextView txt = dialog.findViewById(R.id.txt);
+            txt.setText(R.string.budget_has_been_successfully_removed);
+
+            new Handler().postDelayed(() -> {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+            }, 2000);
         });
     }
 

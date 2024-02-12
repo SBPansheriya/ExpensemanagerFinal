@@ -15,11 +15,17 @@
         android:theme="@style/Theme.ExpenseManager"
         tools:targetApi="31">
         <activity
-            android:name=".Activity.Trancation.EditDetailsTransactionActivity"
-            android:exported="false" />
+            android:name=".Activity.Profile.AboutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activity.Transaction.EditDetailsTransactionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activity.FloatingButton.IconActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activity.Profile.ExportDataActivity"
             android:exported="false"
@@ -37,7 +43,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.Trancation.FinancialReportActivity"
+            android:name=".Activity.Transaction.FinancialReportActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -57,7 +63,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.Trancation.DetailsTransactionActivity"
+            android:name=".Activity.Transaction.DetailsTransactionActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

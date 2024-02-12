@@ -4,6 +4,7 @@ import static android.Manifest.permission_group.CAMERA;
 
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -11,10 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -23,17 +23,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Base64;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,24 +42,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.canhub.cropper.CropImage;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.gson.Gson;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -72,14 +61,13 @@ import java.util.Locale;
 public class IncomeActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
-    ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
     IncomeAndExpense incomeAndExpense = new IncomeAndExpense();
     ImageView back, calender, setIncomeImage, removeIncomeImage;
     TextView showIncomeDate, incomeCategoryName;
     EditText incomeAddAmount, incomeDescription;
     Button incomeAdded;
     RelativeLayout incomeSetImage;
-    LinearLayout incomeCategory, incomeAddAttachment;
+    LinearLayout incomeCategory, incomeAddAttachment, dateSelected;
     String selectedDate;
     String dayName;
     String currantDate;
@@ -107,7 +95,6 @@ public class IncomeActivity extends AppCompatActivity {
         init();
 
         dbHelper = new DBHelper(this);
-        incomeAndExpenseArrayList = new ArrayList<>();
 
         launchSomeActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -116,40 +103,22 @@ public class IncomeActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     if (!TextUtils.isEmpty(categoryName)) {
-                        incomeCategoryName.setText("" + categoryName);
+                        incomeCategoryName.setText(String.format("%s", categoryName));
                     }
                 }
             }
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        calender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCalenderBottomDialog();
-            }
+        back.setOnClickListener(v -> onBackPressed());
+        calender.setOnClickListener(v -> showCalenderBottomDialog());
+
+        incomeCategory.setOnClickListener(v -> {
+            Intent intent = new Intent(IncomeActivity.this, AddCategoryActivity.class);
+            intent.putExtra("clicked", "Income");
+            launchSomeActivityResult.launch(intent);
         });
 
-        incomeCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(IncomeActivity.this, AddCategoryActivity.class);
-                intent.putExtra("clicked", "Income");
-                launchSomeActivityResult.launch(intent);
-            }
-        });
-
-        incomeAddAttachment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionsForCamera();
-            }
-        });
+        incomeAddAttachment.setOnClickListener(v -> checkPermissionsForCamera());
 
         incomeAddAmount.addTextChangedListener(new TextWatcher() {
             @Override
@@ -164,54 +133,48 @@ public class IncomeActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
                 if (!input.startsWith("₹")) {
-                    incomeAddAmount.setText("₹" + input);
+                    incomeAddAmount.setText(String.format("₹%s", input));
                     incomeAddAmount.setSelection(incomeAddAmount.getText().length());
                 }
             }
         });
 
-        incomeAdded.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String editTextValue = incomeAddAmount.getText().toString();
-                if (editTextValue.equals("₹0") || editTextValue.equals("₹")) {
-                    Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(editTextValue)) {
-                    Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(showIncomeDate.getText().toString())) {
-                    Toast.makeText(IncomeActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(incomeCategoryName.getText().toString())) {
-                    Toast.makeText(IncomeActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
-                } else {
-                    String amount = incomeAddAmount.getText().toString();
-                    String description = incomeDescription.getText().toString();
-                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
-                    incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, description, addAttachmentImage, "Income");
-                    incomeAndExpenseArrayList.add(incomeAndExpense);
-                    dbHelper.insertData(incomeAndExpense);
-                    Dialog dialog = new Dialog(IncomeActivity.this);
-                    if (dialog.getWindow() != null) {
-                        dialog.getWindow().setGravity(Gravity.CENTER);
-                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                        dialog.setCancelable(false);
-                    }
-                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    dialog.setContentView(R.layout.dailog_removed_layout);
-                    dialog.setCancelable(true);
-                    dialog.show();
-
-                    TextView txt = dialog.findViewById(R.id.txt);
-                    txt.setText("Income has been successfully added");
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (dialog.isShowing()) {
-                                onBackPressed();
-                                dialog.dismiss();
-                            }
-                        }
-                    }, 1000);
+        incomeAdded.setOnClickListener(v -> {
+            String editTextValue = incomeAddAmount.getText().toString();
+            if (editTextValue.equals("₹0") || editTextValue.equals("₹")) {
+                Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(editTextValue)) {
+                Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(showIncomeDate.getText().toString())) {
+                Toast.makeText(IncomeActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(incomeCategoryName.getText().toString())) {
+                Toast.makeText(IncomeActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+            } else {
+                String amount = incomeAddAmount.getText().toString();
+                String description = incomeDescription.getText().toString();
+                double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
+                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, description, addAttachmentImage, "Income");
+                incomeAndExpenseArrayList.add(incomeAndExpense);
+                dbHelper.insertData(incomeAndExpense);
+                Dialog dialog = new Dialog(IncomeActivity.this);
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().setGravity(Gravity.CENTER);
+                    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                    dialog.setCancelable(false);
                 }
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                dialog.setContentView(R.layout.dailog_removed_layout);
+                dialog.setCancelable(true);
+                dialog.show();
+
+                TextView txt = dialog.findViewById(R.id.txt);
+                txt.setText(R.string.income_has_been_successfully_added);
+                new Handler().postDelayed(() -> {
+                    if (dialog.isShowing()) {
+                        onBackPressed();
+                        dialog.dismiss();
+                    }
+                }, 1000);
             }
         });
 
@@ -222,12 +185,9 @@ public class IncomeActivity extends AppCompatActivity {
             }
         });
 
-        removeIncomeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                incomeAddAttachment.setVisibility(View.VISIBLE);
-                incomeSetImage.setVisibility(View.GONE);
-            }
+        removeIncomeImage.setOnClickListener(v -> {
+            incomeAddAttachment.setVisibility(View.VISIBLE);
+            incomeSetImage.setVisibility(View.GONE);
         });
 
         cropImage = registerForActivityResult(new CropImageContract(), result -> {
@@ -283,20 +243,14 @@ public class IncomeActivity extends AppCompatActivity {
         ImageView camera = dialog.findViewById(R.id.camera);
         ImageView gallery = dialog.findViewById(R.id.gallery);
 
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraPermission();
-                dialog.dismiss();
-            }
+        camera.setOnClickListener(v -> {
+            cameraPermission();
+            dialog.dismiss();
         });
 
-        gallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openImagePicker();
-                dialog.dismiss();
-            }
+        gallery.setOnClickListener(v -> {
+            openImagePicker();
+            dialog.dismiss();
         });
     }
 
@@ -316,11 +270,11 @@ public class IncomeActivity extends AppCompatActivity {
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(IncomeActivity.this, 100);
+            showPermissionDenyDialog(IncomeActivity.this);
         }
     }
 
-    private void showPermissionDenyDialog(Activity activity, int requestCode) {
+    private void showPermissionDenyDialog(Activity activity) {
 
         SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
@@ -343,19 +297,11 @@ public class IncomeActivity extends AppCompatActivity {
                 Button cancel = dialog.findViewById(R.id.canceldialog);
                 Button ok = dialog.findViewById(R.id.okdialog);
 
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                cancel.setOnClickListener(view -> dialog.dismiss());
 
-                ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        checkPermissionsForCamera();
-                        dialog.dismiss();
-                    }
+                ok.setOnClickListener(view -> {
+                    checkPermissionsForCamera();
+                    dialog.dismiss();
                 });
             }
             click = 1;
@@ -378,24 +324,16 @@ public class IncomeActivity extends AppCompatActivity {
                 TextView textView = dialog.findViewById(R.id.filename);
 
                 textView.setText(R.string.camera_permission);
-                ok.setText("Enable from settings");
+                ok.setText(R.string.enable_from_settings);
 
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                cancel.setOnClickListener(view -> dialog.dismiss());
 
-                ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
-                        intent.setData(uri);
-                        ActivityCompat.startActivityForResult(IncomeActivity.this, intent, requestCode, null);
-                        dialog.dismiss();
-                    }
+                ok.setOnClickListener(view -> {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                    intent.setData(uri);
+                    ActivityCompat.startActivityForResult(IncomeActivity.this, intent, 100, null);
+                    dialog.dismiss();
                 });
             }
         }
@@ -412,7 +350,7 @@ public class IncomeActivity extends AppCompatActivity {
             if (data != null && data.getExtras() != null && data.getExtras().containsKey("data")) {
                 bitmap = (Bitmap) data.getExtras().get("data");
                 if (bitmap != null) {
-                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title2", null);
                     startCrop(Uri.parse(path));
                 }
             } else {
@@ -435,13 +373,33 @@ public class IncomeActivity extends AppCompatActivity {
         long currentDateMillis = System.currentTimeMillis();
         calendarView.setMaxDate(currentDateMillis);
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            Calendar currentTime = Calendar.getInstance();
+            currentTime.set(year, month, dayOfMonth);
+            Date currentDate = new Date();
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            currantDate = sdf.format(currentDate);
+
+            int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+            String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
+            dayName = daysOfWeek[dayOfWeek];
+            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            incomeAddTime = dateFormat.format(currentTime.getTime());
+
+            Calendar selectedDateCalendar = Calendar.getInstance();
+            selectedDateCalendar.set(year, month, dayOfMonth);
+            SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+            selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis() / 1000;
+        });
+
+        cancel.setOnClickListener(v -> dialog.dismiss());
+
+        ok.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(selectedDate)) {
                 Calendar currentTime = Calendar.getInstance();
-                currentTime.set(year, month, dayOfMonth);
                 Date currentDate = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 currantDate = sdf.format(currentDate);
 
                 int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
@@ -451,45 +409,14 @@ public class IncomeActivity extends AppCompatActivity {
                 incomeAddTime = dateFormat.format(currentTime.getTime());
 
                 Calendar selectedDateCalendar = Calendar.getInstance();
-                selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
                 selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis() / 1000;
+                showIncomeDate.setText(selectedDate);
+            } else {
+                showIncomeDate.setText(String.format("%s", selectedDate));
             }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(selectedDate)) {
-                    Calendar currentTime = Calendar.getInstance();
-                    Date currentDate = new Date();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    currantDate = sdf.format(currentDate);
-
-                    int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
-                    String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
-                    dayName = daysOfWeek[dayOfWeek];
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                    incomeAddTime = dateFormat.format(currentTime.getTime());
-
-                    Calendar selectedDateCalendar = Calendar.getInstance();
-                    SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                    selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                    selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis() / 1000;
-                    showIncomeDate.setText(selectedDate);
-                } else {
-                    showIncomeDate.setText("" + selectedDate);
-                }
-                dialog.dismiss();
-            }
+            dialog.dismiss();
         });
     }
 
@@ -514,5 +441,6 @@ public class IncomeActivity extends AppCompatActivity {
         incomeAddAmount = findViewById(R.id.income_add_amount);
         incomeDescription = findViewById(R.id.income_description);
         incomeCategoryName = findViewById(R.id.income_category_name);
+        dateSelected = findViewById(R.id.date_selected);
     }
 }

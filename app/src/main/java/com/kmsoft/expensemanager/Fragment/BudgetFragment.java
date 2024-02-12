@@ -64,15 +64,12 @@ public class BudgetFragment extends Fragment {
             }
         });
 
-        createBudget.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CreateBudgetActivity.class);
-                gson = new Gson();
-                String list = gson.toJson(budgetArrayList);
-                intent.putExtra("budgetArrayList", list);
-                startActivity(intent);
-            }
+        createBudget.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), CreateBudgetActivity.class);
+            gson = new Gson();
+            String list = gson.toJson(budgetArrayList);
+            intent.putExtra("budgetArrayList", list);
+            startActivity(intent);
         });
         return view;
     }

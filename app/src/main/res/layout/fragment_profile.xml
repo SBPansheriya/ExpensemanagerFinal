@@ -127,6 +127,7 @@
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:visibility="gone"
                 android:layout_marginHorizontal="20dp"
                 android:src="@drawable/logout_img"/>
         </LinearLayout>

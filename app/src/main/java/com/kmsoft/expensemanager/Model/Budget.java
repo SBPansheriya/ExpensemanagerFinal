@@ -29,31 +29,16 @@ public class Budget implements Serializable {
         return amountBudget;
     }
 
-    public void setAmountBudget(String amountBudget) {
-        this.amountBudget = amountBudget;
-    }
-
     public String getCategoryNameBudget() {
         return categoryNameBudget;
-    }
-
-    public void setCategoryNameBudget(String categoryNameBudget) {
-        this.categoryNameBudget = categoryNameBudget;
     }
 
     public int getCategoryImageBudget() {
         return categoryImageBudget;
     }
 
-    public void setCategoryImageBudget(int categoryImageBudget) {
-        this.categoryImageBudget = categoryImageBudget;
-    }
-
     public int getPercentageBudget() {
         return percentageBudget;
     }
 
-    public void setPercentageBudget(int percentageBudget) {
-        this.percentageBudget = percentageBudget;
-    }
 }

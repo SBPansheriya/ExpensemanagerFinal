@@ -1,4 +1,4 @@
-package com.kmsoft.expensemanager.Activity.Trancation;
+package com.kmsoft.expensemanager.Activity.Transaction;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -62,38 +62,25 @@ public class DetailsTransactionActivity extends AppCompatActivity {
             }
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(v -> onBackPressed());
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDeleteBottomDialog();
-            }
-        });
+        delete.setOnClickListener(v -> showDeleteBottomDialog());
 
-        editDetailsTransaction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DetailsTransactionActivity.this, EditDetailsTransactionActivity.class);
-                intent.putExtra("incomeAndExpense", incomeAndExpense);
-                launchSomeActivity.launch(intent);
-            }
+        editDetailsTransaction.setOnClickListener(view -> {
+            Intent intent = new Intent(DetailsTransactionActivity.this, EditDetailsTransactionActivity.class);
+            intent.putExtra("incomeAndExpense", incomeAndExpense);
+            launchSomeActivity.launch(intent);
         });
     }
 
     private void setData() {
         showTotalBalance.setText(incomeAndExpense.getAmount());
-        showDate.setText(incomeAndExpense.getDayName() + "," + incomeAndExpense.getDate());
+        showDate.setText(String.format("%s,%s", incomeAndExpense.getDayName(), incomeAndExpense.getDate()));
         showType.setText(incomeAndExpense.getTag());
         showCategory.setText(incomeAndExpense.getCategoryName());
         showTime.setText(incomeAndExpense.getTime());
         if (TextUtils.isEmpty(incomeAndExpense.getDescription())){
-            showDescription.setText("No description");
+            showDescription.setText(R.string.no_description);
         } else {
             showDescription.setText(incomeAndExpense.getDescription());
         }
@@ -121,41 +108,30 @@ public class DetailsTransactionActivity extends AppCompatActivity {
         TextView no = bottomSheetDialog.findViewById(R.id.no);
         TextView yes = bottomSheetDialog.findViewById(R.id.yes);
 
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.dismiss();
-            }
-        });
+        no.setOnClickListener(v -> bottomSheetDialog.dismiss());
 
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        yes.setOnClickListener(v -> {
 
-                dbHelper.deleteData(incomeAndExpense.getId());
+            dbHelper.deleteData(incomeAndExpense.getId());
 
-                bottomSheetDialog.dismiss();
-                Dialog dialog = new Dialog(DetailsTransactionActivity.this);
-                if (dialog.getWindow() != null) {
-                    dialog.getWindow().setGravity(Gravity.CENTER);
-                    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    dialog.setCancelable(true);
-                }
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                dialog.setContentView(R.layout.dailog_removed_layout);
+            bottomSheetDialog.dismiss();
+            Dialog dialog = new Dialog(DetailsTransactionActivity.this);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setGravity(Gravity.CENTER);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 dialog.setCancelable(true);
-                dialog.show();
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing()) {
-                            onBackPressed();
-                            dialog.dismiss();
-                        }
-                    }
-                }, 1000);
             }
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.setContentView(R.layout.dailog_removed_layout);
+            dialog.setCancelable(true);
+            dialog.show();
+
+            new Handler().postDelayed(() -> {
+                if (dialog.isShowing()) {
+                    onBackPressed();
+                    dialog.dismiss();
+                }
+            }, 1000);
         });
     }
 

@@ -38,12 +38,7 @@ public class ExportDataActivity extends AppCompatActivity {
         whatFormatAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         whatFormat.setAdapter(whatFormatAdapter);
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(v -> onBackPressed());
     }
 
     private void init(){

@@ -1,4 +1,4 @@
-package com.kmsoft.expensemanager.Activity.Trancation;
+package com.kmsoft.expensemanager.Activity.Transaction;
 
 import static android.Manifest.permission_group.CAMERA;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -50,7 +51,6 @@ import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -105,18 +105,13 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     if (!TextUtils.isEmpty(categoryName)) {
-                        editCategory.setText("" + categoryName);
+                        editCategory.setText(String.format("%s", categoryName));
                     }
                 }
             }
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(view -> onBackPressed());
 
         editTotalBalance.addTextChangedListener(new TextWatcher() {
             @Override
@@ -131,66 +126,55 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
                 if (!input.startsWith("₹")) {
-                    editTotalBalance.setText("₹" + input);
+                    editTotalBalance.setText(String.format("₹%s", input));
                     editTotalBalance.setSelection(editTotalBalance.getText().length());
                 }
             }
         });
 
-        editDetailsTransaction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String amount = editTotalBalance.getText().toString();
-                String description = editDescription.getText().toString();
-                if (imageResId == 0) {
-                    imageResId = incomeAndExpense.getCategoryImage();
-                }
-                if (TextUtils.isEmpty(categoryName)) {
-                    categoryName = incomeAndExpense.getCategoryName();
-                }
-                if (TextUtils.isEmpty(selectedDate)) {
-                    selectedDate = incomeAndExpense.getDate();
-                    dayName = incomeAndExpense.getDayName();
-                    editAddTime = incomeAndExpense.getTime();
-                    currantDate = incomeAndExpense.getCurrantDate();
-                    selectedDateTimeStamp = incomeAndExpense.getSelectedDateTimeStamp();
-                }
-                if (TextUtils.isEmpty(addAttachmentImage)) {
-                    addAttachmentImage = incomeAndExpense.getAddAttachment();
-                }
-                if (amount.equals("₹0") || amount.equals("₹")) {
-                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(amount)) {
-                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(selectedDate)) {
-                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(categoryName)) {
-                    Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
-                } else {
-                    double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
-                    incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp,currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
-                    incomeAndExpenseArrayList.add(incomeAndExpense);
-                    dbHelper.updateData(incomeAndExpense);
-                    onBackPressed();
-                }
+        editDetailsTransaction.setOnClickListener(view -> {
+            String amount = editTotalBalance.getText().toString();
+            String description = editDescription.getText().toString();
+            if (imageResId == 0) {
+                imageResId = incomeAndExpense.getCategoryImage();
+            }
+            if (TextUtils.isEmpty(categoryName)) {
+                categoryName = incomeAndExpense.getCategoryName();
+            }
+            if (TextUtils.isEmpty(selectedDate)) {
+                selectedDate = incomeAndExpense.getDate();
+                dayName = incomeAndExpense.getDayName();
+                editAddTime = incomeAndExpense.getTime();
+                currantDate = incomeAndExpense.getCurrantDate();
+                selectedDateTimeStamp = incomeAndExpense.getSelectedDateTimeStamp();
+            }
+            if (TextUtils.isEmpty(addAttachmentImage)) {
+                addAttachmentImage = incomeAndExpense.getAddAttachment();
+            }
+            if (amount.equals("₹0") || amount.equals("₹")) {
+                Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(amount)) {
+                Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(selectedDate)) {
+                Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a date", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(categoryName)) {
+                Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
+            } else {
+                double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
+                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp,currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
+                incomeAndExpenseArrayList.add(incomeAndExpense);
+                dbHelper.updateData(incomeAndExpense);
+                onBackPressed();
             }
         });
 
-        editShowCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(EditDetailsTransactionActivity.this, AddCategoryActivity.class);
-                intent.putExtra("clicked", incomeAndExpense.getTag());
-                launchSomeActivityResult.launch(intent);
-            }
+        editShowCategory.setOnClickListener(v -> {
+            Intent intent = new Intent(EditDetailsTransactionActivity.this, AddCategoryActivity.class);
+            intent.putExtra("clicked", incomeAndExpense.getTag());
+            launchSomeActivityResult.launch(intent);
         });
 
-        calendar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCalenderBottomDialog();
-            }
-        });
+        calendar.setOnClickListener(v -> showCalenderBottomDialog());
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -199,19 +183,11 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             }
         });
 
-        editAddAttachment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionsForCamera();
-            }
-        });
+        editAddAttachment.setOnClickListener(v -> checkPermissionsForCamera());
 
-        removeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editAddAttachment.setVisibility(View.VISIBLE);
-                editSetImage.setVisibility(View.GONE);
-            }
+        removeImage.setOnClickListener(v -> {
+            editAddAttachment.setVisibility(View.VISIBLE);
+            editSetImage.setVisibility(View.GONE);
         });
 
         cropImage = registerForActivityResult(new CropImageContract(), result -> {
@@ -284,20 +260,14 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         ImageView camera = dialog.findViewById(R.id.camera);
         ImageView gallery = dialog.findViewById(R.id.gallery);
 
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraPermission();
-                dialog.dismiss();
-            }
+        camera.setOnClickListener(v -> {
+            cameraPermission();
+            dialog.dismiss();
         });
 
-        gallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openImagePicker();
-                dialog.dismiss();
-            }
+        gallery.setOnClickListener(v -> {
+            openImagePicker();
+            dialog.dismiss();
         });
     }
 
@@ -317,11 +287,11 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(EditDetailsTransactionActivity.this, 100);
+            showPermissionDenyDialog(EditDetailsTransactionActivity.this);
         }
     }
 
-    private void showPermissionDenyDialog(Activity activity, int requestCode) {
+    private void showPermissionDenyDialog(Activity activity) {
 
         SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
@@ -344,19 +314,11 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 Button cancel = dialog.findViewById(R.id.canceldialog);
                 Button ok = dialog.findViewById(R.id.okdialog);
 
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                cancel.setOnClickListener(view -> dialog.dismiss());
 
-                ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        checkPermissionsForCamera();
-                        dialog.dismiss();
-                    }
+                ok.setOnClickListener(view -> {
+                    checkPermissionsForCamera();
+                    dialog.dismiss();
                 });
             }
             click = 1;
@@ -379,24 +341,16 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 TextView textView = dialog.findViewById(R.id.filename);
 
                 textView.setText(R.string.camera_permission);
-                ok.setText("Enable from settings");
+                ok.setText(R.string.enable_from_settings);
 
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                cancel.setOnClickListener(view -> dialog.dismiss());
 
-                ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
-                        intent.setData(uri);
-                        ActivityCompat.startActivityForResult(EditDetailsTransactionActivity.this, intent, requestCode, null);
-                        dialog.dismiss();
-                    }
+                ok.setOnClickListener(view -> {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                    intent.setData(uri);
+                    ActivityCompat.startActivityForResult(EditDetailsTransactionActivity.this, intent, 100, null);
+                    dialog.dismiss();
                 });
             }
         }
@@ -436,46 +390,35 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         long currentDateMillis = System.currentTimeMillis();
         calendarView.setMaxDate(currentDateMillis);
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                Calendar currentTime = Calendar.getInstance();
-                currentTime.set(year, month, dayOfMonth);
-                int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
-                Date currentDate = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                currantDate = sdf.format(currentDate);
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            Calendar currentTime = Calendar.getInstance();
+            currentTime.set(year, month, dayOfMonth);
+            int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK);
+            Date currentDate = new Date();
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            currantDate = sdf.format(currentDate);
 
-                String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
-                dayName = daysOfWeek[dayOfWeek];
-                SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                editAddTime = dateFormat.format(currentTime.getTime());
-                Calendar selectedDateCalendar = Calendar.getInstance();
-                selectedDateCalendar.set(year, month, dayOfMonth);
-                SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-                selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
+            String[] daysOfWeek = new DateFormatSymbols().getShortWeekdays();
+            dayName = daysOfWeek[dayOfWeek];
+            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            editAddTime = dateFormat.format(currentTime.getTime());
+            Calendar selectedDateCalendar = Calendar.getInstance();
+            selectedDateCalendar.set(year, month, dayOfMonth);
+            SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
+            selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
 
-            }
         });
 
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+        cancel.setOnClickListener(v -> dialog.dismiss());
 
-        ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(selectedDate)) {
-                    editDate.setText("");
-                } else {
-                    editDate.setText("" + selectedDate);
-                }
-                dialog.dismiss();
+        ok.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(selectedDate)) {
+                editDate.setText("");
+            } else {
+                editDate.setText(String.format("%s", selectedDate));
             }
+            dialog.dismiss();
         });
     }
 

@@ -43,7 +43,4 @@ public class Category implements Serializable {
         return categoryTag;
     }
 
-    public void setCategoryTag(String categoryTag) {
-        this.categoryTag = categoryTag;
-    }
 }

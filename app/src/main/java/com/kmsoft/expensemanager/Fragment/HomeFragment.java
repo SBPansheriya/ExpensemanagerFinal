@@ -3,9 +3,9 @@ package com.kmsoft.expensemanager.Fragment;
 import static com.kmsoft.expensemanager.Activity.MainActivity.isStep;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
-import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_NAME;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,7 +41,6 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.kmsoft.expensemanager.Activity.Profile.EditProfileActivity;
 import com.kmsoft.expensemanager.Activity.Profile.NotificationActivity;
 import com.kmsoft.expensemanager.Adapter.HomeAdapter;
-import com.kmsoft.expensemanager.Adapter.RecentTransactionAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
@@ -108,15 +108,12 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        see_all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isStep = false;
-                TransactionFragment transactionFragment = new TransactionFragment();
-                Bundle args = new Bundle();
-                transactionFragment.setArguments(args);
-                getFragmentManager().beginTransaction().add(R.id.framelayout, transactionFragment).commit();
-            }
+        see_all.setOnClickListener(v -> {
+            isStep = false;
+            TransactionFragment transactionFragment = new TransactionFragment();
+            Bundle args = new Bundle();
+            transactionFragment.setArguments(args);
+            getFragmentManager().beginTransaction().add(R.id.framelayout, transactionFragment).commit();
         });
 
         ArrayAdapter<String> spendFrequencyAdapter = new ArrayAdapter<>(getActivity(), R.layout.simple_spinner_item1, getContext().getResources().getStringArray(R.array.spendFrequency));
@@ -127,20 +124,14 @@ public class HomeFragment extends Fragment {
 
         selected = spinner.getSelectedItem().toString();
 
-        homeProfileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                launchSomeActivity.launch(intent);
-            }
+        homeProfileImage.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            launchSomeActivity.launch(intent);
         });
 
-        homeNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), NotificationActivity.class);
-                startActivity(intent);
-            }
+        homeNotification.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), NotificationActivity.class);
+            startActivity(intent);
         });
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -151,328 +142,298 @@ public class HomeFragment extends Fragment {
                 if (selected.equals("Income")) {
                     populateChartWithTodayIncomeData();
 
-                    today.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            populateChartWithTodayIncomeData();
-                        }
-                    });
+                    today.setOnClickListener(v -> populateChartWithTodayIncomeData());
 
-                    week.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            week.setBackgroundResource(R.drawable.selected_home_background);
-                            today.setBackgroundResource(R.drawable.unselected_home_background);
-                            month.setBackgroundResource(R.drawable.unselected_home_background);
-                            year.setBackgroundResource(R.drawable.unselected_home_background);
+                    week.setOnClickListener(v -> {
+                        week.setBackgroundResource(R.drawable.selected_home_background);
+                        today.setBackgroundResource(R.drawable.unselected_home_background);
+                        month.setBackgroundResource(R.drawable.unselected_home_background);
+                        year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                            week.setTextColor(getResources().getColor(R.color.white));
-                            today.setTextColor(getResources().getColor(R.color.gray));
-                            month.setTextColor(getResources().getColor(R.color.gray));
-                            year.setTextColor(getResources().getColor(R.color.gray));
-                            ArrayList<Entry> entries = new ArrayList<>();
+                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        ArrayList<Entry> entries = new ArrayList<>();
 
-                            double[] totalAmountPerDay = new double[7];
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        double[] totalAmountPerDay = new double[7];
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-                            for (IncomeAndExpense entry : incomeList) {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
-                                calendar.set(Calendar.HOUR_OF_DAY, 0);
-                                calendar.set(Calendar.MINUTE, 0);
-                                calendar.set(Calendar.SECOND, 0);
-                                calendar.set(Calendar.MILLISECOND, 0);
-                                String entryDate = entry.getDate();
-                                for (int i = 0; i < 7; i++) {
-                                    String day = dateFormat.format(calendar.getTime());
-                                    if (day.equals(entryDate)) {
-                                        String amountString = extractNumericPart(entry.getAmount());
-                                        double amount = Double.parseDouble(amountString);
-                                        totalAmountPerDay[i] += amount;
-                                        break;
-                                    }
-                                    calendar.add(Calendar.DAY_OF_MONTH, 1);
-                                }
-                            }
-
-                            for (int i = 0; i < totalAmountPerDay.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerDay[i]));
-                            }
-                            chart.invalidate();
-
-                            chart.getAxisLeft().setEnabled(false);
-                            chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-                            setupLineChart(chart, days, entries);
-                        }
-                    });
-
-                    month.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            month.setBackgroundResource(R.drawable.selected_home_background);
-                            week.setBackgroundResource(R.drawable.unselected_home_background);
-                            today.setBackgroundResource(R.drawable.unselected_home_background);
-                            year.setBackgroundResource(R.drawable.unselected_home_background);
-
-                            month.setTextColor(getResources().getColor(R.color.white));
-                            week.setTextColor(getResources().getColor(R.color.gray));
-                            today.setTextColor(getResources().getColor(R.color.gray));
-                            year.setTextColor(getResources().getColor(R.color.gray));
-
-                            ArrayList<Entry> entries = new ArrayList<>();
-                            double[] totalAmountPerMonth = new double[12];
-
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-                            for (IncomeAndExpense entry : incomeList) {
-                                String entryDate = entry.getDate();
-                                int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
-
-                                Calendar calendar = Calendar.getInstance();
-                                int currentYear = calendar.get(Calendar.YEAR);
-
-                                if (currentYear == entryYear) {
+                        for (IncomeAndExpense entry : incomeList) {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
+                            calendar.set(Calendar.HOUR_OF_DAY, 0);
+                            calendar.set(Calendar.MINUTE, 0);
+                            calendar.set(Calendar.SECOND, 0);
+                            calendar.set(Calendar.MILLISECOND, 0);
+                            String entryDate = entry.getDate();
+                            for (int i = 0; i < 7; i++) {
+                                String day = dateFormat.format(calendar.getTime());
+                                if (day.equals(entryDate)) {
                                     String amountString = extractNumericPart(entry.getAmount());
                                     double amount = Double.parseDouble(amountString);
-                                    totalAmountPerMonth[entryMonth - 1] += amount;
+                                    totalAmountPerDay[i] += amount;
+                                    break;
                                 }
+                                calendar.add(Calendar.DAY_OF_MONTH, 1);
                             }
-
-                            for (int i = 0; i < totalAmountPerMonth.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerMonth[i]));
-                            }
-
-                            chart.invalidate();
-
-                            chart.getAxisLeft().setEnabled(false);
-                            chart.getAxisRight().setEnabled(false);
-                            final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-                            setupLineChart(chart, months, entries);
                         }
+
+                        for (int i = 0; i < totalAmountPerDay.length; i++) {
+                            entries.add(new Entry(i, (float) totalAmountPerDay[i]));
+                        }
+                        chart.invalidate();
+
+                        chart.getAxisLeft().setEnabled(false);
+                        chart.getAxisRight().setEnabled(false);
+                        final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+                        setupLineChart(chart, days, entries);
                     });
 
-                    year.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            year.setBackgroundResource(R.drawable.selected_home_background);
-                            week.setBackgroundResource(R.drawable.unselected_home_background);
-                            month.setBackgroundResource(R.drawable.unselected_home_background);
-                            today.setBackgroundResource(R.drawable.unselected_home_background);
+                    month.setOnClickListener(v -> {
+                        month.setBackgroundResource(R.drawable.selected_home_background);
+                        week.setBackgroundResource(R.drawable.unselected_home_background);
+                        today.setBackgroundResource(R.drawable.unselected_home_background);
+                        year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                            year.setTextColor(getResources().getColor(R.color.white));
-                            week.setTextColor(getResources().getColor(R.color.gray));
-                            month.setTextColor(getResources().getColor(R.color.gray));
-                            today.setTextColor(getResources().getColor(R.color.gray));
-                            ArrayList<Entry> entries = new ArrayList<>();
+                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+
+                        ArrayList<Entry> entries = new ArrayList<>();
+                        double[] totalAmountPerMonth = new double[12];
+
+                        for (IncomeAndExpense entry : incomeList) {
+                            String entryDate = entry.getDate();
+                            int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
+                            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
 
                             Calendar calendar = Calendar.getInstance();
                             int currentYear = calendar.get(Calendar.YEAR);
-                            int startYear = currentYear - 1;
-                            int endYear = currentYear + 1;
-                            double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
 
-                            for (IncomeAndExpense entry : incomeList) {
-                                String entryDate = entry.getDate();
-                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
-
-                                if (entryYear >= startYear && entryYear <= endYear) {
-                                    String amountString = extractNumericPart(entry.getAmount());
-                                    double amount = Double.parseDouble(amountString);
-                                    int index = entryYear - startYear;
-
-                                    totalAmountPerYear1[index] += amount;
-                                }
+                            if (currentYear == entryYear) {
+                                String amountString = extractNumericPart(entry.getAmount());
+                                double amount = Double.parseDouble(amountString);
+                                totalAmountPerMonth[entryMonth - 1] += amount;
                             }
-
-                            for (int i = 0; i < totalAmountPerYear1.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
-                            }
-
-                            final String currentYearStr = String.valueOf(currentYear);
-
-                            calendar.add(Calendar.YEAR, -1);
-                            int previousYear = calendar.get(Calendar.YEAR);
-                            final String previousYearStr = String.valueOf(previousYear);
-
-                            calendar.add(Calendar.YEAR, 2);
-                            int nextYear = calendar.get(Calendar.YEAR);
-                            final String nextYearStr = String.valueOf(nextYear);
-                            final String[] years = {previousYearStr, currentYearStr, nextYearStr};
-
-                            chart.invalidate();
-
-                            chart.getAxisLeft().setEnabled(false);
-                            chart.getAxisRight().setEnabled(false);
-
-                            setupLineChart(chart, years, entries);
                         }
+
+                        for (int i = 0; i < totalAmountPerMonth.length; i++) {
+                            entries.add(new Entry(i, (float) totalAmountPerMonth[i]));
+                        }
+
+                        chart.invalidate();
+
+                        chart.getAxisLeft().setEnabled(false);
+                        chart.getAxisRight().setEnabled(false);
+                        final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+                        setupLineChart(chart, months, entries);
+                    });
+
+                    year.setOnClickListener(v -> {
+                        year.setBackgroundResource(R.drawable.selected_home_background);
+                        week.setBackgroundResource(R.drawable.unselected_home_background);
+                        month.setBackgroundResource(R.drawable.unselected_home_background);
+                        today.setBackgroundResource(R.drawable.unselected_home_background);
+
+                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        ArrayList<Entry> entries = new ArrayList<>();
+
+                        Calendar calendar = Calendar.getInstance();
+                        int currentYear = calendar.get(Calendar.YEAR);
+                        int startYear = currentYear - 1;
+                        int endYear = currentYear + 1;
+                        double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
+
+                        for (IncomeAndExpense entry : incomeList) {
+                            String entryDate = entry.getDate();
+                            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+                            if (entryYear >= startYear && entryYear <= endYear) {
+                                String amountString = extractNumericPart(entry.getAmount());
+                                double amount = Double.parseDouble(amountString);
+                                int index = entryYear - startYear;
+
+                                totalAmountPerYear1[index] += amount;
+                            }
+                        }
+
+                        for (int i = 0; i < totalAmountPerYear1.length; i++) {
+                            entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
+                        }
+
+                        final String currentYearStr = String.valueOf(currentYear);
+
+                        calendar.add(Calendar.YEAR, -1);
+                        int previousYear = calendar.get(Calendar.YEAR);
+                        final String previousYearStr = String.valueOf(previousYear);
+
+                        calendar.add(Calendar.YEAR, 2);
+                        int nextYear = calendar.get(Calendar.YEAR);
+                        final String nextYearStr = String.valueOf(nextYear);
+                        final String[] years = {previousYearStr, currentYearStr, nextYearStr};
+
+                        chart.invalidate();
+
+                        chart.getAxisLeft().setEnabled(false);
+                        chart.getAxisRight().setEnabled(false);
+
+                        setupLineChart(chart, years, entries);
                     });
                 } else if (selected.equals("Expense")) {
 
                     populateChartWithTodayExpenseData();
 
-                    today.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            populateChartWithTodayExpenseData();
-                        }
-                    });
+                    today.setOnClickListener(v -> populateChartWithTodayExpenseData());
 
-                    week.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            week.setBackgroundResource(R.drawable.selected_home_background);
-                            today.setBackgroundResource(R.drawable.unselected_home_background);
-                            month.setBackgroundResource(R.drawable.unselected_home_background);
-                            year.setBackgroundResource(R.drawable.unselected_home_background);
+                    week.setOnClickListener(v -> {
+                        week.setBackgroundResource(R.drawable.selected_home_background);
+                        today.setBackgroundResource(R.drawable.unselected_home_background);
+                        month.setBackgroundResource(R.drawable.unselected_home_background);
+                        year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                            week.setTextColor(getResources().getColor(R.color.white));
-                            today.setTextColor(getResources().getColor(R.color.gray));
-                            month.setTextColor(getResources().getColor(R.color.gray));
-                            year.setTextColor(getResources().getColor(R.color.gray));
+                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
 
-                            ArrayList<Entry> entries = new ArrayList<>();
-                            double[] totalAmountPerDay = new double[7];
+                        ArrayList<Entry> entries = new ArrayList<>();
+                        double[] totalAmountPerDay = new double[7];
 
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-                            for (IncomeAndExpense entry : expenseList) {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
-                                calendar.set(Calendar.HOUR_OF_DAY, 0);
-                                calendar.set(Calendar.MINUTE, 0);
-                                calendar.set(Calendar.SECOND, 0);
-                                calendar.set(Calendar.MILLISECOND, 0);
-                                String entryDate = entry.getDate();
-                                for (int i = 0; i < 7; i++) {
-                                    String day = dateFormat.format(calendar.getTime());
-                                    if (day.equals(entryDate)) {
-                                        String amountString = extractNumericPart(entry.getAmount());
-                                        double amount = Double.parseDouble(amountString);
-                                        totalAmountPerDay[i] += amount;
-                                        break;
-                                    }
-                                    calendar.add(Calendar.DAY_OF_MONTH, 1);
-                                }
-                            }
-
-                            for (int i = 0; i < totalAmountPerDay.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerDay[i]));
-                            }
-
-                            chart.invalidate();
-
-                            chart.getAxisLeft().setEnabled(false);
-                            chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-                            setupLineChart1(chart, days, entries);
-                        }
-                    });
-
-                    month.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            month.setBackgroundResource(R.drawable.selected_home_background);
-                            week.setBackgroundResource(R.drawable.unselected_home_background);
-                            today.setBackgroundResource(R.drawable.unselected_home_background);
-                            year.setBackgroundResource(R.drawable.unselected_home_background);
-
-                            month.setTextColor(getResources().getColor(R.color.white));
-                            week.setTextColor(getResources().getColor(R.color.gray));
-                            today.setTextColor(getResources().getColor(R.color.gray));
-                            year.setTextColor(getResources().getColor(R.color.gray));
-
-                            ArrayList<Entry> entries = new ArrayList<>();
-
-                            double[] totalAmountPerMonth = new double[12];
-
-                            for (int i = 0; i < expenseList.size(); i++) {
-                                int month = getMonthFromDateString(expenseList.get(i).getDate());
-
-                                String amountString = extractNumericPart(expenseList.get(i).getAmount());
-                                double amount = Double.parseDouble(amountString);
-
-                                if (month >= 1 && month <= 12) {
-                                    totalAmountPerMonth[month - 1] += amount;
-                                }
-                            }
-                            for (int i = 0; i < totalAmountPerMonth.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerMonth[i]));
-                            }
-
-                            chart.invalidate();
-
-                            chart.getAxisLeft().setEnabled(false);
-                            chart.getAxisRight().setEnabled(false);
-                            final String[] days = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aus", "Sep", "Oct", "Nov", "Dec"};
-
-                            setupLineChart1(chart, days, entries);
-                        }
-                    });
-
-                    year.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            year.setBackgroundResource(R.drawable.selected_home_background);
-                            week.setBackgroundResource(R.drawable.unselected_home_background);
-                            month.setBackgroundResource(R.drawable.unselected_home_background);
-                            today.setBackgroundResource(R.drawable.unselected_home_background);
-
-                            year.setTextColor(getResources().getColor(R.color.white));
-                            week.setTextColor(getResources().getColor(R.color.gray));
-                            month.setTextColor(getResources().getColor(R.color.gray));
-                            today.setTextColor(getResources().getColor(R.color.gray));
-
-                            ArrayList<Entry> entries = new ArrayList<>();
-
+                        for (IncomeAndExpense entry : expenseList) {
                             Calendar calendar = Calendar.getInstance();
-                            int currentYear = calendar.get(Calendar.YEAR);
-                            int startYear = currentYear - 1;
-                            int endYear = currentYear + 1;
-                            double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
-
-                            for (IncomeAndExpense entry : expenseList) {
-                                String entryDate = entry.getDate();
-                                int entryYear = Integer.parseInt(entryDate.split("/")[2]);
-
-                                if (entryYear >= startYear && entryYear <= endYear) {
+                            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
+                            calendar.set(Calendar.HOUR_OF_DAY, 0);
+                            calendar.set(Calendar.MINUTE, 0);
+                            calendar.set(Calendar.SECOND, 0);
+                            calendar.set(Calendar.MILLISECOND, 0);
+                            String entryDate = entry.getDate();
+                            for (int i = 0; i < 7; i++) {
+                                String day = dateFormat.format(calendar.getTime());
+                                if (day.equals(entryDate)) {
                                     String amountString = extractNumericPart(entry.getAmount());
                                     double amount = Double.parseDouble(amountString);
-                                    int index = entryYear - startYear;
-
-                                    totalAmountPerYear1[index] += amount;
+                                    totalAmountPerDay[i] += amount;
+                                    break;
                                 }
+                                calendar.add(Calendar.DAY_OF_MONTH, 1);
                             }
-
-                            for (int i = 0; i < totalAmountPerYear1.length; i++) {
-                                entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
-                            }
-
-                            final String currentYearStr = String.valueOf(currentYear);
-
-                            // Calculate previous year
-                            calendar.add(Calendar.YEAR, -1);
-                            int previousYear = calendar.get(Calendar.YEAR);
-                            final String previousYearStr = String.valueOf(previousYear);
-
-                            // Calculate next year
-                            calendar.add(Calendar.YEAR, 2);
-                            int nextYear = calendar.get(Calendar.YEAR);
-                            final String nextYearStr = String.valueOf(nextYear);
-                            final String[] years = {previousYearStr, currentYearStr, nextYearStr};
-
-                            chart.invalidate();
-
-                            chart.getAxisLeft().setEnabled(false);
-                            chart.getAxisRight().setEnabled(false);
-
-                            setupLineChart1(chart, years, entries);
                         }
+
+                        for (int i = 0; i < totalAmountPerDay.length; i++) {
+                            entries.add(new Entry(i, (float) totalAmountPerDay[i]));
+                        }
+
+                        chart.invalidate();
+
+                        chart.getAxisLeft().setEnabled(false);
+                        chart.getAxisRight().setEnabled(false);
+                        final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+                        setupLineChart1(chart, days, entries);
+                    });
+
+                    month.setOnClickListener(v -> {
+                        month.setBackgroundResource(R.drawable.selected_home_background);
+                        week.setBackgroundResource(R.drawable.unselected_home_background);
+                        today.setBackgroundResource(R.drawable.unselected_home_background);
+                        year.setBackgroundResource(R.drawable.unselected_home_background);
+
+                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+
+                        ArrayList<Entry> entries = new ArrayList<>();
+
+                        double[] totalAmountPerMonth = new double[12];
+
+                        for (int i = 0; i < expenseList.size(); i++) {
+                            int month = getMonthFromDateString(expenseList.get(i).getDate());
+
+                            String amountString = extractNumericPart(expenseList.get(i).getAmount());
+                            double amount = Double.parseDouble(amountString);
+
+                            if (month >= 1 && month <= 12) {
+                                totalAmountPerMonth[month - 1] += amount;
+                            }
+                        }
+                        for (int i = 0; i < totalAmountPerMonth.length; i++) {
+                            entries.add(new Entry(i, (float) totalAmountPerMonth[i]));
+                        }
+
+                        chart.invalidate();
+
+                        chart.getAxisLeft().setEnabled(false);
+                        chart.getAxisRight().setEnabled(false);
+                        final String[] days = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aus", "Sep", "Oct", "Nov", "Dec"};
+
+                        setupLineChart1(chart, days, entries);
+                    });
+
+                    year.setOnClickListener(v -> {
+                        year.setBackgroundResource(R.drawable.selected_home_background);
+                        week.setBackgroundResource(R.drawable.unselected_home_background);
+                        month.setBackgroundResource(R.drawable.unselected_home_background);
+                        today.setBackgroundResource(R.drawable.unselected_home_background);
+
+                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+
+                        ArrayList<Entry> entries = new ArrayList<>();
+
+                        Calendar calendar = Calendar.getInstance();
+                        int currentYear = calendar.get(Calendar.YEAR);
+                        int startYear = currentYear - 1;
+                        int endYear = currentYear + 1;
+                        double[] totalAmountPerYear1 = new double[endYear - startYear + 1];
+
+                        for (IncomeAndExpense entry : expenseList) {
+                            String entryDate = entry.getDate();
+                            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+
+                            if (entryYear >= startYear && entryYear <= endYear) {
+                                String amountString = extractNumericPart(entry.getAmount());
+                                double amount = Double.parseDouble(amountString);
+                                int index = entryYear - startYear;
+
+                                totalAmountPerYear1[index] += amount;
+                            }
+                        }
+
+                        for (int i = 0; i < totalAmountPerYear1.length; i++) {
+                            entries.add(new Entry(i, (float) totalAmountPerYear1[i]));
+                        }
+
+                        final String currentYearStr = String.valueOf(currentYear);
+
+                        // Calculate previous year
+                        calendar.add(Calendar.YEAR, -1);
+                        int previousYear = calendar.get(Calendar.YEAR);
+                        final String previousYearStr = String.valueOf(previousYear);
+
+                        // Calculate next year
+                        calendar.add(Calendar.YEAR, 2);
+                        int nextYear = calendar.get(Calendar.YEAR);
+                        final String nextYearStr = String.valueOf(nextYear);
+                        final String[] years = {previousYearStr, currentYearStr, nextYearStr};
+
+                        chart.invalidate();
+
+                        chart.getAxisLeft().setEnabled(false);
+                        chart.getAxisRight().setEnabled(false);
+
+                        setupLineChart1(chart, years, entries);
                     });
                 }
                 Display();
@@ -501,10 +462,10 @@ public class HomeFragment extends Fragment {
         month.setBackgroundResource(R.drawable.unselected_home_background);
         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-        today.setTextColor(getResources().getColor(R.color.white));
-        week.setTextColor(getResources().getColor(R.color.gray));
-        month.setTextColor(getResources().getColor(R.color.gray));
-        year.setTextColor(getResources().getColor(R.color.gray));
+        today.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
 
         ArrayList<Entry> entries = new ArrayList<>();
 
@@ -551,10 +512,10 @@ public class HomeFragment extends Fragment {
         month.setBackgroundResource(R.drawable.unselected_home_background);
         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-        today.setTextColor(getResources().getColor(R.color.white));
-        week.setTextColor(getResources().getColor(R.color.gray));
-        month.setTextColor(getResources().getColor(R.color.gray));
-        year.setTextColor(getResources().getColor(R.color.gray));
+        today.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
+        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
 
         ArrayList<Entry> entries = new ArrayList<>();
 
@@ -604,28 +565,17 @@ public class HomeFragment extends Fragment {
         Legend legend = chart.getLegend();
         legend.setEnabled(false);
 
-//        chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-//            @Override
-//            public void onValueSelected(Entry e, Highlight h) {
-//                Toast.makeText(getContext(), "123", Toast.LENGTH_SHORT).show();
-//            }
-//            @Override
-//            public void onNothingSelected() {
-//
-//            }
-//        });
-
         LineDataSet dataSet = new LineDataSet(entries, "Income");
 
         dataSet.setCircleRadius(5f);
         dataSet.setValueTextSize(9);
         dataSet.setDrawFilled(true);
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCircleColor(getResources().getColor(R.color.green));
-        dataSet.setFillColor(getResources().getColor(R.color.green));
+        dataSet.setCircleColor(ContextCompat.getColor(getContext(),R.color.green));
+        dataSet.setFillColor(ContextCompat.getColor(getContext(),R.color.green));
         dataSet.setFillAlpha(30);
-        dataSet.setValueTextColor(getResources().getColor(R.color.green));
-        dataSet.setColor(getResources().getColor(R.color.green));
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(),R.color.green));
+        dataSet.setColor(ContextCompat.getColor(getContext(),R.color.green));
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
@@ -645,16 +595,17 @@ public class HomeFragment extends Fragment {
         dataSet.setValueTextSize(9);
         dataSet.setDrawFilled(true);
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCircleColor(getResources().getColor(R.color.red));
-        dataSet.setFillColor(getResources().getColor(R.color.red));
+        dataSet.setCircleColor(ContextCompat.getColor(getContext(),R.color.red));
+        dataSet.setFillColor(ContextCompat.getColor(getContext(),R.color.red));
         dataSet.setFillAlpha(30);
-        dataSet.setValueTextColor(getResources().getColor(R.color.red));
-        dataSet.setColor(getResources().getColor(R.color.red));
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(),R.color.red));
+        dataSet.setColor(ContextCompat.getColor(getContext(),R.color.red));
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
     }
 
+    @SuppressLint("SetTextI18n")
     public BigDecimal calculateTotalIncome() {
         BigDecimal totalSum = BigDecimal.ZERO;
         for (IncomeAndExpense amount : incomeList) {
@@ -667,6 +618,7 @@ public class HomeFragment extends Fragment {
         return totalSum;
     }
 
+    @SuppressLint("SetTextI18n")
     public BigDecimal calculateTotalExpense() {
         BigDecimal totalSum = BigDecimal.ZERO;
         for (IncomeAndExpense amount : expenseList) {
@@ -679,6 +631,7 @@ public class HomeFragment extends Fragment {
         return totalSum;
     }
 
+    @SuppressLint("SetTextI18n")
     public String calculateTotalIncomeAndExpense() {
         BigDecimal totalIncome = calculateTotalIncome();
         BigDecimal totalExpense = calculateTotalExpense();
@@ -727,7 +680,7 @@ public class HomeFragment extends Fragment {
     }
 
     public int getMonthFromDateString(String dateString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date date = dateFormat.parse(dateString);
             int month = date.getMonth() + 1;
@@ -742,9 +695,6 @@ public class HomeFragment extends Fragment {
         Cursor cursor = dbHelper.getAllData();
         if (cursor != null && cursor.moveToFirst()) {
             incomeAndExpenseArrayList = new ArrayList<>();
-            Date currentDate = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDate = sdf.format(currentDate);
             do {
                 int id = cursor.getInt(0);
                 String incomeAmount = cursor.getString(1);
@@ -763,12 +713,7 @@ public class HomeFragment extends Fragment {
                 incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
 
-                Collections.sort(incomeAndExpenseArrayList, new Comparator<IncomeAndExpense>() {
-                    @Override
-                    public int compare(IncomeAndExpense o1, IncomeAndExpense o2) {
-                        return o1.getCurrantDateTimeStamp().compareTo(o2.getCurrantDateTimeStamp());
-                    }
-                });
+                incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getCurrantDateTimeStamp));
 
                 Collections.reverse(incomeAndExpenseArrayList);
                 incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
@@ -776,9 +721,6 @@ public class HomeFragment extends Fragment {
 
                 recentTransactionRecyclerView.setVisibility(View.VISIBLE);
                 emptyTransaction.setVisibility(View.GONE);
-
-//                ArrayList<IncomeAndExpense> filteredIncomeList = filterIncomeListByTodayDate(incomeList);
-//                ArrayList<IncomeAndExpense> filteredExpenseList = filterIncomeListByTodayDate(expenseList);
 
                 if (TextUtils.equals(selected, "Income")) {
                     if (incomeList.isEmpty()) {

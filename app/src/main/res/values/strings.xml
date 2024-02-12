@@ -77,6 +77,15 @@
     <string name="all">All</string>
     <string name="remove_this_category">Remove this category?</string>
     <string name="are_you_sure_do_you_wanna_remove_this_category">Are you sure do you wanna remove this category?</string>
+    <string name="budget_has_been_successfully_removed">Budget has been successfully removed</string>
+    <string name="remove_this_budget">Remove this budget ?</string>
+    <string name="are_you_sure_you_want_to_remove_this_budget">Are you sure you want to remove this budget?</string>
+    <string name="category_has_been_successfully_removed">Category has been successfully removed</string>
+    <string name="expense_has_been_successfully_added">Expense has been successfully added</string>
+    <string name="enable_from_settings">Enable from settings</string>
+    <string name="income_has_been_successfully_added">Income has been successfully added</string>
+    <string name="your_name">Your name</string>
+    <string name="no_description">No description</string>
 
     <string-array name="spendFrequency" translatable="false">
         <item>Income</item>

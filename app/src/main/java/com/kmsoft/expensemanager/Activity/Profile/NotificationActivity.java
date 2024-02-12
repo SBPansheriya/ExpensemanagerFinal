@@ -7,19 +7,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.kmsoft.expensemanager.Adapter.BudgetCreateAdapter;
 import com.kmsoft.expensemanager.Adapter.ExceedBudgetAdapter;
-import com.kmsoft.expensemanager.Fragment.BudgetFragment;
 import com.kmsoft.expensemanager.R;
 
 public class NotificationActivity extends AppCompatActivity {
@@ -43,31 +37,18 @@ public class NotificationActivity extends AppCompatActivity {
         exceedBudgetRecyclerview.setLayoutManager(manager);
         exceedBudgetRecyclerview.setAdapter(exceedBudgetAdapter);
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(v -> onBackPressed());
 
+        more.setOnClickListener(v -> {
+            Context wrapper = new ContextThemeWrapper(NotificationActivity.this, R.style.YOURSTYLE);
+            PopupMenu popupMenu = new PopupMenu(wrapper, v);
+            popupMenu.getMenuInflater().inflate(R.menu.pop_up_menu, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                Toast.makeText(NotificationActivity.this, "You Clicked " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                return true;
+            });
+            popupMenu.show();
 
-
-        more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context wrapper = new ContextThemeWrapper(NotificationActivity.this, R.style.YOURSTYLE);
-                PopupMenu popupMenu = new PopupMenu(wrapper, v);
-                popupMenu.getMenuInflater().inflate(R.menu.pop_up_menu, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        Toast.makeText(NotificationActivity.this, "You Clicked " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
-                        return true;
-                    }
-                });
-                popupMenu.show();
-
-            }
         });
     }
 

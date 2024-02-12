@@ -79,7 +79,7 @@ public class EditProfileActivity extends AppCompatActivity {
         userImage = sharedPreferences.getString(USER_IMAGE,"");
 
         if (TextUtils.isEmpty(userName)) {
-            editProfileUsername.setText("Your name");
+            editProfileUsername.setText(R.string.your_name);
         } else {
             editProfileUsername.setText(userName);
         }
@@ -90,29 +90,16 @@ public class EditProfileActivity extends AppCompatActivity {
             Picasso.get().load(userImage).into(setImage);
         }
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(v -> onBackPressed());
 
-        editProfileImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionsForCamera();
-            }
-        });
+        editProfileImg.setOnClickListener(v -> checkPermissionsForCamera());
 
-        editProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userName = editProfileUsername.getText().toString();
-                userImage = (MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title1", null));
-                editor.putString(USER_NAME, userName).apply();
-                editor.putString(USER_IMAGE, userImage).apply();
-                onBackPressed();
-            }
+        editProfile.setOnClickListener(v -> {
+            userName = editProfileUsername.getText().toString();
+            userImage = (MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title1", null));
+            editor.putString(USER_NAME, userName).apply();
+            editor.putString(USER_IMAGE, userImage).apply();
+            onBackPressed();
         });
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -134,7 +121,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 }
                 if (bitmap != null) {
                     setImage.setImageBitmap(bitmap);
-//                    Picasso.get().load(userImage).into(setImage);
                 }
             } else {
                 setImage.setImageResource(R.drawable.profile);
@@ -181,20 +167,14 @@ public class EditProfileActivity extends AppCompatActivity {
         ImageView camera = dialog.findViewById(R.id.camera);
         ImageView gallery = dialog.findViewById(R.id.gallery);
 
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraPermission();
-                dialog.dismiss();
-            }
+        camera.setOnClickListener(v -> {
+            cameraPermission();
+            dialog.dismiss();
         });
 
-        gallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openImagePicker();
-                dialog.dismiss();
-            }
+        gallery.setOnClickListener(v -> {
+            openImagePicker();
+            dialog.dismiss();
         });
     }
 
@@ -213,11 +193,11 @@ public class EditProfileActivity extends AppCompatActivity {
         if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             showAttachmentBottomDialog();
         } else {
-            showPermissionDenyDialog(EditProfileActivity.this,CAMERA_REQUEST);
+            showPermissionDenyDialog(EditProfileActivity.this);
         }
     }
 
-    private void showPermissionDenyDialog(Activity activity, int requestCode) {
+    private void showPermissionDenyDialog(Activity activity) {
 
         SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
@@ -240,19 +220,11 @@ public class EditProfileActivity extends AppCompatActivity {
                 Button cancel = dialog.findViewById(R.id.canceldialog);
                 Button ok = dialog.findViewById(R.id.okdialog);
 
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                cancel.setOnClickListener(view -> dialog.dismiss());
 
-                ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        checkPermissionsForCamera();
-                        dialog.dismiss();
-                    }
+                ok.setOnClickListener(view -> {
+                    checkPermissionsForCamera();
+                    dialog.dismiss();
                 });
             }
             click = 1;
@@ -276,24 +248,16 @@ public class EditProfileActivity extends AppCompatActivity {
                 TextView textView = dialog.findViewById(R.id.filename);
 
                 textView.setText(R.string.camera_permission);
-                ok.setText("Enable from settings");
+                ok.setText(R.string.enable_from_settings);
 
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                cancel.setOnClickListener(view -> dialog.dismiss());
 
-                ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
-                        intent.setData(uri);
-                        ActivityCompat.startActivityForResult(EditProfileActivity.this,intent, requestCode,null);
-                        dialog.dismiss();
-                    }
+                ok.setOnClickListener(view -> {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                    intent.setData(uri);
+                    ActivityCompat.startActivityForResult(EditProfileActivity.this,intent, EditProfileActivity.CAMERA_REQUEST,null);
+                    dialog.dismiss();
                 });
             }
         }

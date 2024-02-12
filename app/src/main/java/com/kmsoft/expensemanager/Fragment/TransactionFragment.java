@@ -2,6 +2,7 @@ package com.kmsoft.expensemanager.Fragment;
 
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,7 +10,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,8 +26,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.kmsoft.expensemanager.Activity.Trancation.DetailsTransactionActivity;
-import com.kmsoft.expensemanager.Activity.Trancation.FinancialReportActivity;
+import com.kmsoft.expensemanager.Activity.Transaction.DetailsTransactionActivity;
+import com.kmsoft.expensemanager.Activity.Transaction.FinancialReportActivity;
 import com.kmsoft.expensemanager.Adapter.DateAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
@@ -82,34 +83,18 @@ public class TransactionFragment extends Fragment {
         filterBy = "All";
         sortBy = "Newest";
 
-        calender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCalenderBottomDialog();
-            }
+        calender.setOnClickListener(v -> showCalenderBottomDialog());
+
+        see_financial_txt.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), FinancialReportActivity.class);
+            startActivity(intent);
         });
 
-        see_financial_txt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), FinancialReportActivity.class);
-                startActivity(intent);
-            }
-        });
+        filter.setOnClickListener(v -> showFilterBottomDialog());
 
-        filter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFilterBottomDialog();
-            }
-        });
-
-        img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), DetailsTransactionActivity.class);
-                startActivity(intent);
-            }
+        img.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), DetailsTransactionActivity.class);
+            startActivity(intent);
         });
 
         return view;
@@ -135,35 +120,24 @@ public class TransactionFragment extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            Calendar selectedDateCalendar = Calendar.getInstance();
+            selectedDateCalendar.set(year, month, dayOfMonth);
+            SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            date = dateFormat1.format(selectedDateCalendar.getTime());
+        });
+
+        cancel.setOnClickListener(v -> dialog.dismiss());
+
+        ok.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(date)) {
                 Calendar selectedDateCalendar = Calendar.getInstance();
-                selectedDateCalendar.set(year, month, dayOfMonth);
                 SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                 date = dateFormat1.format(selectedDateCalendar.getTime());
             }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(date)) {
-                    Calendar selectedDateCalendar = Calendar.getInstance();
-                    SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                    date = dateFormat1.format(selectedDateCalendar.getTime());
-                }
-                click = 1;
-                Display();
-                dialog.dismiss();
-            }
+            click = 1;
+            Display();
+            dialog.dismiss();
         });
     }
 
@@ -193,7 +167,7 @@ public class TransactionFragment extends Fragment {
         switch (filterBy) {
             case "All":
                 all.setBackgroundResource(R.drawable.selected_border_background);
-                all.setTextColor(getResources().getColor(R.color.green));
+                all.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
                 income.setBackgroundResource(R.drawable.unselected_border_background);
                 income.setTextColor(Color.BLACK);
                 expense.setBackgroundResource(R.drawable.unselected_border_background);
@@ -201,7 +175,7 @@ public class TransactionFragment extends Fragment {
                 break;
             case "Income":
                 income.setBackgroundResource(R.drawable.selected_border_background);
-                income.setTextColor(getResources().getColor(R.color.green));
+                income.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
                 all.setBackgroundResource(R.drawable.unselected_border_background);
                 all.setTextColor(Color.BLACK);
                 expense.setBackgroundResource(R.drawable.unselected_border_background);
@@ -209,7 +183,7 @@ public class TransactionFragment extends Fragment {
                 break;
             case "Expense":
                 expense.setBackgroundResource(R.drawable.selected_border_background);
-                expense.setTextColor(getResources().getColor(R.color.green));
+                expense.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
                 all.setBackgroundResource(R.drawable.unselected_border_background);
                 all.setTextColor(Color.BLACK);
                 income.setBackgroundResource(R.drawable.unselected_border_background);
@@ -217,7 +191,7 @@ public class TransactionFragment extends Fragment {
                 break;
             default:
                 all.setBackgroundResource(R.drawable.selected_border_background);
-                all.setTextColor(getResources().getColor(R.color.green));
+                all.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
                 income.setBackgroundResource(R.drawable.unselected_border_background);
                 income.setTextColor(Color.BLACK);
                 expense.setBackgroundResource(R.drawable.unselected_border_background);
@@ -228,7 +202,7 @@ public class TransactionFragment extends Fragment {
         switch (sortBy) {
             case "Highest":
                 highest.setBackgroundResource(R.drawable.selected_border_background);
-                highest.setTextColor(getResources().getColor(R.color.green));
+                highest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
 
                 lowest.setBackgroundResource(R.drawable.unselected_border_background);
                 lowest.setTextColor(Color.BLACK);
@@ -241,7 +215,7 @@ public class TransactionFragment extends Fragment {
                 break;
             case "Lowest":
                 lowest.setBackgroundResource(R.drawable.selected_border_background);
-                lowest.setTextColor(getResources().getColor(R.color.green));
+                lowest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
 
                 highest.setBackgroundResource(R.drawable.unselected_border_background);
                 highest.setTextColor(Color.BLACK);
@@ -254,7 +228,7 @@ public class TransactionFragment extends Fragment {
                 break;
             case "Newest":
                 newest.setBackgroundResource(R.drawable.selected_border_background);
-                newest.setTextColor(getResources().getColor(R.color.green));
+                newest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
 
                 lowest.setBackgroundResource(R.drawable.unselected_border_background);
                 lowest.setTextColor(Color.BLACK);
@@ -267,7 +241,7 @@ public class TransactionFragment extends Fragment {
                 break;
             case "Oldest":
                 oldest.setBackgroundResource(R.drawable.selected_border_background);
-                oldest.setTextColor(getResources().getColor(R.color.green));
+                oldest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
 
                 lowest.setBackgroundResource(R.drawable.unselected_border_background);
                 lowest.setTextColor(Color.BLACK);
@@ -280,7 +254,7 @@ public class TransactionFragment extends Fragment {
                 break;
             default:
                 newest.setBackgroundResource(R.drawable.selected_border_background);
-                newest.setTextColor(getResources().getColor(R.color.green));
+                newest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
 
                 lowest.setBackgroundResource(R.drawable.unselected_border_background);
                 lowest.setTextColor(Color.BLACK);
@@ -293,171 +267,142 @@ public class TransactionFragment extends Fragment {
                 break;
         }
 
-        reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        reset.setOnClickListener(v -> {
+            filterBy = "All";
+            sortBy = "Newest";
+            all.setBackgroundResource(R.drawable.selected_border_background);
+            all.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+            income.setBackgroundResource(R.drawable.unselected_border_background);
+            income.setTextColor(Color.BLACK);
+
+            expense.setBackgroundResource(R.drawable.unselected_border_background);
+            expense.setTextColor(Color.BLACK);
+
+            newest.setBackgroundResource(R.drawable.selected_border_background);
+            newest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+
+            lowest.setBackgroundResource(R.drawable.unselected_border_background);
+            lowest.setTextColor(Color.BLACK);
+
+            highest.setBackgroundResource(R.drawable.unselected_border_background);
+            highest.setTextColor(Color.BLACK);
+
+            oldest.setBackgroundResource(R.drawable.unselected_border_background);
+            oldest.setTextColor(Color.BLACK);
+        });
+
+        all.setOnClickListener(v -> {
+            filterBy = "All";
+
+            all.setBackgroundResource(R.drawable.selected_border_background);
+            income.setBackgroundResource(R.drawable.unselected_border_background);
+            expense.setBackgroundResource(R.drawable.unselected_border_background);
+
+            all.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+            income.setTextColor(Color.BLACK);
+            expense.setTextColor(Color.BLACK);
+
+        });
+
+        income.setOnClickListener(v -> {
+            filterBy = "Income";
+
+            income.setBackgroundResource(R.drawable.selected_border_background);
+            all.setBackgroundResource(R.drawable.unselected_border_background);
+            expense.setBackgroundResource(R.drawable.unselected_border_background);
+
+            income.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+            all.setTextColor(Color.BLACK);
+            expense.setTextColor(Color.BLACK);
+        });
+
+        expense.setOnClickListener(v -> {
+            filterBy = "Expense";
+
+            expense.setBackgroundResource(R.drawable.selected_border_background);
+            all.setBackgroundResource(R.drawable.unselected_border_background);
+            income.setBackgroundResource(R.drawable.unselected_border_background);
+
+            expense.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+            all.setTextColor(Color.BLACK);
+            income.setTextColor(Color.BLACK);
+        });
+
+        newest.setOnClickListener(v -> {
+            sortBy = "Newest";
+
+            newest.setBackgroundResource(R.drawable.selected_border_background);
+            newest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+
+            lowest.setBackgroundResource(R.drawable.unselected_border_background);
+            lowest.setTextColor(Color.BLACK);
+
+            highest.setBackgroundResource(R.drawable.unselected_border_background);
+            highest.setTextColor(Color.BLACK);
+
+            oldest.setBackgroundResource(R.drawable.unselected_border_background);
+            oldest.setTextColor(Color.BLACK);
+        });
+
+        oldest.setOnClickListener(v -> {
+            sortBy = "Oldest";
+
+            oldest.setBackgroundResource(R.drawable.selected_border_background);
+            oldest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+
+            lowest.setBackgroundResource(R.drawable.unselected_border_background);
+            lowest.setTextColor(Color.BLACK);
+
+            newest.setBackgroundResource(R.drawable.unselected_border_background);
+            newest.setTextColor(Color.BLACK);
+
+            highest.setBackgroundResource(R.drawable.unselected_border_background);
+            highest.setTextColor(Color.BLACK);
+        });
+
+        highest.setOnClickListener(v -> {
+            sortBy = "Highest";
+
+            highest.setBackgroundResource(R.drawable.selected_border_background);
+            highest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+
+            lowest.setBackgroundResource(R.drawable.unselected_border_background);
+            lowest.setTextColor(Color.BLACK);
+
+            newest.setBackgroundResource(R.drawable.unselected_border_background);
+            newest.setTextColor(Color.BLACK);
+
+            oldest.setBackgroundResource(R.drawable.unselected_border_background);
+            oldest.setTextColor(Color.BLACK);
+        });
+
+        lowest.setOnClickListener(v -> {
+            sortBy = "Lowest";
+
+            lowest.setBackgroundResource(R.drawable.selected_border_background);
+            lowest.setTextColor(ContextCompat.getColor(getContext(),R.color.green));
+
+            highest.setBackgroundResource(R.drawable.unselected_border_background);
+            highest.setTextColor(Color.BLACK);
+
+            newest.setBackgroundResource(R.drawable.unselected_border_background);
+            newest.setTextColor(Color.BLACK);
+
+            oldest.setBackgroundResource(R.drawable.unselected_border_background);
+            oldest.setTextColor(Color.BLACK);
+        });
+
+        apply.setOnClickListener(v -> {
+            if (filterBy.isEmpty()){
                 filterBy = "All";
+            }
+            if (sortBy.isEmpty()){
                 sortBy = "Newest";
-                all.setBackgroundResource(R.drawable.selected_border_background);
-                all.setTextColor(getResources().getColor(R.color.green));
-
-                income.setBackgroundResource(R.drawable.unselected_border_background);
-                income.setTextColor(Color.BLACK);
-
-                expense.setBackgroundResource(R.drawable.unselected_border_background);
-                expense.setTextColor(Color.BLACK);
-
-                newest.setBackgroundResource(R.drawable.selected_border_background);
-                newest.setTextColor(getResources().getColor(R.color.green));
-
-                lowest.setBackgroundResource(R.drawable.unselected_border_background);
-                lowest.setTextColor(Color.BLACK);
-
-                highest.setBackgroundResource(R.drawable.unselected_border_background);
-                highest.setTextColor(Color.BLACK);
-
-                oldest.setBackgroundResource(R.drawable.unselected_border_background);
-                oldest.setTextColor(Color.BLACK);
             }
-        });
-
-        all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filterBy = "All";
-
-                all.setBackgroundResource(R.drawable.selected_border_background);
-                income.setBackgroundResource(R.drawable.unselected_border_background);
-                expense.setBackgroundResource(R.drawable.unselected_border_background);
-
-                all.setTextColor(getResources().getColor(R.color.green));
-                income.setTextColor(Color.BLACK);
-                expense.setTextColor(Color.BLACK);
-
-            }
-        });
-
-        income.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filterBy = "Income";
-
-                income.setBackgroundResource(R.drawable.selected_border_background);
-                all.setBackgroundResource(R.drawable.unselected_border_background);
-                expense.setBackgroundResource(R.drawable.unselected_border_background);
-
-                income.setTextColor(getResources().getColor(R.color.green));
-                all.setTextColor(Color.BLACK);
-                expense.setTextColor(Color.BLACK);
-            }
-
-        });
-
-        expense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filterBy = "Expense";
-
-                expense.setBackgroundResource(R.drawable.selected_border_background);
-                all.setBackgroundResource(R.drawable.unselected_border_background);
-                income.setBackgroundResource(R.drawable.unselected_border_background);
-
-                expense.setTextColor(getResources().getColor(R.color.green));
-                all.setTextColor(Color.BLACK);
-                income.setTextColor(Color.BLACK);
-            }
-        });
-
-        newest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortBy = "Newest";
-
-                newest.setBackgroundResource(R.drawable.selected_border_background);
-                newest.setTextColor(getResources().getColor(R.color.green));
-
-                lowest.setBackgroundResource(R.drawable.unselected_border_background);
-                lowest.setTextColor(Color.BLACK);
-
-                highest.setBackgroundResource(R.drawable.unselected_border_background);
-                highest.setTextColor(Color.BLACK);
-
-                oldest.setBackgroundResource(R.drawable.unselected_border_background);
-                oldest.setTextColor(Color.BLACK);
-            }
-        });
-
-        oldest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortBy = "Oldest";
-
-                oldest.setBackgroundResource(R.drawable.selected_border_background);
-                oldest.setTextColor(getResources().getColor(R.color.green));
-
-                lowest.setBackgroundResource(R.drawable.unselected_border_background);
-                lowest.setTextColor(Color.BLACK);
-
-                newest.setBackgroundResource(R.drawable.unselected_border_background);
-                newest.setTextColor(Color.BLACK);
-
-                highest.setBackgroundResource(R.drawable.unselected_border_background);
-                highest.setTextColor(Color.BLACK);
-            }
-        });
-
-        highest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortBy = "Highest";
-
-                highest.setBackgroundResource(R.drawable.selected_border_background);
-                highest.setTextColor(getResources().getColor(R.color.green));
-
-                lowest.setBackgroundResource(R.drawable.unselected_border_background);
-                lowest.setTextColor(Color.BLACK);
-
-                newest.setBackgroundResource(R.drawable.unselected_border_background);
-                newest.setTextColor(Color.BLACK);
-
-                oldest.setBackgroundResource(R.drawable.unselected_border_background);
-                oldest.setTextColor(Color.BLACK);
-            }
-        });
-
-        lowest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortBy = "Lowest";
-
-                lowest.setBackgroundResource(R.drawable.selected_border_background);
-                lowest.setTextColor(getResources().getColor(R.color.green));
-
-                highest.setBackgroundResource(R.drawable.unselected_border_background);
-                highest.setTextColor(Color.BLACK);
-
-                newest.setBackgroundResource(R.drawable.unselected_border_background);
-                newest.setTextColor(Color.BLACK);
-
-                oldest.setBackgroundResource(R.drawable.unselected_border_background);
-                oldest.setTextColor(Color.BLACK);
-            }
-        });
-
-        apply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (filterBy.isEmpty()){
-                    filterBy = "All";
-                }
-                if (sortBy.isEmpty()){
-                    sortBy = "Newest";
-                }
-                editor.putString(FILTER_KEY, filterBy).apply();
-                editor.putString(SORT_KEY, sortBy).apply();
-                Display();
-                dialog.dismiss();
-            }
+            editor.putString(FILTER_KEY, filterBy).apply();
+            editor.putString(SORT_KEY, sortBy).apply();
+            Display();
+            dialog.dismiss();
         });
     }
 
@@ -489,173 +434,130 @@ public class TransactionFragment extends Fragment {
                 LinearLayoutManager manager = new LinearLayoutManager(getContext());
 
                 if (click == 0) {
-                    if (filterBy.equals("All")) {
-                        if (sortBy.equals("Oldest")) {
+                    switch (filterBy) {
+                        case "All": {
+                            if (sortBy.equals("Oldest")) {
 
-                            Collections.sort(incomeAndExpenseArrayList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
+                                incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
 
-                        } else if (sortBy.equals("Newest")) {
+                            } else if (sortBy.equals("Newest")) {
 
-                            Collections.sort(incomeAndExpenseArrayList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
-                            Collections.reverse(incomeAndExpenseArrayList);
-                        } else {
-                            Collections.sort(incomeAndExpenseArrayList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
-                            Collections.reverse(incomeAndExpenseArrayList);
-                        }
-
-                        ArrayList<ListDateModel> listDateModels = new ArrayList<>();
-                        String date = "";
-                        for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
-                            String convertDate = convertTimestampToDateString(incomeAndExpenseArrayList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
-                            if (!convertDate.equalsIgnoreCase(date)) {
-                                date = convertDate;
-                                ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeAndExpenseArrayList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
-
-                                ListDateModel listDateModel = new ListDateModel();
-                                listDateModel.incomeAndExpenseArrayList = newList;
-
-                                listDateModels.add(listDateModel);
+                                incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                                Collections.reverse(incomeAndExpenseArrayList);
+                            } else {
+                                incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                                Collections.reverse(incomeAndExpenseArrayList);
                             }
-                        }
-                        if (incomeAndExpenseArrayList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            dateRecyclerview.setVisibility(View.GONE);
-                        } else {
-                            dateRecyclerview.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
-                            dateRecyclerview.setLayoutManager(manager);
-                            dateRecyclerview.setAdapter(dateAdapter);
-                        }
-                    } else if (filterBy.equals("Income")) {
-                        if (sortBy.equals("Oldest")) {
-                            Collections.sort(incomeList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
+
+                            ArrayList<ListDateModel> listDateModels = new ArrayList<>();
+                            String date = "";
+                            for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
+                                String convertDate = convertTimestampToDateString(incomeAndExpenseArrayList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
+                                if (!convertDate.equalsIgnoreCase(date)) {
+                                    date = convertDate;
+                                    ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeAndExpenseArrayList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
+
+                                    ListDateModel listDateModel = new ListDateModel();
+                                    listDateModel.incomeAndExpenseArrayList = newList;
+
+                                    listDateModels.add(listDateModel);
                                 }
-                            });
-                        } else if (sortBy.equals("Newest")) {
-                            Collections.sort(incomeList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
-
-                            Collections.reverse(incomeList);
-                        } else {
-                            Collections.sort(incomeList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
-
-                            Collections.reverse(incomeList);
-                        }
-
-                        ArrayList<ListDateModel> listDateModels = new ArrayList<>();
-                        String date = "";
-                        for (int i = 0; i < incomeList.size(); i++) {
-                            String convertDate = convertTimestampToDateString(incomeList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
-                            if (!convertDate.equalsIgnoreCase(date)) {
-                                date = convertDate;
-                                ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
-
-                                ListDateModel listDateModel = new ListDateModel();
-                                listDateModel.incomeAndExpenseArrayList = newList;
-
-                                listDateModels.add(listDateModel);
                             }
-                        }
-                        if (incomeList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            dateRecyclerview.setVisibility(View.GONE);
-                        } else {
-                            dateRecyclerview.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
-                            dateRecyclerview.setLayoutManager(manager);
-                            dateRecyclerview.setAdapter(dateAdapter);
-                        }
-                    } else if (filterBy.equals("Expense")) {
-                        if (sortBy.equals("Oldest")) {
-                            Collections.sort(expenseList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
-                        } else if (sortBy.equals("Newest")) {
-                            Collections.sort(expenseList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
-
-                            Collections.reverse(expenseList);
-                        } else {
-                            Collections.sort(expenseList, new Comparator<IncomeAndExpense>() {
-                                @Override
-                                public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                                    return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                                }
-                            });
-
-                            Collections.reverse(expenseList);
-                        }
-
-                        ArrayList<ListDateModel> listDateModels = new ArrayList<>();
-                        String date = "";
-                        for (int i = 0; i < expenseList.size(); i++) {
-                            String convertDate = convertTimestampToDateString(expenseList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
-                            if (!convertDate.equalsIgnoreCase(date)) {
-                                date = convertDate;
-                                ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) expenseList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
-
-                                ListDateModel listDateModel = new ListDateModel();
-                                listDateModel.incomeAndExpenseArrayList = newList;
-
-                                listDateModels.add(listDateModel);
+                            if (incomeAndExpenseArrayList.isEmpty()) {
+                                emptyTransaction.setVisibility(View.VISIBLE);
+                                dateRecyclerview.setVisibility(View.GONE);
+                            } else {
+                                dateRecyclerview.setVisibility(View.VISIBLE);
+                                emptyTransaction.setVisibility(View.GONE);
+                                dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
+                                dateRecyclerview.setLayoutManager(manager);
+                                dateRecyclerview.setAdapter(dateAdapter);
                             }
+                            break;
                         }
-                        if (expenseList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            dateRecyclerview.setVisibility(View.GONE);
-                        } else {
-                            dateRecyclerview.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
-                            dateRecyclerview.setLayoutManager(manager);
-                            dateRecyclerview.setAdapter(dateAdapter);
+                        case "Income": {
+                            if (sortBy.equals("Oldest")) {
+                                incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                            } else if (sortBy.equals("Newest")) {
+                                incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+
+                                Collections.reverse(incomeList);
+                            } else {
+                                incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+
+                                Collections.reverse(incomeList);
+                            }
+
+                            ArrayList<ListDateModel> listDateModels = new ArrayList<>();
+                            String date = "";
+                            for (int i = 0; i < incomeList.size(); i++) {
+                                String convertDate = convertTimestampToDateString(incomeList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
+                                if (!convertDate.equalsIgnoreCase(date)) {
+                                    date = convertDate;
+                                    ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
+
+                                    ListDateModel listDateModel = new ListDateModel();
+                                    listDateModel.incomeAndExpenseArrayList = newList;
+
+                                    listDateModels.add(listDateModel);
+                                }
+                            }
+                            if (incomeList.isEmpty()) {
+                                emptyTransaction.setVisibility(View.VISIBLE);
+                                dateRecyclerview.setVisibility(View.GONE);
+                            } else {
+                                dateRecyclerview.setVisibility(View.VISIBLE);
+                                emptyTransaction.setVisibility(View.GONE);
+                                dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
+                                dateRecyclerview.setLayoutManager(manager);
+                                dateRecyclerview.setAdapter(dateAdapter);
+                            }
+                            break;
+                        }
+                        case "Expense": {
+                            if (sortBy.equals("Oldest")) {
+                                expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                            } else if (sortBy.equals("Newest")) {
+                                expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+
+                                Collections.reverse(expenseList);
+                            } else {
+                                expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+
+                                Collections.reverse(expenseList);
+                            }
+
+                            ArrayList<ListDateModel> listDateModels = new ArrayList<>();
+                            String date = "";
+                            for (int i = 0; i < expenseList.size(); i++) {
+                                String convertDate = convertTimestampToDateString(expenseList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
+                                if (!convertDate.equalsIgnoreCase(date)) {
+                                    date = convertDate;
+                                    ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) expenseList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
+
+                                    ListDateModel listDateModel = new ListDateModel();
+                                    listDateModel.incomeAndExpenseArrayList = newList;
+
+                                    listDateModels.add(listDateModel);
+                                }
+                            }
+                            if (expenseList.isEmpty()) {
+                                emptyTransaction.setVisibility(View.VISIBLE);
+                                dateRecyclerview.setVisibility(View.GONE);
+                            } else {
+                                dateRecyclerview.setVisibility(View.VISIBLE);
+                                emptyTransaction.setVisibility(View.GONE);
+                                dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
+                                dateRecyclerview.setLayoutManager(manager);
+                                dateRecyclerview.setAdapter(dateAdapter);
+                            }
+                            break;
                         }
                     }
                 } else if (click == 1) {
                     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList1 = filterDataByDate(incomeAndExpenseArrayList,date);
 
-                    Collections.sort(incomeAndExpenseArrayList1, new Comparator<IncomeAndExpense>() {
-                        @Override
-                        public int compare(IncomeAndExpense d1, IncomeAndExpense d2) {
-                            return d1.getSelectedDateTimeStamp().compareTo(d2.getSelectedDateTimeStamp());
-                        }
-                    });
+                    incomeAndExpenseArrayList1.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
 
                     Collections.reverse(incomeAndExpenseArrayList1);
 
@@ -673,7 +575,7 @@ public class TransactionFragment extends Fragment {
                             listDateModels.add(listDateModel);
                         }
                     }
-                    if (incomeAndExpenseArrayList.isEmpty()) {
+                    if (listDateModels.isEmpty()) {
                         emptyTransaction.setVisibility(View.VISIBLE);
                         dateRecyclerview.setVisibility(View.GONE);
                     } else {
@@ -706,7 +608,7 @@ public class TransactionFragment extends Fragment {
 
     private ArrayList<IncomeAndExpense> filterDataByDate(ArrayList<IncomeAndExpense> incomeAndExpenses, String targetDate) {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
             if (TextUtils.isEmpty(targetDate)){
                 Date currentDate = new Date();
@@ -728,7 +630,7 @@ public class TransactionFragment extends Fragment {
 
     public String convertTimestampToDateString(double timestamp, String format) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(format);
             long time = (long) (timestamp * 1000);
             Date date = new Date(time);
 

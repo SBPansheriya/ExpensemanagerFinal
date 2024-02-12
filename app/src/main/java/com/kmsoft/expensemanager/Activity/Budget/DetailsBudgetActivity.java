@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -47,6 +48,7 @@ public class DetailsBudgetActivity extends AppCompatActivity {
     int exceedAmount;
     int num1;
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +106,7 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         } else {
             remainingFinalAmount = 0;
         }
-        amountBudget.setText("₹" + remainingFinalAmount);
+        amountBudget.setText(String.format("₹%d", remainingFinalAmount));
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -131,37 +133,24 @@ public class DetailsBudgetActivity extends AppCompatActivity {
 
                         // remainingAmount
                         int result1 = num1 - exceedAmount;
-                        amountBudget.setText("₹" + result1);
+                        amountBudget.setText(String.format("₹%d", result1));
                     }
                 }
             }
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+        back.setOnClickListener(v -> onBackPressed());
+
+        showEditBudget.setOnClickListener(v -> {
+            Intent intent = new Intent(DetailsBudgetActivity.this, EditBudgetActivity.class);
+            intent.putExtra("budget", budget);
+            gson = new Gson();
+            String list = gson.toJson(budgetArrayList);
+            intent.putExtra("budgetArrayList", list);
+            launchSomeActivity.launch(intent);
         });
 
-        showEditBudget.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DetailsBudgetActivity.this, EditBudgetActivity.class);
-                intent.putExtra("budget", budget);
-                gson = new Gson();
-                String list = gson.toJson(budgetArrayList);
-                intent.putExtra("budgetArrayList", list);
-                launchSomeActivity.launch(intent);
-            }
-        });
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDeleteBottomDialog();
-            }
-        });
+        delete.setOnClickListener(v -> showDeleteBottomDialog());
     }
 
     private void setData(){
@@ -172,7 +161,7 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         } else {
             showCategoryImageBudget.setImageResource(budget.getCategoryImageBudget());
         }
-        amountBudget.setText("" + budget.getAmountBudget());
+        amountBudget.setText(String.format("%s", budget.getAmountBudget()));
         showPercentage.setValue(budget.getPercentageBudget());
         showPercentage.setEnabled(false);
     }
@@ -193,48 +182,37 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         TextView txt = bottomSheetDialog.findViewById(R.id.txt);
         TextView txt1 = bottomSheetDialog.findViewById(R.id.txt1);
 
-        txt.setText("Remove this budget ?");
-        txt1.setText("Are you sure you want to remove this budget?");
+        txt.setText(R.string.remove_this_budget);
+        txt1.setText(R.string.are_you_sure_you_want_to_remove_this_budget);
 
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.dismiss();
+        no.setOnClickListener(v -> bottomSheetDialog.dismiss());
+
+        yes.setOnClickListener(v -> {
+
+            bottomSheetDialog.dismiss();
+
+            dbHelper.deleteBudgetData(budget.getId());
+
+            Dialog dialog = new Dialog(DetailsBudgetActivity.this);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setGravity(Gravity.CENTER);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                dialog.setCancelable(false);
             }
-        });
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.setContentView(R.layout.dailog_removed_layout);
+            dialog.setCancelable(true);
+            dialog.show();
 
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            TextView txt2 = dialog.findViewById(R.id.txt);
+            txt2.setText(R.string.budget_has_been_successfully_removed);
 
-                bottomSheetDialog.dismiss();
-
-                dbHelper.deleteBudgetData(budget.getId());
-
-                Dialog dialog = new Dialog(DetailsBudgetActivity.this);
-                if (dialog.getWindow() != null) {
-                    dialog.getWindow().setGravity(Gravity.CENTER);
-                    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    dialog.setCancelable(false);
+            new Handler().postDelayed(() -> {
+                if (dialog.isShowing()) {
+                    onBackPressed();
+                    dialog.dismiss();
                 }
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                dialog.setContentView(R.layout.dailog_removed_layout);
-                dialog.setCancelable(true);
-                dialog.show();
-
-                TextView txt = dialog.findViewById(R.id.txt);
-                txt.setText("Budget has been successfully removed");
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (dialog.isShowing()) {
-                            onBackPressed();
-                            dialog.dismiss();
-                        }
-                    }
-                }, 1000);
-            }
+            }, 1000);
         });
     }
 

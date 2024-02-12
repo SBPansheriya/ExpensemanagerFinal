@@ -26,20 +26,24 @@ public class SettingsActivity extends AppCompatActivity {
 
         init();
 
-        notification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SettingsActivity.this, NotificationActivity.class);
-                startActivity(intent);
-            }
+        notification.setOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this, NotificationActivity.class);
+            startActivity(intent);
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+        share.setOnClickListener(v -> {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Sharing this from my app!");
+            startActivity(Intent.createChooser(shareIntent, "Share via..."));
         });
+
+        about.setOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this,AboutActivity.class);
+            startActivity(intent);
+        });
+
+        back.setOnClickListener(v -> onBackPressed());
     }
 
     private void init(){

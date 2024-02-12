@@ -48,32 +48,16 @@ public class IncomeAndExpense implements Serializable {
         return amount;
     }
 
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
     public Double getCurrantDateTimeStamp() {
         return currantDateTimeStamp;
-    }
-
-    public void setCurrantDateTimeStamp(double currantDateTimeStamp) {
-        this.currantDateTimeStamp = currantDateTimeStamp;
     }
 
     public Double getSelectedDateTimeStamp() {
         return selectedDateTimeStamp;
     }
 
-    public void setSelectedDateTimeStamp(double selectedDateTimeStamp) {
-        this.selectedDateTimeStamp = selectedDateTimeStamp;
-    }
-
     public String getCurrantDate() {
         return currantDate;
-    }
-
-    public void setCurrantDate(String currantDate) {
-        this.currantDate = currantDate;
     }
 
     public String getDate() {
@@ -88,16 +72,8 @@ public class IncomeAndExpense implements Serializable {
         return dayName;
     }
 
-    public void setDayName(String dayName) {
-        this.dayName = dayName;
-    }
-
     public String getTime() {
         return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public String getCategoryName() {
@@ -128,20 +104,11 @@ public class IncomeAndExpense implements Serializable {
         return addAttachment;
     }
 
-    public void setAddAttachment(String addAttachment) {
-        this.addAttachment = addAttachment;
-    }
-
     public String getTag() {
         return tag;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
     public double getAmountValue() {
-        // Parse the amount string to extract the numerical value
         return Double.parseDouble(amount.replace("₹", ""));
     }
 }
