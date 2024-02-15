@@ -52,7 +52,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 
 public class HomeFragment extends Fragment {
@@ -632,12 +631,11 @@ public class HomeFragment extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    public String calculateTotalIncomeAndExpense() {
+    public void calculateTotalIncomeAndExpense() {
         BigDecimal totalIncome = calculateTotalIncome();
         BigDecimal totalExpense = calculateTotalExpense();
         BigDecimal total = totalIncome.subtract(totalExpense);
         showBalance.setText("₹" + total.toString());
-        return total.toString();
     }
 
     private String extractNumericPart(String input) {
@@ -683,8 +681,7 @@ public class HomeFragment extends Fragment {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date date = dateFormat.parse(dateString);
-            int month = date.getMonth() + 1;
-            return month;
+            return date.getMonth() + 1;
         } catch (ParseException e) {
             e.printStackTrace();
             return -1;
@@ -713,8 +710,7 @@ public class HomeFragment extends Fragment {
                 incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
 
-                incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getCurrantDateTimeStamp));
-
+//                incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getCurrantDateTimeStamp));
                 Collections.reverse(incomeAndExpenseArrayList);
                 incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
                 expenseList = filterCategories(incomeAndExpenseArrayList, "Expense");

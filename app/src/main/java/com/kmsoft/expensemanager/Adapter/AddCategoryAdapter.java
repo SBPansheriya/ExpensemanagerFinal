@@ -1,6 +1,5 @@
 package com.kmsoft.expensemanager.Adapter;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
 
     AddCategoryActivity addCategoryActivity;
     ArrayList<Category> categoryArrayList;
-    private int selectedPosition = RecyclerView.NO_POSITION;
 
     public AddCategoryAdapter(AddCategoryActivity addCategoryActivity, ArrayList<Category> categoryArrayList) {
         this.addCategoryActivity = addCategoryActivity;
@@ -47,29 +45,15 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
             holder.addNewCategoryImage.setImageResource(categoryArrayList.get(position).getCategoryImage());
         }
 
-        holder.editCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((AddCategoryActivity) addCategoryActivity).showEditNewCategoryBottomDialog(categoryArrayList.get(position),position);
-            }
-        });
+        holder.editCategory.setOnClickListener(v -> addCategoryActivity.showEditNewCategoryBottomDialog(categoryArrayList.get(position),position));
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.checkbox.performClick();
-            }
-        });
+        holder.itemView.setOnClickListener(view -> holder.checkbox.performClick());
 
-        holder.checkbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String categoryName = categoryArrayList.get(position).getCategoryName();
-                int categoryImage = categoryArrayList.get(position).getCategoryImage();
-                ((AddCategoryActivity) addCategoryActivity).getData(categoryName, categoryImage);
-            }
+        holder.checkbox.setOnClickListener(v -> {
+            String categoryName = categoryArrayList.get(position).getCategoryName();
+            int categoryImage = categoryArrayList.get(position).getCategoryImage();
+            addCategoryActivity.getData(categoryName, categoryImage);
         });
-
 //        if (holder.getAdapterPosition() == categoryArrayList.size() - 1) {
 //            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 //            layoutParams.setMargins(0, 20, 0, 350);
@@ -87,7 +71,7 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
         return categoryArrayList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView categoryName;
         ImageView addNewCategoryImage;
         CheckBox checkbox;

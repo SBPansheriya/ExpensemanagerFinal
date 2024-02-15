@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
@@ -31,7 +32,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @Override
     public HomeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout,parent,false);
-        return new HomeAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -49,27 +50,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         }
 
         if (selected.equals("Income")){
-            holder.itemAmount.setText("+" + incomeAndExpense.getAmount());
-            holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
+            holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
+            holder.itemAmount.setTextColor(ContextCompat.getColor(context,R.color.green));
         } else if (selected.equals("Expense")) {
-            holder.itemAmount.setText("-" + incomeAndExpense.getAmount());
-            holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
+            holder.itemAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
+            holder.itemAmount.setTextColor(ContextCompat.getColor(context,R.color.red));
         }
-
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(context, DetailsTransactionActivity.class);
-//                intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
-//                context.startActivity(intent);
-//            }
-//        });
-
-//        if (position == 9) {
-//            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//            layoutParams.setMargins(0, 20, 0, 170);
-//            holder.relative.setLayoutParams(layoutParams);
-//        }
     }
 
     @Override
@@ -77,7 +63,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return Math.min(incomeAndExpenseArrayList.size(), 10);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
         RelativeLayout relative;
         TextView itemName,itemDescription,itemAmount,itemDate;

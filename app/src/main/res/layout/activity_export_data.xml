@@ -153,6 +153,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/export"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@drawable/border2"
@@ -171,7 +172,6 @@
             android:layout_height="0dp"/>
 
         <TextView
-            android:id="@+id/edit_budget_continue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/lexenddeca_regular"
@@ -181,4 +181,11 @@
             android:textSize="20sp"
             app:backgroundTint="@null" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
 </RelativeLayout>

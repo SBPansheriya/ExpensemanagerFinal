@@ -41,5 +41,9 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.vanniktech:android-image-cropper:4.5.0")
     implementation ("com.google.code.gson:gson:2.10.1")
+    implementation ("com.itextpdf:itext7-core:7.1.16")
+    implementation ("com.itextpdf:itextg:5.5.10")
+    implementation ("com.opencsv:opencsv:5.5.2")
+
 
 }

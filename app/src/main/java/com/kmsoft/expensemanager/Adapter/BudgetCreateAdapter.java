@@ -1,7 +1,6 @@
 package com.kmsoft.expensemanager.Adapter;
 
-import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,16 +22,10 @@ import com.kmsoft.expensemanager.R;
 import java.util.ArrayList;
 
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
-import com.kmsoft.expensemanager.R;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.kmsoft.expensemanager.R;
-
-import java.util.ArrayList;
 
 public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapter.ViewHolder> {
 
@@ -57,6 +50,7 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
         return new ViewHolder(view);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(@NonNull BudgetCreateAdapter.ViewHolder holder, int position) {
         Budget budget = budgetArrayList.get(position);
@@ -81,13 +75,13 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
 
                 double remainingAmount = budgetAmountValue - total;
                 remainingFinalAmount = df.format(remainingAmount);
-                holder.setRemainingAmount.setText("Remaining " + "₹" + remainingFinalAmount);
+                holder.setRemainingAmount.setText(String.format("Remaining ₹%s", remainingFinalAmount));
 
                 remainingFinalAmountMap.put(position, remainingFinalAmount);
                 finalAmountMap.put(position, finalAmount);
 
                 int total1 = (int) total;
-                holder.setIncomeExpenseAmount.setText("₹" + total1);
+                holder.setIncomeExpenseAmount.setText(String.format("₹%d", total1));
 
                 if (total1 >= budgetAmountValue) {
                     holder.setSlider.setValueFrom(0);
@@ -113,22 +107,19 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
         }
         holder.setSlider.setEnabled(false);
 
-        holder.setAmount.setText(" of " + budget.getAmountBudget());
+        holder.setAmount.setText(String.format(" of %s", budget.getAmountBudget()));
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String clickedRemainingFinalAmount = remainingFinalAmountMap.get(position);
-                String clickedFinalAmount = finalAmountMap.get(position);
-                Intent intent = new Intent(budgetFragment.getContext(), DetailsBudgetActivity.class);
-                intent.putExtra("budget", budgetArrayList.get(position));
-                intent.putExtra("remainingFinalAmount", clickedRemainingFinalAmount);
-                intent.putExtra("finalAmount", clickedFinalAmount);
-                Gson gson = new Gson();
-                String list = gson.toJson(budgetArrayList);
-                intent.putExtra("budgetArrayList", list);
-                budgetFragment.getContext().startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            String clickedRemainingFinalAmount = remainingFinalAmountMap.get(position);
+            String clickedFinalAmount = finalAmountMap.get(position);
+            Intent intent = new Intent(budgetFragment.getContext(), DetailsBudgetActivity.class);
+            intent.putExtra("budget", budgetArrayList.get(position));
+            intent.putExtra("remainingFinalAmount", clickedRemainingFinalAmount);
+            intent.putExtra("finalAmount", clickedFinalAmount);
+            Gson gson = new Gson();
+            String list = gson.toJson(budgetArrayList);
+            intent.putExtra("budgetArrayList", list);
+            budgetFragment.getContext().startActivity(intent);
         });
 
         if (position == budgetArrayList.size() - 1) {
@@ -147,7 +138,7 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
         return budgetArrayList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView setWarning;
         Slider setSlider;
         TextView setCategory, setRemainingAmount, setAmount, setExceedAmount, setIncomeExpenseAmount;

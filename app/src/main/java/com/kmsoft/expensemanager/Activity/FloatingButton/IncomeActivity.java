@@ -196,8 +196,7 @@ public class IncomeActivity extends AppCompatActivity {
                 bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriContent);
-                    addAttachmentImage = (MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null));
-
+                    addAttachmentImage = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title2", null);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

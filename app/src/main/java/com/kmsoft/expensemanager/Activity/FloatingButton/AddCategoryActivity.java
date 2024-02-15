@@ -391,7 +391,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     }
 
     private void insertInitialCategories() {
-        dbHelper.insertCategoryData(new Category(0, "Shopping", R.drawable.i47, "Income"));
+        dbHelper.insertCategoryData(new Category(0, "Shopping", R.drawable.i23, "Income"));
         dbHelper.insertCategoryData(new Category(0, "Food", R.drawable.i12, "Income"));
         dbHelper.insertCategoryData(new Category(0, "Birthday", R.drawable.i11, "Income"));
         dbHelper.insertCategoryData(new Category(0, "Party", R.drawable.i7, "Income"));

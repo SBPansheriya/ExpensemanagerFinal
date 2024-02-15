@@ -79,7 +79,7 @@ public class EditProfileActivity extends AppCompatActivity {
         userImage = sharedPreferences.getString(USER_IMAGE,"");
 
         if (TextUtils.isEmpty(userName)) {
-            editProfileUsername.setText(R.string.your_name);
+            editProfileUsername.setHint(R.string.your_name);
         } else {
             editProfileUsername.setText(userName);
         }
@@ -115,7 +115,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriContent);
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -130,12 +129,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent intent = new Intent();
         intent.putExtra("userImage", userImage);
         intent.putExtra("userName",userName);
         setResult(RESULT_OK, intent);
-
+        super.onBackPressed();
     }
 
     private void startCrop(Uri selectedImageUri) {
@@ -274,7 +272,7 @@ public class EditProfileActivity extends AppCompatActivity {
             if (data != null && data.getExtras() != null && data.getExtras().containsKey("data")) {
                 bitmap = (Bitmap) data.getExtras().get("data");
                 if (bitmap != null) {
-                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title1", null);
                     startCrop(Uri.parse(path));
                 }
             } else {

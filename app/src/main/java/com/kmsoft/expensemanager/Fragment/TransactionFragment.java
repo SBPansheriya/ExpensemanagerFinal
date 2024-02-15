@@ -117,8 +117,12 @@ public class TransactionFragment extends Fragment {
         TextView ok = dialog.findViewById(R.id.ok);
         CalendarView calendarView = dialog.findViewById(R.id.trans_calenderView);
 
-        sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        if (date != null){
+            Date date1 = parseDate(date);
+            if(date1 != null) {
+                calendarView.setDate(date1.getTime());
+            }
+        }
 
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             Calendar selectedDateCalendar = Calendar.getInstance();
@@ -139,6 +143,16 @@ public class TransactionFragment extends Fragment {
             Display();
             dialog.dismiss();
         });
+    }
+
+    private Date parseDate(String dateString) {
+        try {
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            return sdf.parse(dateString);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void showFilterBottomDialog() {

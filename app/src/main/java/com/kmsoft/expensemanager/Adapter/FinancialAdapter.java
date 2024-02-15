@@ -47,10 +47,10 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
             holder.itemDate.setText(incomeAndExpense.getDate());
 
             if (selected.equals("Income")){
-                holder.itemAmount.setText("+" + incomeAndExpense.getAmount());
+                holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
                 holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
             } else if (selected.equals("Expense")) {
-                holder.itemAmount.setText("-" + incomeAndExpense.getAmount());
+                holder.itemAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
                 holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
             }
 
@@ -64,10 +64,10 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
         } else if (spinner.equals("Category")) {
             holder.itemCategoryName.setText(incomeAndExpense.getCategoryName());
             if (selected.equals("Income")){
-                holder.itemCategoryAmount.setText("+" + incomeAndExpense.getAmount());
+                holder.itemCategoryAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
                 holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.green));
             } else if (selected.equals("Expense")) {
-                holder.itemCategoryAmount.setText("-" + incomeAndExpense.getAmount());
+                holder.itemCategoryAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
                 holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.red));
             }
             holder.setSlider.setEnabled(false);
@@ -82,7 +82,7 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
         return incomeAndExpenseArrayList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
         RelativeLayout relative,relative1,relative2;
         Slider setSlider;

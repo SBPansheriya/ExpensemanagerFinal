@@ -15,11 +15,13 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,12 +37,15 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.kmsoft.expensemanager.Adapter.FinancialAdapter;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,8 +61,9 @@ public class FinancialReportActivity extends AppCompatActivity {
     DBHelper dbHelper;
     ImageView financialLineChart, financialPieChart, back;
     Spinner spinner, spinner1;
-    LinearLayout pieLinear,pieLinear1;
-    TextView jan,feb,mar,apr,may,june,july,aug,sep,oct,nov,dec;
+    RelativeLayout relativeLayout;
+    LinearLayout pieLinear, pieLinear1, pieLinear2;
+    TextView jan, feb, mar, apr, may, june, july, aug, sep, oct, nov, dec, previousYear, currantYear, nextYear, noData;
     TextView financialIncome, financialExpense, emptyTransaction, mon, tue, wed, thu, fri, sat, sun;
     LineChart chart;
     PieChart pieChart;
@@ -70,7 +76,9 @@ public class FinancialReportActivity extends AppCompatActivity {
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
     String selected;
     String weekly;
+    String yearly;
     int monthly;
+    int totalAmount;
     String clickedDate;
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -86,25 +94,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         dbHelper = new DBHelper(FinancialReportActivity.this);
 
-        weekly = "Monday";
-        monthly = 1;
-        mon.setTextColor(ContextCompat.getColor(this,R.color.green));
-        tue.setTextColor(Color.BLACK);
-        wed.setTextColor(Color.BLACK);
-        thu.setTextColor(Color.BLACK);
-        fri.setTextColor(Color.BLACK);
-        sat.setTextColor(Color.BLACK);
-        sun.setTextColor(Color.BLACK);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setFirstDayOfWeek(Calendar.MONDAY);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        clickedDate = dateFormat1.format(calendar.getTime());
-
-        selected = "Income";
-
-        spinner.setSelection(0);
-        spinner1.setSelection(0);
+        setData();
 
         ArrayAdapter<String> selectTypeAdapter = new ArrayAdapter<>(FinancialReportActivity.this, R.layout.simple_spinner_item1, FinancialReportActivity.this.getResources().getStringArray(R.array.financial_report_type));
         selectTypeAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
@@ -114,16 +104,6 @@ public class FinancialReportActivity extends AppCompatActivity {
         financialCategoryAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(financialCategoryAdapter);
 
-        financialLineChart.setBackgroundResource(R.drawable.selected_financial_pie_background);
-        financialPieChart.setBackgroundResource(R.drawable.unselected_financial_pie_background);
-        financialLineChart.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.line_chart));
-        financialPieChart.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.pie_chart_green));
-
-        financialIncome.setBackgroundResource(R.drawable.selected_category);
-        financialExpense.setBackgroundResource(R.drawable.unselected_category);
-        financialIncome.setTextColor(ContextCompat.getColor(this,R.color.white));
-        financialExpense.setTextColor(ContextCompat.getColor(this,R.color.black));
-
         back.setOnClickListener(v -> onBackPressed());
 
         financialLineChart.setOnClickListener(v -> {
@@ -131,11 +111,12 @@ public class FinancialReportActivity extends AppCompatActivity {
             financialLineChart.setBackgroundResource(R.drawable.selected_financial_pie_background);
             financialPieChart.setBackgroundResource(R.drawable.unselected_financial_pie_background);
 
-            financialLineChart.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.line_chart));
-            financialPieChart.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.pie_chart_green));
+            financialLineChart.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.line_chart));
+            financialPieChart.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pie_chart_green));
 
             pieLinear.setVisibility(View.GONE);
             pieLinear1.setVisibility(View.GONE);
+            pieLinear2.setVisibility(View.GONE);
             pieChart.setVisibility(View.GONE);
             chart.setVisibility(View.VISIBLE);
         });
@@ -145,9 +126,10 @@ public class FinancialReportActivity extends AppCompatActivity {
             financialPieChart.setBackgroundResource(R.drawable.selected_financial_line_background);
             financialLineChart.setBackgroundResource(R.drawable.unselected_financial_line_backgound);
 
-            financialLineChart.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.line_chart_green));
-            financialPieChart.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.pie_chart));
+            financialLineChart.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.line_chart_green));
+            financialPieChart.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pie_chart));
 
+            relativeLayout.setVisibility(View.VISIBLE);
             pieChart.setVisibility(View.VISIBLE);
             chart.setVisibility(View.GONE);
 
@@ -155,6 +137,8 @@ public class FinancialReportActivity extends AppCompatActivity {
                 pieLinear.setVisibility(View.VISIBLE);
             } else if (spinner.getSelectedItem().toString().equals("Month")) {
                 pieLinear1.setVisibility(View.VISIBLE);
+            } else if (spinner.getSelectedItem().toString().equals("Year")) {
+                pieLinear2.setVisibility(View.VISIBLE);
             }
         });
 
@@ -165,8 +149,8 @@ public class FinancialReportActivity extends AppCompatActivity {
             financialIncome.setBackgroundResource(R.drawable.selected_category);
             financialExpense.setBackgroundResource(R.drawable.unselected_category);
 
-            financialIncome.setTextColor(ContextCompat.getColor(this,R.color.white));
-            financialExpense.setTextColor(ContextCompat.getColor(this,R.color.black));
+            financialIncome.setTextColor(ContextCompat.getColor(this, R.color.white));
+            financialExpense.setTextColor(ContextCompat.getColor(this, R.color.black));
             if (spinner.getSelectedItem().toString().equals("Today")) {
                 populateChartWithTodayIncomeData();
             } else if (spinner.getSelectedItem().toString().equals("Week")) {
@@ -186,8 +170,8 @@ public class FinancialReportActivity extends AppCompatActivity {
             financialExpense.setBackgroundResource(R.drawable.selected_category);
             financialIncome.setBackgroundResource(R.drawable.unselected_category);
 
-            financialExpense.setTextColor(ContextCompat.getColor(this,R.color.white));
-            financialIncome.setTextColor(ContextCompat.getColor(this,R.color.black));
+            financialExpense.setTextColor(ContextCompat.getColor(this, R.color.white));
+            financialIncome.setTextColor(ContextCompat.getColor(this, R.color.black));
 
             if (spinner.getSelectedItem().toString().equals("Today")) {
                 populateChartWithTodayExpenseData();
@@ -201,9 +185,45 @@ public class FinancialReportActivity extends AppCompatActivity {
             Display();
         });
 
+        previousYear.setOnClickListener(v -> {
+            yearly = previousYear.getText().toString();
+            previousYear.setTextColor(ContextCompat.getColor(this, R.color.green));
+            currantYear.setTextColor(Color.BLACK);
+            nextYear.setTextColor(Color.BLACK);
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Year")) {
+                populateChartWithYearIncomeData();
+            } else {
+                populateChartWithYearExpenseData();
+            }
+        });
+
+        currantYear.setOnClickListener(v -> {
+            yearly = currantYear.getText().toString();
+            currantYear.setTextColor(ContextCompat.getColor(this, R.color.green));
+            previousYear.setTextColor(Color.BLACK);
+            nextYear.setTextColor(Color.BLACK);
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Year")) {
+                populateChartWithYearIncomeData();
+            } else {
+                populateChartWithYearExpenseData();
+            }
+        });
+
+        nextYear.setOnClickListener(v -> {
+            yearly = nextYear.getText().toString();
+            nextYear.setTextColor(ContextCompat.getColor(this, R.color.green));
+            previousYear.setTextColor(Color.BLACK);
+            currantYear.setTextColor(Color.BLACK);
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Year")) {
+                populateChartWithYearIncomeData();
+            } else {
+                populateChartWithYearExpenseData();
+            }
+        });
+
         mon.setOnClickListener(v -> {
             weekly = "Monday";
-            mon.setTextColor(ContextCompat.getColor(this,R.color.green));
+            mon.setTextColor(ContextCompat.getColor(this, R.color.green));
             tue.setTextColor(Color.BLACK);
             wed.setTextColor(Color.BLACK);
             thu.setTextColor(Color.BLACK);
@@ -215,7 +235,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             calendar1.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
             SimpleDateFormat dateFormat11 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             clickedDate = dateFormat11.format(calendar1.getTime());
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Week")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Week")) {
                 populateChartWithWeekIncomeData();
             } else {
                 populateChartWithWeekExpenseData();
@@ -223,7 +243,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         tue.setOnClickListener(v -> {
-            tue.setTextColor(ContextCompat.getColor(this,R.color.green));
+            tue.setTextColor(ContextCompat.getColor(this, R.color.green));
             mon.setTextColor(Color.BLACK);
             wed.setTextColor(Color.BLACK);
             thu.setTextColor(Color.BLACK);
@@ -237,7 +257,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             calendar12.add(Calendar.DAY_OF_WEEK, 1);
             SimpleDateFormat dateFormat112 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             clickedDate = dateFormat112.format(calendar12.getTime());
-            if (TextUtils.equals(selected, "Income")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Week")) {
                 populateChartWithWeekIncomeData();
             } else {
                 populateChartWithWeekExpenseData();
@@ -245,7 +265,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         wed.setOnClickListener(v -> {
-            wed.setTextColor(ContextCompat.getColor(this,R.color.green));
+            wed.setTextColor(ContextCompat.getColor(this, R.color.green));
             mon.setTextColor(Color.BLACK);
             tue.setTextColor(Color.BLACK);
             thu.setTextColor(Color.BLACK);
@@ -259,7 +279,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             calendar13.add(Calendar.DAY_OF_WEEK, 2);
             SimpleDateFormat dateFormat113 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             clickedDate = dateFormat113.format(calendar13.getTime());
-            if (TextUtils.equals(selected, "Income")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Week")) {
                 populateChartWithWeekIncomeData();
             } else {
                 populateChartWithWeekExpenseData();
@@ -267,7 +287,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         thu.setOnClickListener(v -> {
-            thu.setTextColor(ContextCompat.getColor(this,R.color.green));
+            thu.setTextColor(ContextCompat.getColor(this, R.color.green));
             mon.setTextColor(Color.BLACK);
             tue.setTextColor(Color.BLACK);
             wed.setTextColor(Color.BLACK);
@@ -281,7 +301,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             calendar14.add(Calendar.DAY_OF_WEEK, 3);
             SimpleDateFormat dateFormat114 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             clickedDate = dateFormat114.format(calendar14.getTime());
-            if (TextUtils.equals(selected, "Income")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Week")) {
                 populateChartWithWeekIncomeData();
             } else {
                 populateChartWithWeekExpenseData();
@@ -289,7 +309,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         fri.setOnClickListener(v -> {
-            fri.setTextColor(ContextCompat.getColor(this,R.color.green));
+            fri.setTextColor(ContextCompat.getColor(this, R.color.green));
             mon.setTextColor(Color.BLACK);
             tue.setTextColor(Color.BLACK);
             wed.setTextColor(Color.BLACK);
@@ -303,7 +323,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             calendar16.add(Calendar.DAY_OF_WEEK, 4);
             SimpleDateFormat dateFormat116 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             clickedDate = dateFormat116.format(calendar16.getTime());
-            if (TextUtils.equals(selected, "Income")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Week")) {
                 populateChartWithWeekIncomeData();
             } else {
                 populateChartWithWeekExpenseData();
@@ -311,7 +331,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         sat.setOnClickListener(v -> {
-            sat.setTextColor(ContextCompat.getColor(this,R.color.green));
+            sat.setTextColor(ContextCompat.getColor(this, R.color.green));
             mon.setTextColor(Color.BLACK);
             tue.setTextColor(Color.BLACK);
             wed.setTextColor(Color.BLACK);
@@ -325,7 +345,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             calendar15.add(Calendar.DAY_OF_WEEK, 5);
             SimpleDateFormat dateFormat115 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             clickedDate = dateFormat115.format(calendar15.getTime());
-            if (TextUtils.equals(selected, "Income")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Week")) {
                 populateChartWithWeekIncomeData();
             } else {
                 populateChartWithWeekExpenseData();
@@ -333,7 +353,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         sun.setOnClickListener(v -> {
-            sun.setTextColor(ContextCompat.getColor(this,R.color.green));
+            sun.setTextColor(ContextCompat.getColor(this, R.color.green));
             mon.setTextColor(Color.BLACK);
             tue.setTextColor(Color.BLACK);
             wed.setTextColor(Color.BLACK);
@@ -347,7 +367,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             calendar17.add(Calendar.DAY_OF_WEEK, 6);
             SimpleDateFormat dateFormat117 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             clickedDate = dateFormat117.format(calendar17.getTime());
-            if (TextUtils.equals(selected, "Income")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Week")) {
                 populateChartWithWeekIncomeData();
             } else {
                 populateChartWithWeekExpenseData();
@@ -356,7 +376,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         jan.setOnClickListener(v -> {
             monthly = 1;
-            jan.setTextColor(ContextCompat.getColor(this,R.color.green));
+            jan.setTextColor(ContextCompat.getColor(this, R.color.green));
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
             apr.setTextColor(Color.BLACK);
@@ -368,7 +388,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -377,7 +397,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         feb.setOnClickListener(v -> {
             monthly = 2;
-            feb.setTextColor(ContextCompat.getColor(this,R.color.green));
+            feb.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
             apr.setTextColor(Color.BLACK);
@@ -389,7 +409,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -398,7 +418,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         mar.setOnClickListener(v -> {
             monthly = 3;
-            mar.setTextColor(ContextCompat.getColor(this,R.color.green));
+            mar.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             apr.setTextColor(Color.BLACK);
@@ -410,7 +430,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -419,7 +439,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         apr.setOnClickListener(v -> {
             monthly = 3;
-            apr.setTextColor(ContextCompat.getColor(this,R.color.green));
+            apr.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -431,7 +451,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -440,7 +460,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         may.setOnClickListener(v -> {
             monthly = 3;
-            may.setTextColor(ContextCompat.getColor(this,R.color.green));
+            may.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -452,7 +472,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -461,7 +481,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         june.setOnClickListener(v -> {
             monthly = 3;
-            june.setTextColor(ContextCompat.getColor(this,R.color.green));
+            june.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -473,7 +493,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -482,7 +502,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         july.setOnClickListener(v -> {
             monthly = 3;
-            july.setTextColor(ContextCompat.getColor(this,R.color.green));
+            july.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -494,7 +514,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -503,7 +523,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         aug.setOnClickListener(v -> {
             monthly = 3;
-            aug.setTextColor(ContextCompat.getColor(this,R.color.green));
+            aug.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -515,7 +535,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -524,7 +544,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         sep.setOnClickListener(v -> {
             monthly = 3;
-            sep.setTextColor(ContextCompat.getColor(this,R.color.green));
+            sep.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -536,7 +556,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -545,7 +565,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         oct.setOnClickListener(v -> {
             monthly = 3;
-            oct.setTextColor(ContextCompat.getColor(this,R.color.green));
+            oct.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -557,7 +577,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             sep.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -566,7 +586,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         nov.setOnClickListener(v -> {
             monthly = 3;
-            nov.setTextColor(ContextCompat.getColor(this,R.color.green));
+            nov.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -578,7 +598,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             sep.setTextColor(Color.BLACK);
             oct.setTextColor(Color.BLACK);
             dec.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -587,7 +607,7 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         dec.setOnClickListener(v -> {
             monthly = 3;
-            dec.setTextColor(ContextCompat.getColor(this,R.color.green));
+            dec.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
             mar.setTextColor(Color.BLACK);
@@ -599,7 +619,7 @@ public class FinancialReportActivity extends AppCompatActivity {
             sep.setTextColor(Color.BLACK);
             oct.setTextColor(Color.BLACK);
             nov.setTextColor(Color.BLACK);
-            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(),"Month")) {
+            if (TextUtils.equals(selected, "Income") && TextUtils.equals(spinner.getSelectedItem().toString(), "Month")) {
                 populateChartWithMonthIncomeData();
             } else {
                 populateChartWithMonthExpenseData();
@@ -609,16 +629,22 @@ public class FinancialReportActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (pieChart.getVisibility() == View.VISIBLE && spinner.getSelectedItem().toString().equals("Week")){
+                if (pieChart.getVisibility() == View.VISIBLE && spinner.getSelectedItem().toString().equals("Week")) {
                     pieLinear.setVisibility(View.VISIBLE);
                     pieLinear1.setVisibility(View.GONE);
-
+                    pieLinear2.setVisibility(View.GONE);
                 } else if (pieChart.getVisibility() == View.VISIBLE && spinner.getSelectedItem().toString().equals("Month")) {
                     pieLinear1.setVisibility(View.VISIBLE);
+                    pieLinear.setVisibility(View.GONE);
+                    pieLinear2.setVisibility(View.GONE);
+                } else if (pieChart.getVisibility() == View.VISIBLE && spinner.getSelectedItem().toString().equals("Year")) {
+                    pieLinear2.setVisibility(View.VISIBLE);
+                    pieLinear1.setVisibility(View.GONE);
                     pieLinear.setVisibility(View.GONE);
                 } else {
                     pieLinear.setVisibility(View.GONE);
                     pieLinear1.setVisibility(View.GONE);
+                    pieLinear2.setVisibility(View.GONE);
                 }
                 if (spinner.getSelectedItem().toString().equals("Today")) {
                     if (click == 1) {
@@ -712,8 +738,13 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         ArrayList<PieEntry> pieEntries;
         pieEntries = categorizeToday(incomeList);
-        setupLineChart(chart, days, entries, pieEntries);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
+        setupLineChart(chart, days, entries, pieEntries);
     }
 
     private void populateChartWithTodayExpenseData() {
@@ -756,8 +787,13 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         ArrayList<PieEntry> pieEntries;
         pieEntries = categorizeToday(expenseList);
-        setupLineChart1(chart, days, entries, pieEntries);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
+        setupLineChart1(chart, days, entries, pieEntries);
     }
 
     private void populateChartWithWeekIncomeData() {
@@ -797,8 +833,13 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         ArrayList<PieEntry> pieEntries;
         pieEntries = categorizeWeek(incomeList);
-        setupLineChart(chart, days, entries, pieEntries);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
+        setupLineChart(chart, days, entries, pieEntries);
     }
 
     private void populateChartWithWeekExpenseData() {
@@ -839,8 +880,13 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         ArrayList<PieEntry> pieEntries;
         pieEntries = categorizeWeek(expenseList);
-        setupLineChart1(chart, days, entries, pieEntries);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
+        setupLineChart1(chart, days, entries, pieEntries);
     }
 
     private void populateChartWithMonthIncomeData() {
@@ -873,9 +919,13 @@ public class FinancialReportActivity extends AppCompatActivity {
         chart.getAxisRight().setEnabled(false);
         final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-
         ArrayList<PieEntry> pieEntries;
         pieEntries = categorizeMonth(incomeList);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
         setupLineChart(chart, months, entries, pieEntries);
     }
@@ -913,6 +963,11 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         ArrayList<PieEntry> pieEntries;
         pieEntries = categorizeMonth(expenseList);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
         setupLineChart1(chart, months, entries, pieEntries);
     }
@@ -946,12 +1001,10 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         final String currentYearStr = String.valueOf(currentYear);
 
-        // Calculate previous year
         calendar.add(Calendar.YEAR, -1);
         int previousYear = calendar.get(Calendar.YEAR);
         final String previousYearStr = String.valueOf(previousYear);
 
-        // Calculate next year
         calendar.add(Calendar.YEAR, 2);
         int nextYear = calendar.get(Calendar.YEAR);
         final String nextYearStr = String.valueOf(nextYear);
@@ -962,14 +1015,14 @@ public class FinancialReportActivity extends AppCompatActivity {
         chart.getAxisLeft().setEnabled(false);
         chart.getAxisRight().setEnabled(false);
 
-        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new PieEntry(30f, "Label 1"));
-        pieEntries.add(new PieEntry(20f, "Label 2"));
-        pieEntries.add(new PieEntry(50f, "Label 3"));
-
-        // Refresh chart
+        ArrayList<PieEntry> pieEntries;
+        pieEntries = categorizeYear(incomeList);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
-
         setupLineChart(chart, years, entries, pieEntries);
     }
 
@@ -1018,13 +1071,14 @@ public class FinancialReportActivity extends AppCompatActivity {
         chart.getAxisLeft().setEnabled(false);
         chart.getAxisRight().setEnabled(false);
 
-        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new PieEntry(30f, "Label 1"));
-        pieEntries.add(new PieEntry(20f, "Label 2"));
-        pieEntries.add(new PieEntry(50f, "Label 3"));
-
+        ArrayList<PieEntry> pieEntries;
+        pieEntries = categorizeYear(expenseList);
+        if (pieEntries.isEmpty()) {
+            pieChart.setCenterText("");
+        } else {
+            pieChart.setCenterText("₹" + totalAmount);
+        }
         pieChart.invalidate();
-
         setupLineChart1(chart, years, entries, pieEntries);
     }
 
@@ -1080,11 +1134,11 @@ public class FinancialReportActivity extends AppCompatActivity {
         dataSet.setValueTextSize(9);
         dataSet.setDrawFilled(true);
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCircleColor(ContextCompat.getColor(this,R.color.green));
-        dataSet.setFillColor(ContextCompat.getColor(this,R.color.green));
+        dataSet.setCircleColor(ContextCompat.getColor(this, R.color.green));
+        dataSet.setFillColor(ContextCompat.getColor(this, R.color.green));
         dataSet.setFillAlpha(30);
-        dataSet.setValueTextColor(ContextCompat.getColor(this,R.color.green));
-        dataSet.setColor(ContextCompat.getColor(this,R.color.green));
+        dataSet.setValueTextColor(ContextCompat.getColor(this, R.color.green));
+        dataSet.setColor(ContextCompat.getColor(this, R.color.green));
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
@@ -1099,9 +1153,21 @@ public class FinancialReportActivity extends AppCompatActivity {
         pieData.setValueTypeface(typeface);
         pieData.setValueTextColor(Color.WHITE);
 
+        Legend legend1 = pieChart.getLegend();
+        legend1.setWordWrapEnabled(true);
+        legend1.setMaxSizePercent(0.5f);
+        legend1.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend1.setTextSize(12f);
+        legend1.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend1.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend1.setDrawInside(false);
+        legend1.setYOffset(0f);
+        legend1.setXOffset(0f);
+
         pieDataSet.setColors(MY_COLORS);
 
         pieChart.setData(pieData);
+        pieChart.setExtraBottomOffset(-10f);
         pieChart.setDrawEntryLabels(false);
         pieChart.setCenterTextColor(Color.BLACK);
         pieChart.setCenterTextSize(20f);
@@ -1113,7 +1179,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         pieChart.setCenterTextTypeface(typeface);
     }
 
-    private void setupLineChart1(LineChart chart, String[] days, ArrayList<Entry> entries,ArrayList<PieEntry> pieEntries) {
+    private void setupLineChart1(LineChart chart, String[] days, ArrayList<Entry> entries, ArrayList<PieEntry> pieEntries) {
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
@@ -1129,11 +1195,11 @@ public class FinancialReportActivity extends AppCompatActivity {
         dataSet.setValueTextSize(9);
         dataSet.setDrawFilled(true);
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCircleColor(ContextCompat.getColor(this,R.color.red));
-        dataSet.setFillColor(ContextCompat.getColor(this,R.color.red));
+        dataSet.setCircleColor(ContextCompat.getColor(this, R.color.red));
+        dataSet.setFillColor(ContextCompat.getColor(this, R.color.red));
         dataSet.setFillAlpha(30);
-        dataSet.setValueTextColor(ContextCompat.getColor(this,R.color.red));
-        dataSet.setColor(ContextCompat.getColor(this,R.color.red));
+        dataSet.setValueTextColor(ContextCompat.getColor(this, R.color.red));
+        dataSet.setColor(ContextCompat.getColor(this, R.color.red));
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
@@ -1147,7 +1213,19 @@ public class FinancialReportActivity extends AppCompatActivity {
         typeface = ResourcesCompat.getFont(FinancialReportActivity.this, R.font.lexenddeca_extrabold);
         pieData.setValueTypeface(typeface);
         pieData.setValueTextColor(Color.WHITE);
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+
+        Legend legend1 = pieChart.getLegend();
+        legend1.setWordWrapEnabled(true);
+        legend1.setMaxSizePercent(0.5f);
+        legend1.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend1.setTextSize(12f);
+        legend1.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend1.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend1.setDrawInside(false);
+        legend1.setYOffset(0f);
+        legend1.setXOffset(0f);
+        legend1.setFormToTextSpace(5f);
+        pieDataSet.setColors(MY_COLORS);
 
         pieChart.setData(pieData);
         pieChart.setDrawEntryLabels(false);
@@ -1350,11 +1428,15 @@ public class FinancialReportActivity extends AppCompatActivity {
     private static ArrayList<IncomeAndExpense> filterByCurrentMonth(ArrayList<IncomeAndExpense> incomeAndExpenses) {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
+        int currentYearInt = calendar.get(Calendar.YEAR);
+        String currentYearStr = String.valueOf(currentYearInt);
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
         for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
             String entryDate = incomeAndExpense.getDate();
             int entryMonth = Integer.parseInt(entryDate.split("/")[1]);
-            if (entryMonth == currentMonth) {
+            int entryYear = Integer.parseInt(entryDate.split("/")[2]);
+            String formattedYear = String.valueOf(entryYear);
+            if (entryMonth == currentMonth && TextUtils.equals(currentYearStr, formattedYear)) {
                 filteredList.add(incomeAndExpense);
             }
         }
@@ -1394,6 +1476,8 @@ public class FinancialReportActivity extends AppCompatActivity {
                 }
             }
         }
+        totalAmount = getTotalAmount(categoryTotals);
+
         ArrayList<PieEntry> entries = new ArrayList<>();
         for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
             entries.add(new PieEntry(entry.getValue(), entry.getKey()));
@@ -1418,6 +1502,8 @@ public class FinancialReportActivity extends AppCompatActivity {
                 }
             }
         }
+        totalAmount = getTotalAmount(categoryTotals);
+
         ArrayList<PieEntry> entries = new ArrayList<>();
         for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
             entries.add(new PieEntry(entry.getValue(), entry.getKey()));
@@ -1427,15 +1513,19 @@ public class FinancialReportActivity extends AppCompatActivity {
 
     private ArrayList<PieEntry> categorizeMonth(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList) {
         Map<String, Float> categoryTotals = new HashMap<>();
-
+        Calendar calendar = Calendar.getInstance();
+        int currentYearInt = calendar.get(Calendar.YEAR);
+        String currentYearStr = String.valueOf(currentYearInt);
         for (IncomeAndExpense incomeAndExpense : incomeAndExpenseArrayList) {
             String category = incomeAndExpense.getCategoryName();
             String amt = extractNumericPart(incomeAndExpense.getAmount());
             float amount = Float.parseFloat(amt);
             String entry = incomeAndExpense.getDate();
             int entryMonth = Integer.parseInt(entry.split("/")[1]);
+            int entryYear = Integer.parseInt(entry.split("/")[2]);
+            String formattedYear = String.valueOf(entryYear);
 
-            if (entryMonth == monthly) {
+            if (entryMonth == monthly && TextUtils.equals(formattedYear, currentYearStr)) {
                 if (categoryTotals.containsKey(category)) {
                     categoryTotals.put(category, categoryTotals.get(category) + amount);
                 } else {
@@ -1443,11 +1533,136 @@ public class FinancialReportActivity extends AppCompatActivity {
                 }
             }
         }
+        totalAmount = getTotalAmount(categoryTotals);
+
         ArrayList<PieEntry> entries = new ArrayList<>();
         for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
             entries.add(new PieEntry(entry.getValue(), entry.getKey()));
         }
         return entries;
+    }
+
+    private ArrayList<PieEntry> categorizeYear(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList) {
+        Map<String, Float> categoryTotals = new HashMap<>();
+
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenseArrayList) {
+            String category = incomeAndExpense.getCategoryName();
+            String amt = extractNumericPart(incomeAndExpense.getAmount());
+            float amount = Float.parseFloat(amt);
+            String entry = incomeAndExpense.getDate();
+            int entryYear = Integer.parseInt(entry.split("/")[2]);
+            int formattedYear = Integer.parseInt(yearly);
+            if (entryYear == formattedYear) {
+                if (categoryTotals.containsKey(category)) {
+                    categoryTotals.put(category, categoryTotals.get(category) + amount);
+                } else {
+                    categoryTotals.put(category, amount);
+                }
+            }
+        }
+        totalAmount = getTotalAmount(categoryTotals);
+
+        ArrayList<PieEntry> entries = new ArrayList<>();
+        for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
+            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
+        }
+        return entries;
+    }
+
+    private int getTotalAmount(Map<String, Float> categoryTotals) {
+        int totalAmount = 0;
+        for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
+            totalAmount += entry.getValue();
+        }
+        return totalAmount;
+    }
+
+    private void setData() {
+        Calendar calendarCurrent = Calendar.getInstance();
+        int dayOfWeek = calendarCurrent.get(Calendar.DAY_OF_WEEK);
+        String[] daysOfWeek = new DateFormatSymbols().getWeekdays();
+        weekly = daysOfWeek[dayOfWeek];
+        int currentMonth = calendarCurrent.get(Calendar.MONTH) + 1;
+        monthly = currentMonth;
+        switch (currentMonth) {
+            case 1:
+                jan.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 2:
+                feb.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 3:
+                mar.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 4:
+                apr.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 5:
+                may.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 6:
+                june.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 7:
+                july.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 8:
+                aug.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 9:
+                sep.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 10:
+                oct.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 11:
+                nov.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case 12:
+                dec.setTextColor(ContextCompat.getColor(this, R.color.green));
+                break;
+        }
+        TextView[] daysButtons = {sun, mon, tue, wed, thu, fri, sat};
+        if (dayOfWeek >= Calendar.SUNDAY && dayOfWeek <= Calendar.SATURDAY) {
+            daysButtons[dayOfWeek - 1].setTextColor(ContextCompat.getColor(this, R.color.green));
+        }
+
+        int currentYearInt = calendarCurrent.get(Calendar.YEAR);
+        final String currentYearStr = String.valueOf(currentYearInt);
+
+        calendarCurrent.add(Calendar.YEAR, -1);
+        int previousYearInt = calendarCurrent.get(Calendar.YEAR);
+        final String previousYearStr = String.valueOf(previousYearInt);
+
+        calendarCurrent.add(Calendar.YEAR, 2);
+        int nextYearInt = calendarCurrent.get(Calendar.YEAR);
+        final String nextYearStr = String.valueOf(nextYearInt);
+
+        currantYear.setText(currentYearStr);
+        previousYear.setText(previousYearStr);
+        nextYear.setText(nextYearStr);
+        currantYear.setTextColor(ContextCompat.getColor(this, R.color.green));
+
+        yearly = currentYearStr;
+
+        Calendar calendar1 = Calendar.getInstance();
+        SimpleDateFormat dateFormat11 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        clickedDate = dateFormat11.format(calendar1.getTime());
+
+        selected = "Income";
+
+        spinner.setSelection(0);
+        spinner1.setSelection(0);
+
+        financialLineChart.setBackgroundResource(R.drawable.selected_financial_pie_background);
+        financialPieChart.setBackgroundResource(R.drawable.unselected_financial_pie_background);
+        financialLineChart.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.line_chart));
+        financialPieChart.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.pie_chart_green));
+
+        financialIncome.setBackgroundResource(R.drawable.selected_category);
+        financialExpense.setBackgroundResource(R.drawable.unselected_category);
+        financialIncome.setTextColor(ContextCompat.getColor(this, R.color.white));
+        financialExpense.setTextColor(ContextCompat.getColor(this, R.color.black));
     }
 
     private void init() {
@@ -1463,7 +1678,13 @@ public class FinancialReportActivity extends AppCompatActivity {
         emptyTransaction = findViewById(R.id.empty_transaction);
         pieLinear = findViewById(R.id.pie_linear);
         pieLinear1 = findViewById(R.id.pie_linear1);
+        pieLinear2 = findViewById(R.id.pie_linear2);
+        relativeLayout = findViewById(R.id.relativeLayout);
         back = findViewById(R.id.back);
+        noData = findViewById(R.id.no_data);
+        previousYear = findViewById(R.id.previous_year);
+        currantYear = findViewById(R.id.currant_year);
+        nextYear = findViewById(R.id.next_year);
         mon = findViewById(R.id.mon);
         tue = findViewById(R.id.tue);
         wed = findViewById(R.id.wed);

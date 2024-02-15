@@ -161,7 +161,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
-                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp,currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
+                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.updateData(incomeAndExpense);
                 onBackPressed();
@@ -197,21 +197,24 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriContent);
-                    addAttachmentImage = (MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null));
+                    addAttachmentImage = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title2", null);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 if (bitmap != null) {
-                    Picasso.get().load(addAttachmentImage).into(setEditImage);
+                    setEditImage.setImageBitmap(bitmap);
                 }
                 editAddAttachment.setVisibility(View.GONE);
                 editSetImage.setVisibility(View.VISIBLE);
             } else {
-                Picasso.get().load(incomeAndExpense.getAddAttachment()).into(setEditImage);
-
-                editAddAttachment.setVisibility(View.GONE);
-                editSetImage.setVisibility(View.VISIBLE);
+                if (!TextUtils.isEmpty(incomeAndExpense.getAddAttachment())) {
+                    Picasso.get().load(incomeAndExpense.getAddAttachment()).into(setEditImage);
+                    editAddAttachment.setVisibility(View.GONE);
+                    editSetImage.setVisibility(View.VISIBLE);
+                } else {
+                    editAddAttachment.setVisibility(View.VISIBLE);
+                    editSetImage.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -368,7 +371,8 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 bitmap = (Bitmap) data.getExtras().get("data");
                 if (bitmap != null) {
                     String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
-                    startCrop(Uri.parse(path));
+                    Uri imageUri = Uri.parse(path);
+                    startCrop(imageUri);
                 }
             } else {
                 Toast.makeText(this, "No image data found in the intent.", Toast.LENGTH_SHORT).show();
@@ -386,6 +390,16 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         TextView cancel = dialog.findViewById(R.id.cancel);
         TextView ok = dialog.findViewById(R.id.ok);
         CalendarView calendarView = dialog.findViewById(R.id.trans_calenderView);
+
+        Date date;
+        if (selectedDate != null) {
+            date = parseDate(selectedDate);
+        } else {
+            date = parseDate(incomeAndExpense.getDate());
+        }
+        if (date != null) {
+            calendarView.setDate(date.getTime());
+        }
 
         long currentDateMillis = System.currentTimeMillis();
         calendarView.setMaxDate(currentDateMillis);
@@ -406,7 +420,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             selectedDateCalendar.set(year, month, dayOfMonth);
             SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             selectedDate = dateFormat1.format(selectedDateCalendar.getTime());
-            selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis()/1000;
+            selectedDateTimeStamp = selectedDateCalendar.getTimeInMillis() / 1000;
 
         });
 
@@ -420,6 +434,16 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             }
             dialog.dismiss();
         });
+    }
+
+    private Date parseDate(String dateString) {
+        try {
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            return sdf.parse(dateString);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

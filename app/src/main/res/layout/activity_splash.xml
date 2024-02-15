@@ -20,10 +20,11 @@
             android:src="@drawable/splash_img1" />
 
         <ImageView
+            android:id="@+id/person"
             android:layout_width="match_parent"
             android:layout_height="450dp"
             android:layout_centerInParent="true"
-            android:src="@drawable/splash_img"/>
+            android:src="@drawable/splash_img" />
     </RelativeLayout>
 
     <TextView

@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,8 @@ import com.kmsoft.expensemanager.Model.ListDateModel;
 import com.kmsoft.expensemanager.R;
 
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -49,7 +48,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.MainViewHolder
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -1 * numberOfDays);
         Date yesterdayDate = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         String yesterday = sdf.format(yesterdayDate);
 
         Date currentDate = new Date();
@@ -57,17 +56,17 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.MainViewHolder
 
         if (listDateModel.incomeAndExpenseArrayList.size() > 0) {
             if (listDateModel.incomeAndExpenseArrayList.get(0).getDate().equals(today)) {
-                holder.date_text.setText("Today");
+                holder.date_text.setText(R.string.today);
             } else if (listDateModel.incomeAndExpenseArrayList.get(0).getDate().equals(yesterday)) {
-                holder.date_text.setText("Yesterday");
+                holder.date_text.setText(R.string.yesterday);
             } else {
                 holder.date_text.setText(listDateModel.incomeAndExpenseArrayList.get(0).getDate());
             }
 
             if (sortBy.equals("Highest")) {
-                Collections.sort(listDateModel.incomeAndExpenseArrayList, Comparator.comparingDouble(IncomeAndExpense::getAmountValue).reversed());
+                listDateModel.incomeAndExpenseArrayList.sort(Comparator.comparingDouble(IncomeAndExpense::getAmountValue).reversed());
             } else if (sortBy.equals("Lowest")) {
-                Collections.sort(listDateModel.incomeAndExpenseArrayList, Comparator.comparingDouble(IncomeAndExpense::getAmountValue));
+                listDateModel.incomeAndExpenseArrayList.sort(Comparator.comparingDouble(IncomeAndExpense::getAmountValue));
             }
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
@@ -82,7 +81,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.MainViewHolder
         return listDateModels.size();
     }
 
-    public class MainViewHolder extends RecyclerView.ViewHolder {
+    public static class MainViewHolder extends RecyclerView.ViewHolder {
 
         TextView date_text;
         RecyclerView data_recycler;

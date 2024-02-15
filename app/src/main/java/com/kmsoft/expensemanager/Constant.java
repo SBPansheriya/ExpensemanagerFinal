@@ -26,7 +26,6 @@ public class Constant {
             Color.rgb(217, 184, 162),
             Color.rgb(191, 134, 134),
             Color.rgb(179, 48, 80),
-            Color.rgb(193, 37, 82),
             Color.rgb(255, 102, 0),
             Color.rgb(245, 199, 0),
             Color.rgb(106, 150, 31),
@@ -40,7 +39,8 @@ public class Constant {
             Color.rgb(255, 247, 140),
             Color.rgb(255, 208, 140),
             Color.rgb(140, 234, 255),
-            Color.rgb(255, 140, 157)
+            Color.rgb(255, 140, 157),
+            Color.rgb(193, 37, 82)
     };
 
     public static ArrayList<IncomeAndExpense> incomeAndExpenseArrayList = new ArrayList<>();

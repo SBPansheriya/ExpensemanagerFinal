@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.kmsoft.expensemanager.R;
@@ -20,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     public static String USER_NAME = "userName";
     public static String USER_IMAGE = "userImage";
-    ImageView getStarted;
+    ImageView getStarted,person;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,10 @@ public class SplashActivity extends AppCompatActivity {
         editor = sharedPreferences.edit();
 
         getStarted = findViewById(R.id.get_started);
+        person = findViewById(R.id.person);
+
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.dance_animation);
+        person.startAnimation(animation);
 
         getStarted.setOnClickListener(v -> {
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
