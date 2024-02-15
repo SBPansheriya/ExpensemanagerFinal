@@ -1,5 +1,8 @@
 package com.kmsoft.expensemanager.Activity.FloatingButton;
 
+import static com.kmsoft.expensemanager.Constant.MY_COLORS;
+import static com.kmsoft.expensemanager.Constant.categories;
+import static com.kmsoft.expensemanager.Constant.categoriesImage;
 import static com.kmsoft.expensemanager.Constant.categoryArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -36,6 +39,7 @@ import com.kmsoft.expensemanager.Model.Category;
 import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class AddCategoryActivity extends AppCompatActivity {
 
@@ -63,7 +67,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     ImageView editNewCategoryImage;
     ImageView addNewCategoryImage;
     LinearLayoutManager layoutManager;
-
+    int color;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,8 +110,8 @@ public class AddCategoryActivity extends AppCompatActivity {
             income.setBackgroundResource(R.drawable.selected_category);
             expense.setBackgroundResource(R.drawable.unselected_category);
 
-            income.setTextColor(ContextCompat.getColor(this,R.color.white));
-            expense.setTextColor(ContextCompat.getColor(this,R.color.black));
+            income.setTextColor(ContextCompat.getColor(this, R.color.white));
+            expense.setTextColor(ContextCompat.getColor(this, R.color.black));
         } else if (clicked.equals("Expense")) {
             tagFind = "Expense";
 
@@ -115,8 +119,8 @@ public class AddCategoryActivity extends AppCompatActivity {
             income.setBackgroundResource(R.drawable.unselected_category);
             expense.setBackgroundResource(R.drawable.selected_category);
 
-            income.setTextColor(ContextCompat.getColor(this,R.color.black));
-            expense.setTextColor(ContextCompat.getColor(this,R.color.white));
+            income.setTextColor(ContextCompat.getColor(this, R.color.black));
+            expense.setTextColor(ContextCompat.getColor(this, R.color.white));
         }
 
         back.setOnClickListener(v -> onBackPressed());
@@ -128,8 +132,8 @@ public class AddCategoryActivity extends AppCompatActivity {
             income.setBackgroundResource(R.drawable.selected_category);
             expense.setBackgroundResource(R.drawable.unselected_category);
 
-            income.setTextColor(ContextCompat.getColor(this,R.color.white));
-            expense.setTextColor(ContextCompat.getColor(this,R.color.black));
+            income.setTextColor(ContextCompat.getColor(this, R.color.white));
+            expense.setTextColor(ContextCompat.getColor(this, R.color.black));
         });
 
         expense.setOnClickListener(v -> {
@@ -139,8 +143,8 @@ public class AddCategoryActivity extends AppCompatActivity {
             expense.setBackgroundResource(R.drawable.selected_category);
             income.setBackgroundResource(R.drawable.unselected_category);
 
-            expense.setTextColor(ContextCompat.getColor(this,R.color.white));
-            income.setTextColor(ContextCompat.getColor(this,R.color.black));
+            expense.setTextColor(ContextCompat.getColor(this, R.color.white));
+            income.setTextColor(ContextCompat.getColor(this, R.color.black));
         });
 
         addNewCategoryBtn.setOnClickListener(v -> showAddNewCategoryBottomDialog());
@@ -241,7 +245,10 @@ public class AddCategoryActivity extends AppCompatActivity {
                 Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 addCategoryName = addNewCategory.getText().toString();
-                category = new Category(0, addCategoryName, addCategoryImage, tagFind);
+                Random random = new Random();
+                int randomIndex = random.nextInt(MY_COLORS.length);
+                int randomColor = MY_COLORS[randomIndex];
+                category = new Category(0, addCategoryName, addCategoryImage, tagFind, randomColor);
                 categoryArrayList.add(category);
                 dbHelper.insertCategoryData(category);
                 if (tagFind.equals("Income")) {
@@ -355,7 +362,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                 Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 addCategoryName = editCategory.getText().toString();
-                category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind);
+                category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind, category.getColor());
                 categoryArrayList.add(category);
                 if (tagFind.equals("Income")) {
                     for (int i = 0; i < incomeCategoryList.size(); i++) {
@@ -391,26 +398,12 @@ public class AddCategoryActivity extends AppCompatActivity {
     }
 
     private void insertInitialCategories() {
-        dbHelper.insertCategoryData(new Category(0, "Shopping", R.drawable.i23, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Food", R.drawable.i12, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Birthday", R.drawable.i11, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Party", R.drawable.i7, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Medicine", R.drawable.i18, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Books", R.drawable.i1, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Sports", R.drawable.i43, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Traveling", R.drawable.i17, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Education", R.drawable.i22, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Transportation", R.drawable.i38, "Income"));
-        dbHelper.insertCategoryData(new Category(0, "Entertainment", R.drawable.i15, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Gifts", R.drawable.i9, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Health & Fitness", R.drawable.i41, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Investments", R.drawable.i37, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Pets", R.drawable.i39, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Games", R.drawable.i34, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Car", R.drawable.i25, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Donation", R.drawable.i38, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Shipping", R.drawable.i30, "Expense"));
-        dbHelper.insertCategoryData(new Category(0, "Diamond & Jewellery", R.drawable.i19, "Expense"));
+        for (int i = 0; i < categories.length; i++) {
+            int color = MY_COLORS[i % MY_COLORS.length];
+            int drawableId = categoriesImage[i % categoriesImage.length];
+            String type = (i < 10) ? "Income" : "Expense";
+            dbHelper.insertCategoryData(new Category(0, categories[i], drawableId, type, color));
+        }
     }
 
     private void Display() {
@@ -422,24 +415,23 @@ public class AddCategoryActivity extends AppCompatActivity {
                 String categoryName = cursor.getString(1);
                 int categoryImage = cursor.getInt(2);
                 String tag = cursor.getString(3);
+                int color = cursor.getInt(4);
 
-                category = new Category(id, categoryName, categoryImage, tag);
+                category = new Category(id, categoryName, categoryImage, tag, color);
                 categoryArrayList.add(category);
-
-                incomeCategoryList = filterCategories(categoryArrayList, "Income");
-                expenseCategoryList = filterCategories(categoryArrayList, "Expense");
-
-                if (TextUtils.equals(tagFind, "Income")) {
-                    incomeCategoryRecyclerview.setLayoutManager(layoutManager);
-                    addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList);
-                    incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
-                } else if (TextUtils.equals(tagFind, "Expense")) {
-                    incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-                    addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList);
-                    incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
-                }
-
             } while (cursor.moveToNext());
+            incomeCategoryList = filterCategories(categoryArrayList, "Income");
+            expenseCategoryList = filterCategories(categoryArrayList, "Expense");
+
+            if (TextUtils.equals(tagFind, "Income")) {
+                incomeCategoryRecyclerview.setLayoutManager(layoutManager);
+                addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList);
+                incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
+            } else if (TextUtils.equals(tagFind, "Expense")) {
+                incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+                addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList);
+                incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
+            }
         }
     }
 
@@ -453,9 +445,10 @@ public class AddCategoryActivity extends AppCompatActivity {
         return filteredList;
     }
 
-    public void getData(String name1, int image1) {
+    public void getData(String name1, int image1, int categoryColor) {
         name = name1;
         image = image1;
+        color = categoryColor;
         onBackPressed();
     }
 
@@ -464,6 +457,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra("categoryImage", image);
         intent.putExtra("categoryName", name);
+        intent.putExtra("categoryColor", color);
         setResult(RESULT_OK, intent);
         super.onBackPressed();
     }

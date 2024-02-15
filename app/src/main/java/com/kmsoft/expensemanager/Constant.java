@@ -42,6 +42,51 @@ public class Constant {
             Color.rgb(255, 140, 157),
             Color.rgb(193, 37, 82)
     };
+    public static String[] categories = {
+            "Shopping",
+            "Food",
+            "Birthday",
+            "Party",
+            "Medicine",
+            "Books",
+            "Sports",
+            "Traveling",
+            "Education",
+            "Transportation",
+            "Entertainment",
+            "Gifts",
+            "Health & Fitness",
+            "Investments",
+            "Pets",
+            "Games",
+            "Car",
+            "Donation",
+            "Shipping",
+            "Diamond & Jewellery"
+    };
+
+    public static int[] categoriesImage = {
+            R.drawable.i23,
+            R.drawable.i12,
+            R.drawable.i11,
+            R.drawable.i7,
+            R.drawable.i18,
+            R.drawable.i1,
+            R.drawable.i43,
+            R.drawable.i17,
+            R.drawable.i22,
+            R.drawable.i38,
+            R.drawable.i15,
+            R.drawable.i9,
+            R.drawable.i41,
+            R.drawable.i37,
+            R.drawable.i39,
+            R.drawable.i34,
+            R.drawable.i25,
+            R.drawable.i38,
+            R.drawable.i30,
+            R.drawable.i19
+    };
 
     public static ArrayList<IncomeAndExpense> incomeAndExpenseArrayList = new ArrayList<>();
     public static ArrayList<Category> categoryArrayList = new ArrayList<>();

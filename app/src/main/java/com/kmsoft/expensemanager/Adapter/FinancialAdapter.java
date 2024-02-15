@@ -1,6 +1,7 @@
 package com.kmsoft.expensemanager.Adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,9 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
     String spinner;
     String selected;
+    double amount;
 
-    public FinancialAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList,String spinner,String selected) {
+    public FinancialAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, String spinner, String selected) {
         this.context = context;
         this.incomeAndExpenseArrayList = incomeAndExpenseArrayList;
         this.spinner = spinner;
@@ -34,7 +36,7 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
     @NonNull
     @Override
     public FinancialAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_financial_transaction_layout,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_financial_transaction_layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -46,7 +48,7 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
             holder.itemDescription.setText(incomeAndExpense.getDescription());
             holder.itemDate.setText(incomeAndExpense.getDate());
 
-            if (selected.equals("Income")){
+            if (selected.equals("Income")) {
                 holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
                 holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
             } else if (selected.equals("Expense")) {
@@ -63,18 +65,55 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
             holder.relative2.setVisibility(View.GONE);
         } else if (spinner.equals("Category")) {
             holder.itemCategoryName.setText(incomeAndExpense.getCategoryName());
-            if (selected.equals("Income")){
+            if (selected.equals("Income")) {
                 holder.itemCategoryAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
                 holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.green));
+                double totalIncome = getTotalIncome();
+                holder.setSlider.setValueFrom(0);
+                holder.setSlider.setValueTo((float) totalIncome);
+                String amount = extractNumericPart(incomeAndExpense.getAmount());
+                holder.setSlider.setValue(Float.parseFloat(amount));
             } else if (selected.equals("Expense")) {
                 holder.itemCategoryAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
                 holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.red));
+                double totalExpense = getTotalExpense();
+                holder.setSlider.setValueFrom(0);
+                holder.setSlider.setValueTo((float) totalExpense);
+                String amount = extractNumericPart(incomeAndExpense.getAmount());
+                holder.setSlider.setValue(Float.parseFloat(amount));
             }
+
             holder.setSlider.setEnabled(false);
 
             holder.relative1.setVisibility(View.GONE);
             holder.relative2.setVisibility(View.VISIBLE);
         }
+    }
+
+    private String extractNumericPart(String input) {
+        return input.replaceAll("[^\\d.]", "");
+    }
+
+    public double getTotalIncome() {
+        double totalIncome = 0.0;
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenseArrayList) {
+            if (incomeAndExpense.getTag().equals("Income")) {
+                amount = Double.parseDouble(extractNumericPart(incomeAndExpense.getAmount()));
+                totalIncome += amount;
+            }
+        }
+        return totalIncome;
+    }
+
+    public double getTotalExpense() {
+        double totalExpense = 0.0;
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenseArrayList) {
+            if (incomeAndExpense.getTag().equals("Expense")) {
+                amount = Double.parseDouble(extractNumericPart(incomeAndExpense.getAmount()));
+                totalExpense += amount;
+            }
+        }
+        return totalExpense;
     }
 
     @Override
@@ -84,9 +123,10 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
-        RelativeLayout relative,relative1,relative2;
+        RelativeLayout relative, relative1, relative2;
         Slider setSlider;
-        TextView itemName,itemDescription,itemAmount,itemDate, itemCategoryName, itemCategoryAmount;
+        TextView itemName, itemDescription, itemAmount, itemDate, itemCategoryName, itemCategoryAmount;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.item_image);

@@ -7,12 +7,14 @@ public class Category implements Serializable {
     String categoryName;
     int categoryImage;
     String categoryTag;
+    int color;
 
-    public Category(int id,String categoryName, int categoryImage,String categoryTag) {
+    public Category(int id,String categoryName, int categoryImage,String categoryTag,int color) {
         this.id = id;
         this.categoryName = categoryName;
         this.categoryImage = categoryImage;
         this.categoryTag = categoryTag;
+        this.color = color;
     }
 
     public int getId() {
@@ -43,4 +45,11 @@ public class Category implements Serializable {
         return categoryTag;
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
 }

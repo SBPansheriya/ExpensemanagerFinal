@@ -53,6 +53,8 @@ import java.util.Date;
 import java.util.Random;
 
 public class ExportDataActivity extends AppCompatActivity {
+    private static final int STORAGE_PERMISSION_CODE = 101;
+
 
     ImageView back;
     LinearLayout export;
@@ -69,6 +71,8 @@ public class ExportDataActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         init();
+
+        requestStoragePermission();
 
 //        checkPermission();
 
@@ -142,14 +146,6 @@ public class ExportDataActivity extends AppCompatActivity {
             }
         });
     }
-
-//    private void checkPermission() {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
-//        } else {
-//
-//        }
-//    }
 
     private ArrayList<IncomeAndExpense> filterCategories(ArrayList<IncomeAndExpense> incomeAndExpenses, String type) {
         ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
@@ -227,6 +223,16 @@ public class ExportDataActivity extends AppCompatActivity {
         if (!folder.exists())
             folder.mkdir();
         return folder;
+    }
+
+    private void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_CODE);
+        }
     }
 
     private void generatePDF(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, String head) {
@@ -310,7 +316,7 @@ public class ExportDataActivity extends AppCompatActivity {
 
     public void generateCsvFile(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, String head) {
 
-        String folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/Income_Expense";
+        String folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/Expense Manager";
         File folder = new File(folderPath);
         if (!folder.exists()) {
             folder.mkdirs();

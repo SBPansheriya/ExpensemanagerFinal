@@ -49,10 +49,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
         }
 
-        if (selected.equals("Income")){
+        if (incomeAndExpense.getTag().equals("Income")){
             holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
             holder.itemAmount.setTextColor(ContextCompat.getColor(context,R.color.green));
-        } else if (selected.equals("Expense")) {
+        } else if (incomeAndExpense.getTag().equals("Expense")) {
             holder.itemAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
             holder.itemAmount.setTextColor(ContextCompat.getColor(context,R.color.red));
         }

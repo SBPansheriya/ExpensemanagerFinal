@@ -14,6 +14,7 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -93,6 +94,7 @@ public class ProfileFragment extends Fragment {
     private void setData(){
         if (TextUtils.isEmpty(userName)){
             username.setText("Your name");
+            username.setTextColor(ContextCompat.getColor(getActivity(),R.color.gray));
         } else {
             username.setText(userName);
         }

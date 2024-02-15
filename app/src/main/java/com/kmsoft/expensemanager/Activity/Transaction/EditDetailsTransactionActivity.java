@@ -80,6 +80,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     String editAddTime;
     Bitmap bitmap;
     int imageResId;
+    int categoryColor;
     double selectedDateTimeStamp;
     String categoryName;
     String addAttachmentImage;
@@ -104,6 +105,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 if (data != null) {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
+                    categoryColor = data.getIntExtra("categoryColor",0);
                     if (!TextUtils.isEmpty(categoryName)) {
                         editCategory.setText(String.format("%s", categoryName));
                     }
@@ -140,6 +142,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             }
             if (TextUtils.isEmpty(categoryName)) {
                 categoryName = incomeAndExpense.getCategoryName();
+                categoryColor = incomeAndExpense.getCategoryColor();
             }
             if (TextUtils.isEmpty(selectedDate)) {
                 selectedDate = incomeAndExpense.getDate();
@@ -161,7 +164,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
-                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, description, addAttachmentImage, incomeAndExpense.getTag());
+                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor,description, addAttachmentImage, incomeAndExpense.getTag());
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.updateData(incomeAndExpense);
                 onBackPressed();

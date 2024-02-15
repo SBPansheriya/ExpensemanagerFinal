@@ -28,6 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_TIME = "time";
     private static final String COLUMN_CATEGORY_NAME = "category_name";
     private static final String COLUMN_CATEGORY_IMAGE = "category_image";
+    private static final String COLUMN_CATEGORY_COLOR = "category_color";
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_ADD_ATTACHMENT = "add_attachment";
     private static final String COLUMN_TAG = "tag";
@@ -37,6 +38,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_NAME_SHOW = "category_name_show";
     public static final String COLUMN_CATEGORY_IMAGE_SHOW = "category_image_show";
     public static final String COLUMN_TAG_SHOW = "category_tag_show";
+    public static final String COLUMN_TAG_COLOR = "category_tag_color";
 
     private static final String TABLE2 = "Budgetdata";
     private static final String COLUMN_ID_BUDGET = "id";
@@ -58,6 +60,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_TIME + " TEXT,"
             + COLUMN_CATEGORY_NAME + " TEXT,"
             + COLUMN_CATEGORY_IMAGE + " TEXT,"
+            + COLUMN_CATEGORY_COLOR + " TEXT,"
             + COLUMN_DESCRIPTION + " TEXT,"
             + COLUMN_ADD_ATTACHMENT + " TEXT,"
             + COLUMN_TAG + " TEXT"
@@ -67,7 +70,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_ID_SHOW + " INTEGER PRIMARY KEY,"
             + COLUMN_CATEGORY_NAME_SHOW + " TEXT,"
             + COLUMN_CATEGORY_IMAGE_SHOW + " TEXT,"
-            + COLUMN_TAG_SHOW + " TEXT"
+            + COLUMN_TAG_SHOW + " TEXT,"
+            + COLUMN_TAG_COLOR + " TEXT"
             + ")";
 
     private static final String CREATE_TABLE_BUDGET = "CREATE TABLE " + TABLE2 + "("
@@ -113,6 +117,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_TIME, incomeAndExpense.getTime());
         contentValues.put(COLUMN_CATEGORY_NAME, incomeAndExpense.getCategoryName());
         contentValues.put(COLUMN_CATEGORY_IMAGE, incomeAndExpense.getCategoryImage());
+        contentValues.put(COLUMN_CATEGORY_COLOR, incomeAndExpense.getCategoryColor());
         contentValues.put(COLUMN_DESCRIPTION, incomeAndExpense.getDescription());
         contentValues.put(COLUMN_ADD_ATTACHMENT, incomeAndExpense.getAddAttachment());
         contentValues.put(COLUMN_TAG, incomeAndExpense.getTag());
@@ -133,6 +138,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_TIME, incomeAndExpense.getTime());
         contentValues.put(COLUMN_CATEGORY_NAME, incomeAndExpense.getCategoryName());
         contentValues.put(COLUMN_CATEGORY_IMAGE, incomeAndExpense.getCategoryImage());
+        contentValues.put(COLUMN_CATEGORY_COLOR, incomeAndExpense.getCategoryColor());
         contentValues.put(COLUMN_DESCRIPTION, incomeAndExpense.getDescription());
         contentValues.put(COLUMN_ADD_ATTACHMENT, incomeAndExpense.getAddAttachment());
         contentValues.put(COLUMN_TAG, incomeAndExpense.getTag());
@@ -165,6 +171,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_CATEGORY_NAME_SHOW, category.getCategoryName());
         contentValues.put(COLUMN_CATEGORY_IMAGE_SHOW, category.getCategoryImage());
         contentValues.put(COLUMN_TAG_SHOW, category.getCategoryTag());
+        contentValues.put(COLUMN_TAG_COLOR, category.getColor());
 
         db.insert(TABLE1, null, contentValues);
         db.close();
@@ -183,6 +190,8 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_CATEGORY_NAME_SHOW, category.getCategoryName());
         contentValues.put(COLUMN_CATEGORY_IMAGE_SHOW, category.getCategoryImage());
         contentValues.put(COLUMN_TAG_SHOW, category.getCategoryTag());
+        contentValues.put(COLUMN_TAG_COLOR, category.getColor());
+
         db.update(TABLE1, contentValues, COLUMN_ID_SHOW + " = ?",
                 new String[]{String.valueOf(category.getId())});
         db.close();

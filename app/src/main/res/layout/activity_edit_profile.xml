@@ -111,7 +111,7 @@
             android:maxLines="1"
             android:minHeight="56dp"
             android:padding="10dp"
-            android:text="@string/leslie_alexander"
+            android:hint="@string/your_name"
             android:textColor="@color/green"
             android:textSize="18sp" />
     </LinearLayout>

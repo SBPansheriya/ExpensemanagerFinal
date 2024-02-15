@@ -13,6 +13,7 @@ public class IncomeAndExpense implements Serializable {
     String time;
     String categoryName;
     int categoryImage;
+    int categoryColor;
     String description;
     String addAttachment;
     String tag;
@@ -20,7 +21,7 @@ public class IncomeAndExpense implements Serializable {
     public IncomeAndExpense() {
     }
 
-    public IncomeAndExpense(int id, String amount, double currantDateTimeStamp,double selectedDateTimeStamp,String currantDate, String date, String dayName, String time, String categoryName, int categoryImage, String description, String addAttachment, String tag) {
+    public IncomeAndExpense(int id, String amount, double currantDateTimeStamp, double selectedDateTimeStamp, String currantDate, String date, String dayName, String time, String categoryName, int categoryImage, int categoryColor, String description, String addAttachment, String tag) {
         this.id = id;
         this.amount = amount;
         this.currantDateTimeStamp = currantDateTimeStamp;
@@ -31,6 +32,7 @@ public class IncomeAndExpense implements Serializable {
         this.time = time;
         this.categoryName = categoryName;
         this.categoryImage = categoryImage;
+        this.categoryColor = categoryColor;
         this.description = description;
         this.addAttachment = addAttachment;
         this.tag = tag;
@@ -90,6 +92,14 @@ public class IncomeAndExpense implements Serializable {
 
     public void setCategoryImage(int categoryImage) {
         this.categoryImage = categoryImage;
+    }
+
+    public int getCategoryColor() {
+        return categoryColor;
+    }
+
+    public void setCategoryColor(int categoryColor) {
+        this.categoryColor = categoryColor;
     }
 
     public String getDescription() {

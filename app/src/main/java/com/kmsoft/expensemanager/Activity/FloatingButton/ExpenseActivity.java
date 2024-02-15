@@ -77,6 +77,7 @@ public class ExpenseActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 101;
     int click;
     int imageResId;
+    int categoryColor;
     double selectedDateTimeStamp;
     String categoryName;
     String expenseAddTime;
@@ -100,6 +101,8 @@ public class ExpenseActivity extends AppCompatActivity {
                 if (data != null) {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
+                    categoryColor = data.getIntExtra("categoryColor",0);
+
                     if (!TextUtils.isEmpty(categoryName)) {
                         expenseCategoryName.setText(String.format("%s", categoryName));
                     }
@@ -150,7 +153,7 @@ public class ExpenseActivity extends AppCompatActivity {
                 String amount = expenseAddAmount.getText().toString();
                 String description = expenseDescription.getText().toString();
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis()/1000;
-                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp,selectedDateTimeStamp,currantDate, selectedDate, dayName,expenseAddTime, categoryName, imageResId, description, addAttachmentImage, "Expense");
+                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp,selectedDateTimeStamp,currantDate, selectedDate, dayName,expenseAddTime, categoryName, imageResId, categoryColor,description, addAttachmentImage, "Expense");
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.insertData(incomeAndExpense);
                 Dialog dialog = new Dialog(ExpenseActivity.this);

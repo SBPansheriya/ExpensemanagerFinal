@@ -52,6 +52,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 public class HomeFragment extends Fragment {
@@ -83,9 +84,9 @@ public class HomeFragment extends Fragment {
 
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        profileImage = sharedPreferences.getString(USER_IMAGE,"");
+        profileImage = sharedPreferences.getString(USER_IMAGE, "");
 
-        if (TextUtils.isEmpty(profileImage)){
+        if (TextUtils.isEmpty(profileImage)) {
             homeProfileImage.setImageResource(R.drawable.profile);
         } else {
             Picasso.get().load(profileImage).into(homeProfileImage);
@@ -99,7 +100,7 @@ public class HomeFragment extends Fragment {
                 if (data != null) {
                     profileImage = data.getStringExtra("userImage");
                 }
-                if (TextUtils.isEmpty(profileImage)){
+                if (TextUtils.isEmpty(profileImage)) {
                     homeProfileImage.setImageResource(R.drawable.profile);
                 } else {
                     Picasso.get().load(profileImage).into(homeProfileImage);
@@ -149,10 +150,10 @@ public class HomeFragment extends Fragment {
                         month.setBackgroundResource(R.drawable.unselected_home_background);
                         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        week.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        today.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
                         ArrayList<Entry> entries = new ArrayList<>();
 
                         double[] totalAmountPerDay = new double[7];
@@ -160,7 +161,7 @@ public class HomeFragment extends Fragment {
 
                         for (IncomeAndExpense entry : incomeList) {
                             Calendar calendar = Calendar.getInstance();
-                            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
+                            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
                             calendar.set(Calendar.HOUR_OF_DAY, 0);
                             calendar.set(Calendar.MINUTE, 0);
                             calendar.set(Calendar.SECOND, 0);
@@ -185,7 +186,7 @@ public class HomeFragment extends Fragment {
 
                         chart.getAxisLeft().setEnabled(false);
                         chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                        final String[] days = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
                         setupLineChart(chart, days, entries);
                     });
@@ -196,10 +197,10 @@ public class HomeFragment extends Fragment {
                         today.setBackgroundResource(R.drawable.unselected_home_background);
                         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
 
                         ArrayList<Entry> entries = new ArrayList<>();
                         double[] totalAmountPerMonth = new double[12];
@@ -238,10 +239,10 @@ public class HomeFragment extends Fragment {
                         month.setBackgroundResource(R.drawable.unselected_home_background);
                         today.setBackgroundResource(R.drawable.unselected_home_background);
 
-                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
                         ArrayList<Entry> entries = new ArrayList<>();
 
                         Calendar calendar = Calendar.getInstance();
@@ -297,10 +298,10 @@ public class HomeFragment extends Fragment {
                         month.setBackgroundResource(R.drawable.unselected_home_background);
                         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        week.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        today.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
 
                         ArrayList<Entry> entries = new ArrayList<>();
                         double[] totalAmountPerDay = new double[7];
@@ -309,7 +310,7 @@ public class HomeFragment extends Fragment {
 
                         for (IncomeAndExpense entry : expenseList) {
                             Calendar calendar = Calendar.getInstance();
-                            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + 1);
+                            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
                             calendar.set(Calendar.HOUR_OF_DAY, 0);
                             calendar.set(Calendar.MINUTE, 0);
                             calendar.set(Calendar.SECOND, 0);
@@ -335,7 +336,7 @@ public class HomeFragment extends Fragment {
 
                         chart.getAxisLeft().setEnabled(false);
                         chart.getAxisRight().setEnabled(false);
-                        final String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                        final String[] days = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
                         setupLineChart1(chart, days, entries);
                     });
@@ -346,10 +347,10 @@ public class HomeFragment extends Fragment {
                         today.setBackgroundResource(R.drawable.unselected_home_background);
                         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
 
                         ArrayList<Entry> entries = new ArrayList<>();
 
@@ -384,10 +385,10 @@ public class HomeFragment extends Fragment {
                         month.setBackgroundResource(R.drawable.unselected_home_background);
                         today.setBackgroundResource(R.drawable.unselected_home_background);
 
-                        year.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-                        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-                        today.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+                        year.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                        week.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        month.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+                        today.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
 
                         ArrayList<Entry> entries = new ArrayList<>();
 
@@ -461,10 +462,10 @@ public class HomeFragment extends Fragment {
         month.setBackgroundResource(R.drawable.unselected_home_background);
         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-        today.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+        today.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        week.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+        month.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+        year.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
 
         ArrayList<Entry> entries = new ArrayList<>();
 
@@ -511,10 +512,10 @@ public class HomeFragment extends Fragment {
         month.setBackgroundResource(R.drawable.unselected_home_background);
         year.setBackgroundResource(R.drawable.unselected_home_background);
 
-        today.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
-        week.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-        month.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
-        year.setTextColor(ContextCompat.getColor(getContext(),R.color.gray));
+        today.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        week.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+        month.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
+        year.setTextColor(ContextCompat.getColor(getContext(), R.color.gray));
 
         ArrayList<Entry> entries = new ArrayList<>();
 
@@ -570,11 +571,11 @@ public class HomeFragment extends Fragment {
         dataSet.setValueTextSize(9);
         dataSet.setDrawFilled(true);
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCircleColor(ContextCompat.getColor(getContext(),R.color.green));
-        dataSet.setFillColor(ContextCompat.getColor(getContext(),R.color.green));
+        dataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.green));
+        dataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.green));
         dataSet.setFillAlpha(30);
-        dataSet.setValueTextColor(ContextCompat.getColor(getContext(),R.color.green));
-        dataSet.setColor(ContextCompat.getColor(getContext(),R.color.green));
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.green));
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.green));
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
@@ -594,11 +595,11 @@ public class HomeFragment extends Fragment {
         dataSet.setValueTextSize(9);
         dataSet.setDrawFilled(true);
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCircleColor(ContextCompat.getColor(getContext(),R.color.red));
-        dataSet.setFillColor(ContextCompat.getColor(getContext(),R.color.red));
+        dataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.red));
+        dataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.red));
         dataSet.setFillAlpha(30);
-        dataSet.setValueTextColor(ContextCompat.getColor(getContext(),R.color.red));
-        dataSet.setColor(ContextCompat.getColor(getContext(),R.color.red));
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.red));
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.red));
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
@@ -703,52 +704,39 @@ public class HomeFragment extends Fragment {
                 String incomeAddTime = cursor.getString(7);
                 String categoryName = cursor.getString(8);
                 int categoryImage = cursor.getInt(9);
-                String incomeDescription = cursor.getString(10);
-                String addAttachment = cursor.getString(11);
-                String tag = cursor.getString(12);
+                int categoryColor = cursor.getInt(10);
+                String incomeDescription = cursor.getString(11);
+                String addAttachment = cursor.getString(12);
+                String tag = cursor.getString(13);
 
-                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, incomeDescription, addAttachment, tag);
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, categoryColor, incomeDescription, addAttachment, tag);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
+            } while (cursor.moveToNext());
+            incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getCurrantDateTimeStamp));
+            Collections.reverse(incomeAndExpenseArrayList);
+            incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
+            expenseList = filterCategories(incomeAndExpenseArrayList, "Expense");
 
-//                incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getCurrantDateTimeStamp));
-                Collections.reverse(incomeAndExpenseArrayList);
-                incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
-                expenseList = filterCategories(incomeAndExpenseArrayList, "Expense");
+            recentTransactionRecyclerView.setVisibility(View.VISIBLE);
+            emptyTransaction.setVisibility(View.GONE);
 
+            if (incomeAndExpenseArrayList.isEmpty()) {
+                emptyTransaction.setVisibility(View.VISIBLE);
+                recentTransactionRecyclerView.setVisibility(View.GONE);
+            } else {
                 recentTransactionRecyclerView.setVisibility(View.VISIBLE);
                 emptyTransaction.setVisibility(View.GONE);
-
-                if (TextUtils.equals(selected, "Income")) {
-                    if (incomeList.isEmpty()) {
-                        emptyTransaction.setVisibility(View.VISIBLE);
-                        recentTransactionRecyclerView.setVisibility(View.GONE);
-                    } else {
-                        recentTransactionRecyclerView.setVisibility(View.VISIBLE);
-                        emptyTransaction.setVisibility(View.GONE);
-                        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                        homeAdapter = new HomeAdapter(getContext(), incomeList, selected);
-                        recentTransactionRecyclerView.setLayoutManager(manager);
-                        recentTransactionRecyclerView.setAdapter(homeAdapter);
-                    }
-                } else if (TextUtils.equals(selected, "Expense")) {
-                    if (expenseList.isEmpty()) {
-                        emptyTransaction.setVisibility(View.VISIBLE);
-                        recentTransactionRecyclerView.setVisibility(View.GONE);
-                    } else {
-                        recentTransactionRecyclerView.setVisibility(View.VISIBLE);
-                        emptyTransaction.setVisibility(View.GONE);
-                        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                        homeAdapter = new HomeAdapter(getContext(), expenseList, selected);
-                        recentTransactionRecyclerView.setLayoutManager(manager);
-                        recentTransactionRecyclerView.setAdapter(homeAdapter);
-                    }
-                }
-            } while (cursor.moveToNext());
+                LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                homeAdapter = new HomeAdapter(getContext(), incomeAndExpenseArrayList, selected);
+                recentTransactionRecyclerView.setLayoutManager(manager);
+                recentTransactionRecyclerView.setAdapter(homeAdapter);
+            }
         } else {
             incomeAndExpenseArrayList = new ArrayList<>();
             recentTransactionRecyclerView.setVisibility(View.GONE);
             emptyTransaction.setVisibility(View.VISIBLE);
         }
+
     }
 
     private ArrayList<IncomeAndExpense> filterCategories(ArrayList<IncomeAndExpense> incomeAndExpenses, String type) {
