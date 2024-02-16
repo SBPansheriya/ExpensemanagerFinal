@@ -11,11 +11,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +41,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.kmsoft.expensemanager.Activity.NotificationScheduler;
 import com.kmsoft.expensemanager.Activity.Profile.EditProfileActivity;
 import com.kmsoft.expensemanager.Activity.Profile.NotificationActivity;
 import com.kmsoft.expensemanager.Adapter.HomeAdapter;
@@ -561,6 +565,11 @@ public class HomeFragment extends Fragment {
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.BLACK);
+        xAxis.setTextSize(11);
+        xAxis.setYOffset((float) -0.5);
+        Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.lexenddeca_semibold);
+        xAxis.setTypeface(typeface);
         chart.setDescription(null);
         Legend legend = chart.getLegend();
         legend.setEnabled(false);
@@ -586,6 +595,11 @@ public class HomeFragment extends Fragment {
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.BLACK);
+        xAxis.setTextSize(11);
+        xAxis.setYOffset((float) -0.5);
+        Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.lexenddeca_semibold);
+        xAxis.setTypeface(typeface);
         chart.setDescription(null);
         Legend legend = chart.getLegend();
         legend.setEnabled(false);
@@ -731,6 +745,9 @@ public class HomeFragment extends Fragment {
                 recentTransactionRecyclerView.setLayoutManager(manager);
                 recentTransactionRecyclerView.setAdapter(homeAdapter);
             }
+
+            NotificationScheduler.scheduleNotification(getContext(),incomeAndExpenseArrayList);
+
         } else {
             incomeAndExpenseArrayList = new ArrayList<>();
             recentTransactionRecyclerView.setVisibility(View.GONE);

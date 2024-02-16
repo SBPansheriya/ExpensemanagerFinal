@@ -48,7 +48,6 @@ public class NotificationActivity extends AppCompatActivity {
                 return true;
             });
             popupMenu.show();
-
         });
     }
 

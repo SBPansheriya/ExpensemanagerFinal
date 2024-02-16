@@ -137,10 +137,31 @@ public class FinancialReportActivity extends AppCompatActivity {
 
             if (spinner.getSelectedItem().toString().equals("Week")) {
                 pieLinear.setVisibility(View.VISIBLE);
+                if (TextUtils.equals(selected,"Income")) {
+                    populateChartWithWeekIncomeData();
+                } else {
+                    populateChartWithWeekExpenseData();
+                }
             } else if (spinner.getSelectedItem().toString().equals("Month")) {
                 pieLinear1.setVisibility(View.VISIBLE);
+                if (TextUtils.equals(selected,"Income")) {
+                    populateChartWithMonthIncomeData();
+                } else {
+                    populateChartWithMonthExpenseData();
+                }
             } else if (spinner.getSelectedItem().toString().equals("Year")) {
                 pieLinear2.setVisibility(View.VISIBLE);
+                if (TextUtils.equals(selected,"Income")) {
+                    populateChartWithYearIncomeData();
+                } else {
+                    populateChartWithYearExpenseData();
+                }
+            } else if (spinner.getSelectedItem().toString().equals("Today")) {
+                if (TextUtils.equals(selected,"Income")) {
+                    populateChartWithTodayIncomeData();
+                } else {
+                    populateChartWithTodayExpenseData();
+                }
             }
         });
 
@@ -1131,6 +1152,8 @@ public class FinancialReportActivity extends AppCompatActivity {
         chart.setDescription(null);
         Legend legend = chart.getLegend();
         legend.setEnabled(false);
+        xAxis.setYOffset((float) -0.5);
+
 
         LineDataSet dataSet = new LineDataSet(entries, "Income");
         dataSet.setCircleRadius(5f);
@@ -1199,11 +1222,15 @@ public class FinancialReportActivity extends AppCompatActivity {
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        Typeface typeface = ResourcesCompat.getFont(FinancialReportActivity.this, R.font.lexenddeca_extrabold);
+        Typeface typeface = ResourcesCompat.getFont(FinancialReportActivity.this, R.font.lexenddeca_semibold);
         xAxis.setTypeface(typeface);
+        xAxis.setTextColor(Color.BLACK);
+        xAxis.setTextSize(11);
         chart.setDescription(null);
         Legend legend = chart.getLegend();
         legend.setEnabled(false);
+        xAxis.setYOffset((float) -0.5);
+
 
         LineDataSet dataSet = new LineDataSet(entries, "Expense");
         dataSet.setCircleRadius(5f);

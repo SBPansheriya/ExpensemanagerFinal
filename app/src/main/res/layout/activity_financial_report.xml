@@ -146,6 +146,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="Sun"
                 android:textSize="12sp" />
 
@@ -156,6 +157,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="Mon"
                 android:textSize="12sp" />
 
@@ -166,6 +168,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="Tue"
                 android:textSize="12sp" />
 
@@ -176,6 +179,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="Wed"
                 android:textSize="12sp" />
 
@@ -184,8 +188,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="@font/lexenddeca_medium"
+                android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="Thu"
                 android:textSize="14sp" />
 
@@ -196,6 +201,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="Fri"
                 android:textSize="12sp" />
 
@@ -206,6 +212,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="Sat"
                 android:textSize="12sp" />
 
@@ -225,6 +232,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="2023"
                 android:textSize="12sp" />
 
@@ -235,6 +243,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="2024"
                 android:textSize="12sp" />
 
@@ -245,6 +254,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:gravity="center"
+                android:textColor="@color/black"
                 android:text="2025"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -258,17 +268,18 @@
                 android:id="@+id/pie_linear1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/jan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Jan"
                     android:textSize="13sp" />
 
@@ -279,6 +290,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Feb"
                     android:textSize="13sp" />
 
@@ -289,6 +301,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Mar"
                     android:textSize="13sp" />
 
@@ -297,8 +310,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:fontFamily="@font/lexenddeca_medium"
+                    android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Apr"
                     android:textSize="13sp" />
 
@@ -309,6 +323,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="May"
                     android:textSize="13sp" />
 
@@ -319,6 +334,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="June"
                     android:textSize="13sp" />
 
@@ -329,6 +345,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="July"
                     android:textSize="13sp" />
 
@@ -339,6 +356,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Aug"
                     android:textSize="13sp" />
 
@@ -349,6 +367,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Sep"
                     android:textSize="13sp" />
 
@@ -359,6 +378,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Oct"
                     android:textSize="13sp" />
 
@@ -369,6 +389,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Nov"
                     android:textSize="13sp" />
 
@@ -379,6 +400,7 @@
                     android:layout_marginHorizontal="15dp"
                     android:fontFamily="@font/lexenddeca_semibold"
                     android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="Dec"
                     android:textSize="13sp" />
             </LinearLayout>

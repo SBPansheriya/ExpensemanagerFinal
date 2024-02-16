@@ -11,13 +11,16 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,6 +44,7 @@ import com.kmsoft.expensemanager.R;
 import com.opencsv.CSVWriter;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,6 +52,7 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -71,10 +76,6 @@ public class ExportDataActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         init();
-
-        requestStoragePermission();
-
-//        checkPermission();
 
         incomeList = filterCategories(incomeAndExpenseArrayList, "Income");
         expenseList = filterCategories(incomeAndExpenseArrayList, "Expense");
@@ -171,7 +172,13 @@ public class ExportDataActivity extends AppCompatActivity {
                 calendar.add(Calendar.DAY_OF_MONTH, -30);
                 break;
             case "Year":
-                calendar.add(Calendar.YEAR, -1);
+                calendar.set(Calendar.MONTH, Calendar.JANUARY);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+//                calendar.add(Calendar.YEAR, -1);
                 break;
             case "Week":
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -207,37 +214,26 @@ public class ExportDataActivity extends AppCompatActivity {
         return !transactionDate.before(startDate);
     }
 
-    public String getDefaultStorageLocation(Context context) {
-        File dir = context.getFilesDir();
-        if (!dir.exists()) {
-            boolean isDirectoryCreated = dir.mkdir();
-            if (!isDirectoryCreated) {
-                Log.e("Error", "Directory could not be created");
-            }
-        }
-        return dir.getAbsolutePath() + "/Expense Manager/";
-    }
+//    public String getDefaultStorageLocation(Context context) {
+//        File dir = context.getFilesDir();
+//        if (!dir.exists()) {
+//            boolean isDirectoryCreated = dir.mkdir();
+//            if (!isDirectoryCreated) {
+//                Log.e("Error", "Directory could not be created");
+//            }
+//        }
+//        return dir.getAbsolutePath() + "/Expense Manager/";
+//    }
+//
+//    public File getOrCreatePdfDirectory() {
+//        File folder = new File(getDefaultStorageLocation(this));
+//        if (!folder.exists())
+//            folder.mkdir();
+//        return folder;
+//    }
 
-    public File getOrCreatePdfDirectory() {
-        File folder = new File(getDefaultStorageLocation(this));
-        if (!folder.exists())
-            folder.mkdir();
-        return folder;
-    }
-
-    private void requestStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    STORAGE_PERMISSION_CODE);
-        }
-    }
-
-    private void generatePDF(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, String head) {
-
-        String folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/Income_Expense";
+    private String Path(String head) {
+        String folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/Expense Manager";
         File folder = new File(folderPath);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -245,9 +241,13 @@ public class ExportDataActivity extends AppCompatActivity {
 
         String random = head + new Random().nextInt(100000) + ".pdf";
         String pdfPath = folderPath + "/" + random;
+        return pdfPath;
+    }
 
+    private void generatePDF(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, String head) {
+
+        String pdfPath = Path(head);
         Uri fileUri = FileProvider.getUriForFile(this, "com.kmsoft.expensemanager.fileprovider", new File(pdfPath));
-//        String path = getOrCreatePdfDirectory().getPath();
 
         try {
             PdfWriter writer = new PdfWriter(getContentResolver().openOutputStream(fileUri));
@@ -285,7 +285,7 @@ public class ExportDataActivity extends AppCompatActivity {
                 }
                 table.addCell(String.valueOf(item.getAmount()));
                 table.addCell(item.getDate());
-                if (item.getDescription() != null) {
+                if (!TextUtils.isEmpty(item.getDescription())) {
                     table.addCell(item.getDescription());
                 } else {
                     table.addCell("No description");
@@ -295,6 +295,8 @@ public class ExportDataActivity extends AppCompatActivity {
             Toast.makeText(this, "Pdf create successfully", Toast.LENGTH_SHORT).show();
             document.close();
 
+            openPdfFile(pdfPath);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -302,17 +304,14 @@ public class ExportDataActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == 101) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                checkPermission();
-//            } else {
-//                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+    private void openPdfFile(String filePath) {
+        File file = new File(filePath);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = FileProvider.getUriForFile(this, "com.kmsoft.expensemanager.fileprovider", file);
+        intent.setDataAndType(uri, "application/pdf");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
+    }
 
     public void generateCsvFile(ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, String head) {
 
@@ -325,11 +324,10 @@ public class ExportDataActivity extends AppCompatActivity {
         String random = head + new Random().nextInt(100000) + ".csv";
         String pdfPath = folderPath + "/" + random;
 
-//        Uri fileUri = FileProvider.getUriForFile(this, "com.kmsoft.expensemanager.fileprovider", new File(pdfPath));
-
         try (CSVWriter writer = new CSVWriter(new FileWriter(pdfPath))) {
             String[] header = {"Type", "Category", "Amount", "Date", "Description"};
             writer.writeNext(header);
+
 
             for (IncomeAndExpense item : incomeAndExpenseArrayList) {
                 String[] data = {
@@ -337,13 +335,46 @@ public class ExportDataActivity extends AppCompatActivity {
                         item.getCategoryName(),
                         String.valueOf(item.getAmount()),
                         item.getDate(),
-                        item.getDescription(),
+                        TextUtils.isEmpty(item.getDescription()) ? item.getDescription() : "No description",
                 };
                 writer.writeNext(data);
             }
+            Toast.makeText(this, "CSV File created successfully", Toast.LENGTH_SHORT).show();
+            openCsvFile(pdfPath);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void openCsvFile(String filePath) {
+        File file = new File(filePath);
+        if (file.exists()) {
+            Uri uri = FileProvider.getUriForFile(this, "com.kmsoft.expensemanager.fileprovider", file);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "text/csv");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static String encodeImageToBase64(String imagePath) {
+        String encodedString = null;
+        try {
+            File imageFile = new File(imagePath);
+            FileInputStream fileInputStreamReader = new FileInputStream(imageFile);
+            byte[] imageData = new byte[(int) imageFile.length()];
+            fileInputStreamReader.read(imageData);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                encodedString = Base64.getEncoder().encodeToString(imageData);
+            }
+            fileInputStreamReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return encodedString;
     }
 
     public static String getPathFromUri(Context context, Uri uri) {

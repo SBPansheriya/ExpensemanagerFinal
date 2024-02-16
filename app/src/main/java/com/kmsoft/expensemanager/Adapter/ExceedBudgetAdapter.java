@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kmsoft.expensemanager.Activity.Profile.NotificationActivity;
+import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.R;
 
 public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapter.ViewHolder> {
@@ -29,15 +30,13 @@ public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ExceedBudgetAdapter.ViewHolder holder, int position) {
-        holder.itemName.setText("Subscription");
-        holder.itemDescription.setText("Disney+ Annual..");
-        holder.itemAmount.setText("- ₹80");
-        holder.itemDate.setText("03:30 PM");
+//        holder.itemName.setText(budget.getCategoryNameBudget());
+//        holder.itemAmount.setText(budget.getAmountBudget());
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

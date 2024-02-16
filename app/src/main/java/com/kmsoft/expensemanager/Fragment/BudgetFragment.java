@@ -1,6 +1,5 @@
 package com.kmsoft.expensemanager.Fragment;
 
-
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.app.Activity;
@@ -94,20 +93,19 @@ public class BudgetFragment extends Fragment {
                 budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget);
                 budgetArrayList.add(budget);
 
-                if (budgetArrayList.isEmpty()) {
-                    budgetRecyclerview.setVisibility(View.GONE);
-                    emptyBudget.setVisibility(View.VISIBLE);
-                } else {
-                    budgetRecyclerview.setVisibility(View.VISIBLE);
-                    emptyBudget.setVisibility(View.GONE);
-
-                    LinearLayoutManager manager = new LinearLayoutManager(getContext());
-
-                    budgetCreateAdapter = new BudgetCreateAdapter(BudgetFragment.this, budgetArrayList, incomeAndExpenseArrayList);
-                    budgetRecyclerview.setLayoutManager(manager);
-                    budgetRecyclerview.setAdapter(budgetCreateAdapter);
-                }
             } while (cursor.moveToNext());
+            if (budgetArrayList.isEmpty()) {
+                budgetRecyclerview.setVisibility(View.GONE);
+                emptyBudget.setVisibility(View.VISIBLE);
+            } else {
+                budgetRecyclerview.setVisibility(View.VISIBLE);
+                emptyBudget.setVisibility(View.GONE);
+
+                LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                budgetCreateAdapter = new BudgetCreateAdapter(BudgetFragment.this, budgetArrayList, incomeAndExpenseArrayList);
+                budgetRecyclerview.setLayoutManager(manager);
+                budgetRecyclerview.setAdapter(budgetCreateAdapter);
+            }
         } else {
             budgetArrayList = new ArrayList<>();
             budgetRecyclerview.setVisibility(View.GONE);

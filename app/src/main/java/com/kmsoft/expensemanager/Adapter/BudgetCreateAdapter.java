@@ -1,7 +1,12 @@
 package com.kmsoft.expensemanager.Adapter;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
@@ -29,6 +35,8 @@ import java.util.Map;
 
 public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapter.ViewHolder> {
 
+    private static final String CHANNEL_ID = "BudgetExceedChannel";
+
     BudgetFragment budgetFragment;
     ArrayList<Budget> budgetArrayList;
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
@@ -36,6 +44,7 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
     String finalAmount;
     Map<Integer, String> remainingFinalAmountMap = new HashMap<>();
     Map<Integer, String> finalAmountMap = new HashMap<>();
+    private NotificationManager notificationManager;
 
     public BudgetCreateAdapter(BudgetFragment budgetFragment, ArrayList<Budget> budgetArrayList, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList) {
         this.budgetFragment = budgetFragment;
@@ -83,7 +92,8 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                 int total1 = (int) total;
                 holder.setIncomeExpenseAmount.setText(String.format("₹%d", total1));
 
-                if (total1 >= budgetAmountValue) {
+                if (total1 > budgetAmountValue) {
+                    showNotification(holder.itemView.getContext(), budget);
                     holder.setSlider.setValueFrom(0);
                     holder.setSlider.setValueTo((float) budgetAmountValue);
                     holder.setSlider.setValue((float) budgetAmountValue);
@@ -105,6 +115,7 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                 }
             }
         }
+
         holder.setSlider.setEnabled(false);
 
         holder.setAmount.setText(String.format(" of %s", budget.getAmountBudget()));
@@ -127,6 +138,31 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
             layoutParams.setMargins(0, 20, 0, 330);
             holder.reletive.setLayoutParams(layoutParams);
         }
+    }
+
+    private void showNotification(Context context, Budget budget) {
+        if (notificationManager == null) {
+            notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+
+        // Create notification channel (required for Android Oreo and above)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Budget Exceed Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        int notificationId = budget.getCategoryNameBudget().hashCode();
+
+        // Create notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.only_logo)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.only_logo))
+                .setContentTitle("Budget Exceeded")
+                .setContentText("Your budget for " + budget.getCategoryNameBudget() + " has been exceeded.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        // Show notification
+        notificationManager.notify(notificationId, builder.build());
     }
 
     private String extractNumericPart(String input) {

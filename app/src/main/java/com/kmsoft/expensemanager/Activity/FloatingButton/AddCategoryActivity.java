@@ -396,6 +396,9 @@ public class AddCategoryActivity extends AppCompatActivity {
                 Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 addCategoryName = editCategory.getText().toString();
+                if (editCategoryImage == 0){
+                    editCategoryImage = category.getCategoryImage();
+                }
                 category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind, category.getColor());
                 categoryArrayList.add(category);
                 if (tagFind.equals("Income")) {
@@ -433,10 +436,9 @@ public class AddCategoryActivity extends AppCompatActivity {
 
     private void insertInitialCategories() {
         for (int i = 0; i < categories.length; i++) {
-            int color = MY_COLORS[i % MY_COLORS.length];
             int drawableId = categoriesImage[i % categoriesImage.length];
             String type = (i < 10) ? "Income" : "Expense";
-            dbHelper.insertCategoryData(new Category(0, categories[i], drawableId, type, color));
+            dbHelper.insertCategoryData(new Category(0, categories[i], drawableId, type, MY_COLORS[i]));
         }
     }
 
