@@ -21,6 +21,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +50,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     DBHelper dbHelper;
     TextView income, expense;
     ImageView back;
+    LinearLayout add_mini_layout;
     AddCategoryAdapter addCategoryIncomeAdapter;
     RecyclerView incomeCategoryRecyclerview;
     Button addNewCategoryBtn;
@@ -148,55 +153,84 @@ public class AddCategoryActivity extends AppCompatActivity {
         });
 
         addNewCategoryBtn.setOnClickListener(v -> showAddNewCategoryBottomDialog());
+        add_mini_layout.setOnClickListener(v -> showAddNewCategoryBottomDialog());
 
         incomeCategoryRecyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+            }
 
-                int last = layoutManager.findLastVisibleItemPosition();
-                if (TextUtils.equals(tagFind, "Income")) {
-                    if (last == incomeCategoryList.size() - 1) {
-                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
-                                RecyclerView.LayoutParams.MATCH_PARENT,
-                                RecyclerView.LayoutParams.MATCH_PARENT
-                        );
-                        marginLayoutParams.setMargins(80, 10, 80, 300);
-                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
-                    } else {
-                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
-                                RecyclerView.LayoutParams.MATCH_PARENT,
-                                RecyclerView.LayoutParams.MATCH_PARENT
-                        );
-                        marginLayoutParams.setMargins(80, 40, 80, 40);
-                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                    if (TextUtils.equals(tagFind, "Income")){
+                        if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() -1){
+                            addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addNewCategoryBtn.setVisibility(View.GONE);
+                                }
+                            });
+
+                            add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    add_mini_layout.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                        }else {
+                            addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addNewCategoryBtn.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                            add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    add_mini_layout.setVisibility(View.GONE);
+                                }
+                            });
+                        }
+                    }else {
+                        if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() -1){
+                            addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addNewCategoryBtn.setVisibility(View.GONE);
+                                }
+                            });
+
+                            add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    add_mini_layout.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                        }else {
+                            addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addNewCategoryBtn.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                            add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                    add_mini_layout.setVisibility(View.GONE);
+                                }
+                            });
+                        }
                     }
-                } else {
-                    if (last == expenseCategoryList.size() - 1) {
-                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
-                                RecyclerView.LayoutParams.MATCH_PARENT,
-                                RecyclerView.LayoutParams.MATCH_PARENT
-                        );
-                        marginLayoutParams.setMargins(80, 10, 80, 300);
-                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
-                    } else {
-                        RelativeLayout.LayoutParams marginLayoutParams = new RelativeLayout.LayoutParams(
-                                RecyclerView.LayoutParams.MATCH_PARENT,
-                                RecyclerView.LayoutParams.MATCH_PARENT
-                        );
-                        marginLayoutParams.setMargins(80, 40, 80, 40);
-                        incomeCategoryRecyclerview.setLayoutParams(marginLayoutParams);
-                    }
+
                 }
-//                int firstVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition();
-//
-//                if (firstVisibleItemPosition > lastFirstVisiblePosition) {
-//                    addNewCategoryBtn.setVisibility(View.GONE);
-//                } else if (firstVisibleItemPosition < lastFirstVisiblePosition) {
-//                    addNewCategoryBtn.setVisibility(View.VISIBLE);
-//                }
-//
-//                lastFirstVisiblePosition = firstVisibleItemPosition;
             }
         });
     }
@@ -468,5 +502,6 @@ public class AddCategoryActivity extends AppCompatActivity {
         incomeCategoryRecyclerview = findViewById(R.id.incomeCategoryRecyclerview);
         addNewCategoryBtn = findViewById(R.id.add_new_category);
         back = findViewById(R.id.back);
+        add_mini_layout = findViewById(R.id.add_mini_layout);
     }
 }

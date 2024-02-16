@@ -35,6 +35,22 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
 
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/add_mini_layout"
+            android:visibility="gone"
+            android:background="@drawable/selected_tab">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/add"
+                android:layout_margin="5dp"
+                android:layout_gravity="center"/>
+        </LinearLayout>
     </RelativeLayout>
 
     <LinearLayout
