@@ -461,10 +461,70 @@ public class AddCategoryActivity extends AppCompatActivity {
                 incomeCategoryRecyclerview.setLayoutManager(layoutManager);
                 addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList);
                 incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
+                if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() -1){
+                    addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            addNewCategoryBtn.setVisibility(View.GONE);
+                        }
+                    });
+
+                    add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            add_mini_layout.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                }else {
+                    addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            addNewCategoryBtn.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            add_mini_layout.setVisibility(View.GONE);
+                        }
+                    });
+                }
             } else if (TextUtils.equals(tagFind, "Expense")) {
-                incomeCategoryRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+                incomeCategoryRecyclerview.setLayoutManager(layoutManager);
                 addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList);
                 incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
+                if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() -1){
+                    addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            addNewCategoryBtn.setVisibility(View.GONE);
+                        }
+                    });
+
+                    add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            add_mini_layout.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                }else {
+                    addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            addNewCategoryBtn.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            add_mini_layout.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
         }
     }
