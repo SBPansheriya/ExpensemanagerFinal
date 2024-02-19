@@ -22,7 +22,7 @@ import com.kmsoft.expensemanager.Fragment.ProfileFragment;
 import com.kmsoft.expensemanager.R;
 import com.kmsoft.expensemanager.Fragment.TransactionFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements {
 
     DBHelper dbHelper;
     BottomNavigationView bottomNavigationView;
@@ -133,6 +133,14 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void hideImageView() {
+        HomeFragment firstPageFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.framelayout);
+        if (firstPageFragment != null) {
+            firstPageFragment.hideImageView();
         }
     }
 

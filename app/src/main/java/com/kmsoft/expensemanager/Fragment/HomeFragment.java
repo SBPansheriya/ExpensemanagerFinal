@@ -41,7 +41,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.kmsoft.expensemanager.Activity.NotificationScheduler;
 import com.kmsoft.expensemanager.Activity.Profile.EditProfileActivity;
 import com.kmsoft.expensemanager.Activity.Profile.NotificationActivity;
 import com.kmsoft.expensemanager.Adapter.HomeAdapter;
@@ -63,7 +62,7 @@ public class HomeFragment extends Fragment {
 
     TextView today, week, month, year, see_all, showBalance, totalIncome, totalExpense, emptyTransaction;
     LineChart chart;
-    ImageView homeProfileImage, homeNotification;
+    ImageView homeProfileImage, homeNotification, markRead;
     RecyclerView recentTransactionRecyclerView;
     HomeAdapter homeAdapter;
     Spinner spinner;
@@ -745,9 +744,7 @@ public class HomeFragment extends Fragment {
                 recentTransactionRecyclerView.setLayoutManager(manager);
                 recentTransactionRecyclerView.setAdapter(homeAdapter);
             }
-
-            NotificationScheduler.scheduleNotification(getContext(),incomeAndExpenseArrayList);
-
+//            NotificationScheduler.scheduleNotification(getContext(),incomeAndExpenseArrayList);
         } else {
             incomeAndExpenseArrayList = new ArrayList<>();
             recentTransactionRecyclerView.setVisibility(View.GONE);
@@ -764,6 +761,10 @@ public class HomeFragment extends Fragment {
             }
         }
         return filteredList;
+    }
+
+    public void hideImageView() {
+        markRead.setVisibility(View.GONE);
     }
 
 //    private static ArrayList<IncomeAndExpense> filterIncomeListByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {
@@ -795,5 +796,6 @@ public class HomeFragment extends Fragment {
         totalExpense = view.findViewById(R.id.total_expense);
         totalIncome = view.findViewById(R.id.total_income);
         emptyTransaction = view.findViewById(R.id.empty_transaction);
+        markRead = view.findViewById(R.id.mark_read);
     }
 }

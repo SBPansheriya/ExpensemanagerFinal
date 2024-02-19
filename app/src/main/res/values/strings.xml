@@ -87,6 +87,9 @@
     <string name="your_name">Your name</string>
     <string name="no_description">No description</string>
     <string name="yesterday">Yesterday</string>
+    <string name="there_is_no_notification_for_now">There is no notification for now</string>
+    <string name="no_entry_added_today">No Entry Added Today</string>
+    <string name="you_haven_t_added_any_income_or_expense_entry_for_today">You haven\'t added any income or expense entry for today.</string>
 
     <string-array name="spendFrequency" translatable="false">
         <item>Income</item>

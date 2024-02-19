@@ -1,6 +1,8 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
 
+import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,8 +27,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kmsoft.expensemanager.Activity.FloatingButton.AddCategoryActivity;
 
+import com.kmsoft.expensemanager.Activity.NotificationScheduler;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Budget;
+import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
@@ -44,6 +48,7 @@ public class CreateBudgetActivity extends AppCompatActivity {
     int imageResId;
     String categoryName;
     ArrayList<Budget> budgetArrayList;
+    ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
     Gson gson;
 
     @Override
@@ -59,7 +64,8 @@ public class CreateBudgetActivity extends AppCompatActivity {
 
         String listGet = getIntent().getStringExtra("budgetArrayList");
         gson = new Gson();
-        budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {}.getType());
+        budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {
+        }.getType());
 
         back.setOnClickListener(v -> onBackPressed());
 
@@ -78,10 +84,12 @@ public class CreateBudgetActivity extends AppCompatActivity {
 
         createBudgetAmount.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -98,18 +106,18 @@ public class CreateBudgetActivity extends AppCompatActivity {
             int percentageBudget = (int) createSlider.getValue();
             if (budgetAmount.equals("₹0") || budgetAmount.equals("₹")) {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
-            } else if (TextUtils.isEmpty(budgetAmount)){
+            } else if (TextUtils.isEmpty(budgetAmount)) {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(categoryName)) {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 boolean categoryFound = false;
-
                 if (budgetArrayList.size() != 0) {
                     for (int i = 0; i < budgetArrayList.size(); i++) {
                         if (budgetArrayList.get(i).getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
-                            budget = new Budget(budgetArrayList.get(i).getId(), budgetAmount, categoryName, imageResId, percentageBudget);
-                            dbHelper.updateBudgetData(budget);
+                            Toast.makeText(CreateBudgetActivity.this, "Category already exists", Toast.LENGTH_SHORT).show();
+//                            budget = new Budget(budgetArrayList.get(i).getId(), budgetAmount, categoryName, imageResId, percentageBudget);
+//                            dbHelper.updateBudgetData(budget);
                             categoryFound = true;
                             break;
                         }
@@ -118,18 +126,53 @@ public class CreateBudgetActivity extends AppCompatActivity {
 
                 if (!categoryFound) {
                     budget = new Budget(0, budgetAmount, categoryName, imageResId, percentageBudget);
+                    budgetArrayList.add(budget);
                     dbHelper.insertBudgetData(budget);
+
+                    expenseList = filterCategories(incomeAndExpenseArrayList);
+
+                    double totalExpense = 0;
+                    double budgetAmount1;
+                    for (int i = 0; i < expenseList.size(); i++) {
+                        if (expenseList.get(i).getCategoryName().equals(categoryName)) {
+                            double amount1 = Double.parseDouble(extractNumericPart(expenseList.get(i).getAmount()));
+                            totalExpense += amount1;
+                        }
+                    }
+
+                    for (int i = 0; i < expenseList.size(); i++) {
+                        if (categoryName.equals(expenseList.get(i).getCategoryName())) {
+                            budgetAmount1 = Double.parseDouble(extractNumericPart(budgetAmount));
+                            if (totalExpense >= budgetAmount1) {
+                                NotificationScheduler.scheduleNotification(this, budget);
+                                break;
+                            }
+                        }
+                    }
+                    onBackPressed();
                 }
-                budgetArrayList.add(budget);
-                onBackPressed();
             }
         });
 
         budgetCategory.setOnClickListener(v -> {
             Intent intent = new Intent(CreateBudgetActivity.this, AddCategoryActivity.class);
-            intent.putExtra("clicked", "Income");
+            intent.putExtra("clicked", "Expense");
             launchSomeActivityResult.launch(intent);
         });
+    }
+
+    private String extractNumericPart(String input) {
+        return input.replaceAll("[^\\d.]", "");
+    }
+
+    private ArrayList<IncomeAndExpense> filterCategories(ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            if (incomeAndExpense.getTag().equals("Expense")) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
     }
 
     @Override

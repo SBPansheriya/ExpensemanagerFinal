@@ -83,7 +83,7 @@ public class Constant {
             R.drawable.i39,
             R.drawable.i34,
             R.drawable.i25,
-            R.drawable.i38,
+            R.drawable.i32,
             R.drawable.i30,
             R.drawable.i19
     };

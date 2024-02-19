@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relative"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="5dp">
+
+    <RelativeLayout
+        android:id="@+id/relative1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border3">
+
+        <LinearLayout
+            android:id="@+id/title"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginVertical="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="10dp">
+
+            <ImageView
+                android:id="@+id/item_image"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ex" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/title1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginVertical="5dp"
+            android:layout_toStartOf="@+id/title2"
+            android:layout_toEndOf="@+id/title"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/item_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:gravity="center|start"
+                android:text="@string/shopping"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="2dp"/>
+
+            <TextView
+                android:id="@+id/item_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/item_name"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:text="@string/amet_minim_mollit_non_deserunt_ullamcoest_sit_aliqua_dolor_do_amet_sint_velit_officia_consequat_duis_enim_velit_mollit_exercitation_veniam_consequat_sunt_nostrud_amet"
+                android:textColor="@color/gray"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/title2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:gravity="end"
+                android:text="@string/_12000000"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="5dp" />
+
+            <TextView
+                android:id="@+id/item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_gravity="end"
+                android:fontFamily="@font/lexenddeca_semibold"
+                android:text="@string/_10_00_am"
+                android:textColor="@color/gray"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@drawable/border3">
+
+        <LinearLayout
+            android:id="@+id/linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_toStartOf="@+id/time"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:fontFamily="@font/lexenddeca_bold"
+                android:text="@string/no_entry_added_today"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:id="@+id/txt1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:textColor="@color/gray"
+                android:textSize="15sp"
+                android:fontFamily="@font/lexenddeca_medium"
+                android:text="@string/you_haven_t_added_any_income_or_expense_entry_for_today"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/lexenddeca_semibold"
+            android:textColor="@color/gray"
+            android:textSize="12sp" />
+    </RelativeLayout>
+</RelativeLayout>

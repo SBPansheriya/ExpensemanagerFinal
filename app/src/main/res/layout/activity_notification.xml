@@ -45,16 +45,17 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/no_notification"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/tbMenu"
         android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:gravity="center"
-        android:text="There is no notification for now"
-        android:textColor="@color/gray"
-        android:textSize="18dp"
         android:fontFamily="@font/lexenddeca_medium"
-        android:layout_below="@+id/tbMenu"/>
+        android:gravity="center"
+        android:text="@string/there_is_no_notification_for_now"
+        android:textColor="@color/gray"
+        android:textSize="18sp"
+        android:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/exceed_budget_recyclerview"
@@ -62,7 +63,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginVertical="10dp"
-        android:layout_marginHorizontal="10dp"
+        android:layout_marginHorizontal="20dp"
+        android:visibility="gone"
         tools:listitem="@layout/item_recent_transaction_layout"/>
 
 </RelativeLayout>

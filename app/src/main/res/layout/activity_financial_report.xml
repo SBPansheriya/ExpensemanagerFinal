@@ -124,7 +124,7 @@
         android:layout_marginHorizontal="10dp"
         android:layout_below="@+id/title2"
         android:visibility="visible"
-        tools:listitem="@layout/legend_layout" />
+        tools:listitem="@layout/item_legend_layout" />
 
     <RelativeLayout
         android:id="@+id/title3"

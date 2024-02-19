@@ -50,20 +50,17 @@ public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransaction
         }
 
         if (incomeAndExpense.getTag().equals("Income")){
-            holder.itemAmount.setText("+" + incomeAndExpense.getAmount());
+            holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
             holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
         } else if (incomeAndExpense.getTag().equals("Expense")) {
-            holder.itemAmount.setText("-" + incomeAndExpense.getAmount());
+            holder.itemAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
             holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, DetailsTransactionActivity.class);
-                intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
-                context.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailsTransactionActivity.class);
+            intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
+            context.startActivity(intent);
         });
     }
 
@@ -72,7 +69,7 @@ public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransaction
         return incomeAndExpenseArrayList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
         RelativeLayout relative;
         TextView itemName,itemDescription,itemAmount,itemDate;

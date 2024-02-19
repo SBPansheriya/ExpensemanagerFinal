@@ -112,7 +112,7 @@ public class IncomeActivity extends AppCompatActivity {
         });
 
         back.setOnClickListener(v -> onBackPressed());
-        calender.setOnClickListener(v -> showCalenderBottomDialog());
+        dateSelected.setOnClickListener(v -> showCalenderBottomDialog());
 
         incomeCategory.setOnClickListener(v -> {
             Intent intent = new Intent(IncomeActivity.this, AddCategoryActivity.class);

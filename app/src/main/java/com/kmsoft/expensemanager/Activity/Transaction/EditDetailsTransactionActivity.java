@@ -19,6 +19,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -46,7 +47,9 @@ import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.kmsoft.expensemanager.Activity.FloatingButton.AddCategoryActivity;
+import com.kmsoft.expensemanager.Activity.NotificationScheduler;
 import com.kmsoft.expensemanager.DBHelper;
+import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 import com.squareup.picasso.Picasso;
@@ -54,8 +57,10 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class EditDetailsTransactionActivity extends AppCompatActivity {
@@ -84,6 +89,8 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     double selectedDateTimeStamp;
     String categoryName;
     String addAttachmentImage;
+    ArrayList<Budget> budgetArrayList = new ArrayList<>();
+    ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,8 +172,44 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             } else {
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
                 incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor,description, addAttachmentImage, incomeAndExpense.getTag());
-                incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.updateData(incomeAndExpense);
+
+                Cursor cursor = dbHelper.getAllBudgetData();
+                if (cursor != null && cursor.moveToFirst()) {
+                    budgetArrayList = new ArrayList<>();
+                    do {
+                        int id = cursor.getInt(0);
+                        String amountBudget = cursor.getString(1);
+                        String categoryNameBudget = cursor.getString(2);
+                        int categoryImageBudget = cursor.getInt(3);
+                        int percentageBudget = cursor.getInt(4);
+
+                        Budget budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget);
+                        budgetArrayList.add(budget);
+                    } while (cursor.moveToNext());
+                }
+
+                expenseList = filterCategories(incomeAndExpenseArrayList);
+                HashMap<String, Double> categoryTotalExpenses = new HashMap<>();
+
+                for (IncomeAndExpense expense : expenseList) {
+                    String categoryName = expense.getCategoryName();
+                    double amount1 = Double.parseDouble(extractNumericPart(expense.getAmount()));
+                    double categoryTotal = categoryTotalExpenses.getOrDefault(categoryName, 0.0);
+                    categoryTotal += amount1;
+                    categoryTotalExpenses.put(categoryName, categoryTotal);
+                }
+
+                for (Budget budget : budgetArrayList) {
+                    String categoryName1 = budget.getCategoryNameBudget();
+                    double categoryTotalExpense = categoryTotalExpenses.getOrDefault(categoryName1, 0.0);
+                    if (categoryName.equals(budget.getCategoryNameBudget())) {
+                        double budgetAmount1 = Double.parseDouble(extractNumericPart(budget.getAmountBudget()));
+                        if (categoryTotalExpense >= budgetAmount1) {
+                            NotificationScheduler.scheduleNotification(this, budget);
+                        }
+                    }
+                }
                 onBackPressed();
             }
         });
@@ -220,6 +263,21 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private String extractNumericPart(String input) {
+        return input.replaceAll("[^\\d.]", "");
+    }
+
+    private ArrayList<IncomeAndExpense> filterCategories
+            (ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            if (incomeAndExpense.getTag().equals("Expense")) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
     }
 
     private void setData() {

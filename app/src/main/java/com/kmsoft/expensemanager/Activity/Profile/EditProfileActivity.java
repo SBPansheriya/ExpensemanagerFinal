@@ -254,7 +254,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
                     intent.setData(uri);
-                    ActivityCompat.startActivityForResult(EditProfileActivity.this,intent, EditProfileActivity.CAMERA_REQUEST,null);
+                    ActivityCompat.startActivityForResult(EditProfileActivity.this,intent, 100,null);
                     dialog.dismiss();
                 });
             }

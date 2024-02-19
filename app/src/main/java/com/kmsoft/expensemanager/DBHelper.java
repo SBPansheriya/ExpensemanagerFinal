@@ -47,6 +47,15 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_IMAGE_BUDGET = "category_image_budget";
     public static final String COLUMN_PERCENTAGE_BUDGET = "percentage_budget";
 
+    private static final String TABLE3 = "Notificationdata";
+    private static final String COLUMN_ID_NOTIFICATION = "id";
+    private static final String COLUMN_AMOUNT_NOTIFICATION = "notification_amount_budget";
+    public static final String COLUMN_CATEGORY_NAME_NOTIFICATION = "notification_category_name_budget";
+    public static final String COLUMN_CATEGORY_IMAGE_NOTIFICATION = "notification_category_image_budget";
+    public static final String COLUMN_CATEGORY_CURRENTTIME_NOTIFICATION = "notification_category_currentTime_budget";
+    public static final String COLUMN_CATEGORY_ISREMOVE_NOTIFICATION = "notification_category_isRemove_budget";
+    public static final String COLUMN_CATEGORY_TAG_NOTIFICATION = "notification_category_tag_budget";
+
     private static final int VER = 1;
 
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "("
@@ -82,6 +91,16 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_PERCENTAGE_BUDGET + " TEXT"
             + ")";
 
+    private static final String CREATE_TABLE_NOTIFICATION = "CREATE TABLE " + TABLE3 + "("
+            + COLUMN_ID_NOTIFICATION + " INTEGER PRIMARY KEY,"
+            + COLUMN_AMOUNT_NOTIFICATION + " TEXT,"
+            + COLUMN_CATEGORY_NAME_NOTIFICATION + " TEXT,"
+            + COLUMN_CATEGORY_IMAGE_NOTIFICATION + " TEXT,"
+            + COLUMN_CATEGORY_CURRENTTIME_NOTIFICATION + " TEXT,"
+            + COLUMN_CATEGORY_ISREMOVE_NOTIFICATION + " TEXT,"
+            + COLUMN_CATEGORY_TAG_NOTIFICATION + " TEXT"
+            + ")";
+
     public DBHelper(@Nullable Context context) {
         super(context, DBNAME, null, VER);
         Log.d("TTT", "DataBase: create database");
@@ -93,6 +112,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE);
         sqLiteDatabase.execSQL(CREATE_TABLE_CATEGORY);
         sqLiteDatabase.execSQL(CREATE_TABLE_BUDGET);
+        sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
         Log.d("TTT", "onCreate: create table");
     }
 
@@ -101,6 +121,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE1);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE2);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE3);
         onCreate(sqLiteDatabase);
     }
 
@@ -204,6 +225,10 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+
+
+    //Budget Crud
+
     //insert Data
     public void insertBudgetData(Budget budget) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -240,6 +265,37 @@ public class DBHelper extends SQLiteOpenHelper {
     public void deleteBudgetData(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE2, COLUMN_ID_BUDGET + " = ?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+
+    // Notification Curd
+
+    //insert Data
+    public void insertBudgetNotificationData(String amount,String name,int image,String time,boolean isRemove,String tag) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_AMOUNT_NOTIFICATION, amount);
+        contentValues.put(COLUMN_CATEGORY_NAME_NOTIFICATION, name);
+        contentValues.put(COLUMN_CATEGORY_IMAGE_NOTIFICATION, image);
+        contentValues.put(COLUMN_CATEGORY_CURRENTTIME_NOTIFICATION, time);
+        contentValues.put(COLUMN_CATEGORY_ISREMOVE_NOTIFICATION, isRemove);
+        contentValues.put(COLUMN_CATEGORY_TAG_NOTIFICATION, tag);
+
+        db.insert(TABLE3, null, contentValues);
+        db.close();
+    }
+
+    // Retrieve All Data
+    public Cursor getAllBudgetNotificationData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE3, null);
+    }
+
+    // Delete Data
+    public void deleteAllBudgetNotificationData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE3, null, null);
         db.close();
     }
 }

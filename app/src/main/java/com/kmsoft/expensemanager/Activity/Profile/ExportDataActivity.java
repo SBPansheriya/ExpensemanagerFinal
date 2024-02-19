@@ -2,17 +2,12 @@ package com.kmsoft.expensemanager.Activity.Profile;
 
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -21,7 +16,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -58,8 +52,6 @@ import java.util.Date;
 import java.util.Random;
 
 public class ExportDataActivity extends AppCompatActivity {
-    private static final int STORAGE_PERMISSION_CODE = 101;
-
 
     ImageView back;
     LinearLayout export;
@@ -349,14 +341,19 @@ public class ExportDataActivity extends AppCompatActivity {
 
     private void openCsvFile(String filePath) {
         File file = new File(filePath);
-        if (file.exists()) {
-            Uri uri = FileProvider.getUriForFile(this, "com.kmsoft.expensemanager.fileprovider", file);
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(uri, "text/csv");
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show();
+        try {
+            if (file.exists()) {
+                Uri uri = FileProvider.getUriForFile(this, "com.kmsoft.expensemanager.fileprovider", file);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, "text/csv");
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (Exception e){
+            Toast.makeText(this, "File not open", Toast.LENGTH_SHORT).show();
         }
     }
 

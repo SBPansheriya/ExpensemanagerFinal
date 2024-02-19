@@ -21,9 +21,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.transition.Fade;
-import android.transition.Transition;
-import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +29,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -168,65 +164,25 @@ public class AddCategoryActivity extends AppCompatActivity {
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     if (TextUtils.equals(tagFind, "Income")){
                         if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() -1){
-                            addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    addNewCategoryBtn.setVisibility(View.GONE);
-                                }
-                            });
+                            addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
-                            add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    add_mini_layout.setVisibility(View.VISIBLE);
-                                }
-                            });
+                            add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
                         }else {
-                            addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    addNewCategoryBtn.setVisibility(View.VISIBLE);
-                                }
-                            });
+                            addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
-                            add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    add_mini_layout.setVisibility(View.GONE);
-                                }
-                            });
+                            add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
                         }
                     }else {
                         if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() -1){
-                            addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    addNewCategoryBtn.setVisibility(View.GONE);
-                                }
-                            });
+                            addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
-                            add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    add_mini_layout.setVisibility(View.VISIBLE);
-                                }
-                            });
+                            add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
                         }else {
-                            addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    addNewCategoryBtn.setVisibility(View.VISIBLE);
-                                }
-                            });
+                            addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
-                            add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                                @Override
-                                public void run() {
-                                    add_mini_layout.setVisibility(View.GONE);
-                                }
-                            });
+                            add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
                         }
                     }
 
@@ -436,9 +392,8 @@ public class AddCategoryActivity extends AppCompatActivity {
 
     private void insertInitialCategories() {
         for (int i = 0; i < categories.length; i++) {
-            int drawableId = categoriesImage[i % categoriesImage.length];
             String type = (i < 10) ? "Income" : "Expense";
-            dbHelper.insertCategoryData(new Category(0, categories[i], drawableId, type, MY_COLORS[i]));
+            dbHelper.insertCategoryData(new Category(0, categories[i], categoriesImage[i], type, MY_COLORS[i]));
         }
     }
 
@@ -464,68 +419,28 @@ public class AddCategoryActivity extends AppCompatActivity {
                 addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList);
                 incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() -1){
-                    addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            addNewCategoryBtn.setVisibility(View.GONE);
-                        }
-                    });
+                    addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
-                    add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            add_mini_layout.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
                 }else {
-                    addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            addNewCategoryBtn.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
-                    add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            add_mini_layout.setVisibility(View.GONE);
-                        }
-                    });
+                    add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
                 }
             } else if (TextUtils.equals(tagFind, "Expense")) {
                 incomeCategoryRecyclerview.setLayoutManager(layoutManager);
                 addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList);
                 incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
                 if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() -1){
-                    addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            addNewCategoryBtn.setVisibility(View.GONE);
-                        }
-                    });
+                    addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
-                    add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            add_mini_layout.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
                 }else {
-                    addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            addNewCategoryBtn.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
-                    add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            add_mini_layout.setVisibility(View.GONE);
-                        }
-                    });
+                    add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
                 }
             }
         }

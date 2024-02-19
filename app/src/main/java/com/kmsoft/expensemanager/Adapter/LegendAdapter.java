@@ -1,8 +1,5 @@
 package com.kmsoft.expensemanager.Adapter;
 
-import static com.kmsoft.expensemanager.Constant.categoryArrayList;
-import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +14,6 @@ import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class LegendAdapter extends RecyclerView.Adapter<LegendAdapter.ViewHolder> {
     FinancialReportActivity financialReportActivity;
@@ -33,7 +29,7 @@ public class LegendAdapter extends RecyclerView.Adapter<LegendAdapter.ViewHolder
     @NonNull
     @Override
     public LegendAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.legend_layout,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_legend_layout,parent,false);
         return new ViewHolder(view);
     }
 
@@ -60,7 +56,7 @@ public class LegendAdapter extends RecyclerView.Adapter<LegendAdapter.ViewHolder
         return chartData.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         View legendBox;
         TextView legendTitle;
         public ViewHolder(@NonNull View itemView) {

@@ -36,12 +36,7 @@ public class IconActivity extends AppCompatActivity {
 
         name = getIntent().getStringExtra("name");
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        back.setOnClickListener(v -> onBackPressed());
 
         GridLayoutManager layoutManager=new GridLayoutManager(this,5);
         iconAdapter = new IconAdapter(IconActivity.this,iconList);

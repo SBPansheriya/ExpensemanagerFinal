@@ -1,5 +1,7 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
+import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,11 +27,14 @@ import com.google.android.material.slider.Slider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import com.kmsoft.expensemanager.Activity.NotificationScheduler;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Budget;
+import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DetailsBudgetActivity extends AppCompatActivity {
 
@@ -44,9 +49,12 @@ public class DetailsBudgetActivity extends AppCompatActivity {
     ArrayList<Budget> budgetArrayList;
     String remainingAmount;
     String finalAmount;
+    String name;
     int remainingFinalAmount;
     int exceedAmount;
     int num1;
+    ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
+
 
     @SuppressLint("DefaultLocale")
     @Override
@@ -113,27 +121,67 @@ public class DetailsBudgetActivity extends AppCompatActivity {
                 Intent data = result.getData();
                 if (data != null) {
                     budget = (Budget) data.getSerializableExtra("budget");
-                    if (budget != null) {
-                        setData();
+                    String listGet1 = data.getStringExtra("budgetArrayList");
+                    gson = new Gson();
+                    budgetArrayList = gson.fromJson(listGet1, new TypeToken<ArrayList<Budget>>() {
+                    }.getType());
 
+                    if (budget != null) {
                         // exceedAmount set
                         String valueTo1 = extractNumericPart(budget.getAmountBudget());
                         num1 = Integer.parseInt(valueTo1);
-                        if (exceedAmount >= num1) {
-                            showPercentage.setValueTo(num1);
-                            showPercentage.setValueFrom(0);
-                            showPercentage.setValue(num1);
-                            showExceedAmount.setVisibility(View.VISIBLE);
+                        if (budget.getCategoryNameBudget().equals(name)) {
+                            if (exceedAmount >= num1) {
+                                showPercentage.setValueTo(num1);
+                                showPercentage.setValueFrom(0);
+                                showPercentage.setValue(num1);
+                                showExceedAmount.setVisibility(View.VISIBLE);
+                            } else {
+                                showPercentage.setValueTo(Float.parseFloat(valueTo1));
+                                showPercentage.setValueFrom(0);
+                                showPercentage.setValue(exceedAmount);
+                                showExceedAmount.setVisibility(View.GONE);
+                            }
+                            // remainingAmount set
+                            int result1 = num1 - exceedAmount;
+                            amountBudget.setText(String.format("₹%d", result1));
                         } else {
-                            showPercentage.setValueTo(Float.parseFloat(valueTo1));
-                            showPercentage.setValueFrom(0);
-                            showPercentage.setValue(exceedAmount);
-                            showExceedAmount.setVisibility(View.GONE);
-                        }
+                            expenseList = filterCategories(incomeAndExpenseArrayList);
+                            HashMap<String, Double> categoryTotalExpenses = new HashMap<>();
+                            for (IncomeAndExpense expense : expenseList) {
+                                double amount1 = Double.parseDouble(extractNumericPart(expense.getAmount()));
+                                double categoryTotal = categoryTotalExpenses.getOrDefault(expense.getCategoryName(), 0.0);
+                                categoryTotal += amount1;
+                                categoryTotalExpenses.put(expense.getCategoryName(), categoryTotal);
+                            }
 
-                        // remainingAmount
-                        int result1 = num1 - exceedAmount;
-                        amountBudget.setText(String.format("₹%d", result1));
+                            double categoryTotalExpense = 0;
+                            double budgetAmount1 = 0;
+                            for (IncomeAndExpense expense : expenseList) {
+                                if (expense.getCategoryName().equals(budget.getCategoryNameBudget())) {
+                                    categoryTotalExpense = categoryTotalExpenses.getOrDefault(expense.getCategoryName(), 0.0);
+                                }
+                            }
+                            budgetAmount1 = Double.parseDouble(extractNumericPart(budget.getAmountBudget()));
+
+                            if (categoryTotalExpense >= budgetAmount1) {
+                                showPercentage.setValueTo((float) budgetAmount1);
+                                showPercentage.setValueFrom(0);
+                                showPercentage.setValue((float) budgetAmount1);
+                                showExceedAmount.setVisibility(View.VISIBLE);
+                            } else {
+                                showPercentage.setValueTo(Float.parseFloat(valueTo1));
+                                showPercentage.setValueFrom(0);
+                                showPercentage.setValue((float) categoryTotalExpense);
+                                showExceedAmount.setVisibility(View.GONE);
+                            }
+
+                            // remainingAmount set
+                            double result1 = budgetAmount1 - categoryTotalExpense;
+                            int a = (int) result1;
+                            amountBudget.setText(String.format("₹" + a));
+                        }
+                        setData();
                     }
                 }
             }
@@ -153,16 +201,28 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         delete.setOnClickListener(v -> showDeleteBottomDialog());
     }
 
-    private void setData(){
+    private ArrayList<IncomeAndExpense> filterCategories
+            (ArrayList<IncomeAndExpense> incomeAndExpenses) {
+        ArrayList<IncomeAndExpense> filteredList = new ArrayList<>();
+        for (IncomeAndExpense incomeAndExpense : incomeAndExpenses) {
+            if (incomeAndExpense.getTag().equals("Expense")) {
+                filteredList.add(incomeAndExpense);
+            }
+        }
+        return filteredList;
+    }
 
+    private void setData() {
+
+        name = budget.getCategoryNameBudget();
         showCategoryNameBudget.setText(budget.getCategoryNameBudget());
         if (budget.getCategoryImageBudget() == 0) {
             showCategoryImageBudget.setImageResource(R.drawable.i);
         } else {
             showCategoryImageBudget.setImageResource(budget.getCategoryImageBudget());
         }
-        amountBudget.setText(String.format("%s", budget.getAmountBudget()));
-        showPercentage.setValue(budget.getPercentageBudget());
+//        amountBudget.setText(String.format("%s", budget.getAmountBudget()));
+//        showPercentage.setValue(budget.getPercentageBudget());
         showPercentage.setEnabled(false);
     }
 
