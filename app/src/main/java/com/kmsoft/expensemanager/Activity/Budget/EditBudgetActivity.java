@@ -133,25 +133,23 @@ public class EditBudgetActivity extends AppCompatActivity {
             } else if (TextUtils.isEmpty(categoryName)) {
                 Toast.makeText(EditBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
-
                 boolean categoryFound = false;
-//                int existingId = budget.getId();
-//                String existingCategoryName = budget.getCategoryNameBudget();
+                int existingId = budget.getId();
+                String existingCategoryName = budget.getCategoryNameBudget();
                 if (imageResId == 0) {
                     imageResId = budget.getCategoryImageBudget();
                 }
 
                 for (int i = 0; i < budgetArrayList.size(); i++) {
                     if (budgetArrayList.get(i).getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
-                        Toast.makeText(EditBudgetActivity.this, "Category already exists", Toast.LENGTH_SHORT).show();
-//                        if (!existingCategoryName.equalsIgnoreCase(budgetArrayList.get(i).getCategoryNameBudget())) {
-//                            budget = new Budget(budgetArrayList.get(i).getId(), amount, categoryName, imageResId, percentage);
-//                            dbHelper.updateBudgetData(budget);
-//                            dbHelper.deleteBudgetData(existingId);
-//                        } else {
-//                            budget = new Budget(existingId, amount, categoryName, imageResId, percentage);
-//                            dbHelper.updateBudgetData(budget);
-//                        }
+                        if (!existingCategoryName.equalsIgnoreCase(budgetArrayList.get(i).getCategoryNameBudget())) {
+                            budget = new Budget(budgetArrayList.get(i).getId(), amount, categoryName, imageResId, percentage);
+                            dbHelper.updateBudgetData(budget);
+                            dbHelper.deleteBudgetData(existingId);
+                        } else {
+                            budget = new Budget(existingId, amount, categoryName, imageResId, percentage);
+                            dbHelper.updateBudgetData(budget);
+                        }
                         categoryFound = true;
                         break;
                     }
@@ -160,30 +158,30 @@ public class EditBudgetActivity extends AppCompatActivity {
                 if (!categoryFound) {
                     budget = new Budget(budget.getId(), amount, categoryName, imageResId, percentage);
                     dbHelper.updateBudgetData(budget);
-                    budgetArrayList.add(budget);
-
-                    expenseList = filterCategories(incomeAndExpenseArrayList);
-
-                    double totalExpense = 0;
-                    double budgetAmount1;
-                    for (int i = 0; i < expenseList.size(); i++) {
-                        if (expenseList.get(i).getCategoryName().equals(categoryName)) {
-                            double amount1 = Double.parseDouble(extractNumericPart(expenseList.get(i).getAmount()));
-                            totalExpense += amount1;
-                        }
-                    }
-
-                    for (int i = 0; i < expenseList.size(); i++) {
-                        if (categoryName.equals(expenseList.get(i).getCategoryName())) {
-                            budgetAmount1 = Double.parseDouble(extractNumericPart(amount));
-                            if (totalExpense >= budgetAmount1) {
-                                NotificationScheduler.scheduleNotification(this, budget);
-                                break;
-                            }
-                        }
-                    }
-                    onBackPressed();
                 }
+                budgetArrayList.add(budget);
+
+                expenseList = filterCategories(incomeAndExpenseArrayList);
+
+                double totalExpense = 0;
+                double budgetAmount1;
+                for (int i = 0; i < expenseList.size(); i++) {
+                    if (expenseList.get(i).getCategoryName().equals(categoryName)) {
+                        double amount1 = Double.parseDouble(extractNumericPart(expenseList.get(i).getAmount()));
+                        totalExpense += amount1;
+                    }
+                }
+
+                for (int i = 0; i < expenseList.size(); i++) {
+                    if (categoryName.equals(expenseList.get(i).getCategoryName())) {
+                        budgetAmount1 = Double.parseDouble(extractNumericPart(amount));
+                        if (totalExpense >= budgetAmount1) {
+                            NotificationScheduler.scheduleNotification(this, budget);
+                            break;
+                        }
+                    }
+                }
+                onBackPressed();
             }
         });
     }

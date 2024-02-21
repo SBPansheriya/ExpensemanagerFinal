@@ -1,14 +1,20 @@
 package com.kmsoft.expensemanager.Activity;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Budget;
@@ -30,10 +36,10 @@ public class NotificationReceiver extends BroadcastReceiver {
         Budget budget = (Budget) intent.getSerializableExtra("budget");
 
         dbHelper = new DBHelper(context);
-        showNotification(context,budget);
+        showNotification(context, budget);
     }
 
-    private void showNotification(Context context,Budget budget) {
+    private void showNotification(Context context, Budget budget) {
 
         if (notificationManager == null) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -48,9 +54,15 @@ public class NotificationReceiver extends BroadcastReceiver {
         SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         String time = dateFormat.format(calendar.getTime());
 
-        dbHelper.insertBudgetNotificationData(budget.getAmountBudget(),budget.getCategoryNameBudget(),budget.getCategoryImageBudget(),time,false,"Exceed");
-
         int notificationId = budget.getCategoryNameBudget().hashCode();
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(context, POST_NOTIFICATIONS) != PackageManager.PERMISSION_DENIED) {
+                dbHelper.insertBudgetNotificationData(budget.getAmountBudget(), budget.getCategoryNameBudget(), budget.getCategoryImageBudget(), time, false, "Exceed");
+            }
+        } else {
+            dbHelper.insertBudgetNotificationData(budget.getAmountBudget(), budget.getCategoryNameBudget(), budget.getCategoryImageBudget(), time, false, "Exceed");
+        }
 
         // Create notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)

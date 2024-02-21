@@ -236,14 +236,14 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:fontFamily="@font/lexenddeca_bold"
-                    android:text="Spend frequency"
+                    android:text="@string/spend_frequency"
                     android:textColor="@color/black"
-                    android:textSize="20dp" />
+                    android:textSize="18sp" />
 
                 <Spinner
                     android:id="@+id/spinner"
@@ -371,7 +371,7 @@
                     android:fontFamily="@font/lexenddeca_bold"
                     android:text="@string/recent_transaction"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/see_all"

@@ -744,7 +744,6 @@ public class HomeFragment extends Fragment {
                 recentTransactionRecyclerView.setLayoutManager(manager);
                 recentTransactionRecyclerView.setAdapter(homeAdapter);
             }
-//            NotificationScheduler.scheduleNotification(getContext(),incomeAndExpenseArrayList);
         } else {
             incomeAndExpenseArrayList = new ArrayList<>();
             recentTransactionRecyclerView.setVisibility(View.GONE);

@@ -1,9 +1,10 @@
 package com.kmsoft.expensemanager.Activity;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -14,9 +15,9 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
@@ -30,6 +31,7 @@ public class MyAlarmReceiver extends BroadcastReceiver {
 
     DBHelper dbHelper;
     IncomeAndExpense incomeAndExpense;
+    NotificationManager notificationManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -55,7 +57,30 @@ public class MyAlarmReceiver extends BroadcastReceiver {
     }
 
     private void sendNotification(Context context) {
-        createNotificationChannel(context);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "NotificationChannel";
+//            String description = "Channel for notifications";
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("default", name, importance);
+//            channel.setDescription(description);
+//
+//            if (notificationManager == null) {
+//                notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//            }
+//            notificationManager.createNotificationChannel(channel);
+//        }
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        String time = dateFormat.format(calendar.getTime());
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(context, POST_NOTIFICATIONS) != PackageManager.PERMISSION_DENIED) {
+                dbHelper.insertBudgetNotificationData("", "", 0, time, false, "Reminder");
+            }
+        } else {
+            dbHelper.insertBudgetNotificationData("", "", 0, time, false, "Reminder");
+        }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default")
                 .setSmallIcon(R.drawable.only_logo)
@@ -64,11 +89,8 @@ public class MyAlarmReceiver extends BroadcastReceiver {
                 .setContentText("You haven't added any income or expense entry for today.")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        notificationManager.notify(123, builder.build());
+        Notification notification = builder.build();
+        notificationManager.notify(1, notification);
     }
 
     private void checkForEntryAndNotify(Context context) {
@@ -90,29 +112,25 @@ public class MyAlarmReceiver extends BroadcastReceiver {
             }
         }
 
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-        String time = dateFormat.format(calendar.getTime());
-
         if (!hasEntry) {
             sendNotification(context);
-            dbHelper.insertBudgetNotificationData("","",0,time,false,"Reminder");
-
         }
     }
 
-    private void createNotificationChannel(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "NotificationChannel";
-            String description = "Channel for notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("default", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+//    private void createNotificationChannel(Context context) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "NotificationChannel";
+//            String description = "Channel for notifications";
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("default", name, importance);
+//            channel.setDescription(description);
+//
+//            if (notificationManager == null) {
+//                notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//            }
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
     private void Display() {
         Cursor cursor = dbHelper.getAllData();

@@ -90,6 +90,10 @@
     <string name="there_is_no_notification_for_now">There is no notification for now</string>
     <string name="no_entry_added_today">No Entry Added Today</string>
     <string name="you_haven_t_added_any_income_or_expense_entry_for_today">You haven\'t added any income or expense entry for today.</string>
+    <string name="spend_frequency">Spend frequency</string>
+    <string name="you_don_t_have_a_any_transaction_let_s_make_one_so_you_in_control">You don’t have a any transaction . Let’s make one so you in control.</string>
+    <string name="postNotification">You have chosen to never ask the permission again, but post notification permission is needed for proper functioning of app.</string>
+    <string name="post_notification_permission_is_needed_for_proper_functioning_of_app">Post notification permission is needed for proper functioning of app.</string>
 
     <string-array name="spendFrequency" translatable="false">
         <item>Income</item>

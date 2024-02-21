@@ -58,8 +58,6 @@ public class NotificationActivity extends AppCompatActivity {
                     notificationsList.clear();
                     exceedBudgetAdapter.notifyDataSetChanged();
                     noNotification.setVisibility(View.VISIBLE);
-                } else if (menuItem.getTitle().equals("Mark all read")) {
-
                 }
                 return true;
             });
