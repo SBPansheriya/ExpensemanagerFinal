@@ -49,7 +49,7 @@ import java.io.IOException;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    ImageView editProfileImg, setImage,back;
+    ImageView editProfileImg, setImage, back;
     EditText editProfileUsername;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -75,8 +75,8 @@ public class EditProfileActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        userName = sharedPreferences.getString(USER_NAME,"");
-        userImage = sharedPreferences.getString(USER_IMAGE,"");
+        userName = sharedPreferences.getString(USER_NAME, "");
+        userImage = sharedPreferences.getString(USER_IMAGE, "");
 
         if (TextUtils.isEmpty(userName)) {
             editProfileUsername.setHint(R.string.your_name);
@@ -84,7 +84,7 @@ public class EditProfileActivity extends AppCompatActivity {
             editProfileUsername.setText(userName);
         }
 
-        if (TextUtils.isEmpty(userImage)){
+        if (TextUtils.isEmpty(userImage)) {
             setImage.setImageResource(R.drawable.profile);
         } else {
             Picasso.get().load(userImage).into(setImage);
@@ -95,11 +95,21 @@ public class EditProfileActivity extends AppCompatActivity {
         editProfileImg.setOnClickListener(v -> checkPermissionsForCamera());
 
         editProfile.setOnClickListener(v -> {
-            userName = editProfileUsername.getText().toString();
-            userImage = (MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title1", null));
-            editor.putString(USER_NAME, userName).apply();
-            editor.putString(USER_IMAGE, userImage).apply();
-            onBackPressed();
+            if (TextUtils.isEmpty(editProfileUsername.getText().toString())) {
+                Toast.makeText(this, "Please enter name", Toast.LENGTH_SHORT).show();
+            } else if (setImage.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.profile).getConstantState())) {
+                Toast.makeText(this, "Please enter image", Toast.LENGTH_SHORT).show();
+            } else {
+                userName = editProfileUsername.getText().toString();
+                if (bitmap == null) {
+                    userImage = sharedPreferences.getString(USER_IMAGE, "");
+                } else {
+                    userImage = (MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title1", null));
+                }
+                editor.putString(USER_NAME, userName).apply();
+                editor.putString(USER_IMAGE, userImage).apply();
+                onBackPressed();
+            }
         });
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -131,7 +141,7 @@ public class EditProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent();
         intent.putExtra("userImage", userImage);
-        intent.putExtra("userName",userName);
+        intent.putExtra("userName", userName);
         setResult(RESULT_OK, intent);
         super.onBackPressed();
     }
@@ -155,7 +165,7 @@ public class EditProfileActivity extends AppCompatActivity {
         startActivityForResult(takePicture, CAMERA_REQUEST);
     }
 
-    private void showAttachmentBottomDialog(){
+    private void showAttachmentBottomDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(EditProfileActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.add_attachment_bottomsheet_layout);
@@ -185,6 +195,7 @@ public class EditProfileActivity extends AppCompatActivity {
             showAttachmentBottomDialog();
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -226,8 +237,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 });
             }
             click = 1;
-        }
-        else if (click == 1) {
+        } else if (click == 1) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, CAMERA)) {
 
                 Dialog dialog = new Dialog(activity);
@@ -254,7 +264,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
                     intent.setData(uri);
-                    ActivityCompat.startActivityForResult(EditProfileActivity.this,intent, 100,null);
+                    ActivityCompat.startActivityForResult(EditProfileActivity.this, intent, 100, null);
                     dialog.dismiss();
                 });
             }
@@ -281,7 +291,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void init(){
+    private void init() {
         editProfileImg = findViewById(R.id.edit_profile_img);
         editProfileUsername = findViewById(R.id.edit_profile_username);
         editProfile = findViewById(R.id.edit_profile);

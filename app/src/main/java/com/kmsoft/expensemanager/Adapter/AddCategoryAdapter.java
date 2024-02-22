@@ -22,10 +22,12 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
 
     AddCategoryActivity addCategoryActivity;
     ArrayList<Category> categoryArrayList;
+    String name;
 
-    public AddCategoryAdapter(AddCategoryActivity addCategoryActivity, ArrayList<Category> categoryArrayList) {
+    public AddCategoryAdapter(AddCategoryActivity addCategoryActivity, ArrayList<Category> categoryArrayList, String name) {
         this.addCategoryActivity = addCategoryActivity;
         this.categoryArrayList = categoryArrayList;
+        this.name = name;
     }
 
     @NonNull
@@ -46,7 +48,15 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
             holder.addNewCategoryImage.setImageResource(categoryArrayList.get(position).getCategoryImage());
         }
 
-        holder.editCategory.setOnClickListener(v -> addCategoryActivity.showEditNewCategoryBottomDialog(categoryArrayList.get(position),position));
+        holder.editCategory.setOnClickListener(v -> addCategoryActivity.showEditNewCategoryBottomDialog(categoryArrayList.get(position), position));
+
+//        if (!TextUtils.isEmpty(name)) {
+//            if (TextUtils.equals(name, categoryArrayList.get(position).getCategoryName())) {
+//                holder.checkbox.setChecked(true);
+//            } else {
+//                holder.checkbox.setChecked(false);
+//            }
+//        }
 
         holder.itemView.setOnClickListener(view -> holder.checkbox.performClick());
 
@@ -54,7 +64,7 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
             String categoryName = categoryArrayList.get(position).getCategoryName();
             int categoryImage = categoryArrayList.get(position).getCategoryImage();
             int categoryColor = categoryArrayList.get(position).getColor();
-            addCategoryActivity.getData(categoryName, categoryImage,categoryColor);
+            addCategoryActivity.getData(categoryName, categoryImage, categoryColor);
         });
     }
 

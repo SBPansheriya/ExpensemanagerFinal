@@ -652,15 +652,15 @@ public class FinancialReportActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (pieChart.getVisibility() == View.VISIBLE && spinner.getSelectedItem().toString().equals("Week")) {
+                if (imgClick == 2 && spinner.getSelectedItem().toString().equals("Week")) {
                     pieLinear.setVisibility(View.VISIBLE);
                     pieLinear1.setVisibility(View.GONE);
                     pieLinear2.setVisibility(View.GONE);
-                } else if (pieChart.getVisibility() == View.VISIBLE && spinner.getSelectedItem().toString().equals("Month")) {
+                } else if (imgClick == 2 && spinner.getSelectedItem().toString().equals("Month")) {
                     pieLinear1.setVisibility(View.VISIBLE);
                     pieLinear.setVisibility(View.GONE);
                     pieLinear2.setVisibility(View.GONE);
-                } else if (pieChart.getVisibility() == View.VISIBLE && spinner.getSelectedItem().toString().equals("Year")) {
+                } else if (imgClick == 2 && spinner.getSelectedItem().toString().equals("Year")) {
                     pieLinear2.setVisibility(View.VISIBLE);
                     pieLinear1.setVisibility(View.GONE);
                     pieLinear.setVisibility(View.GONE);
@@ -1194,10 +1194,12 @@ public class FinancialReportActivity extends AppCompatActivity {
         }
         pieDataSet.setColors(colors);
 
-        if (pieEntries.isEmpty() && pieChart.getVisibility() == View.VISIBLE) {
+        if (pieEntries.isEmpty() && imgClick == 2) {
             noData.setVisibility(View.VISIBLE);
+            pieChart.setVisibility(View.GONE);
         } else {
             noData.setVisibility(View.GONE);
+            pieChart.setVisibility(View.VISIBLE);
         }
 
         LinearLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false);
@@ -1272,11 +1274,12 @@ public class FinancialReportActivity extends AppCompatActivity {
 
         pieDataSet.setColors(colors);
 
-        if (pieEntries.isEmpty() && pieChart.getVisibility() == View.VISIBLE) {
+        if (pieEntries.isEmpty() && imgClick == 2) {
             noData.setVisibility(View.VISIBLE);
+            pieChart.setVisibility(View.GONE);
         } else {
             noData.setVisibility(View.GONE);
-
+            pieChart.setVisibility(View.VISIBLE);
         }
 
         LinearLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false);

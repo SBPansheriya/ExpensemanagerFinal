@@ -24,7 +24,7 @@ public class Constant {
             Color.rgb(64, 89, 128),
             Color.rgb(149, 165, 124),
             Color.rgb(217, 184, 162),
-            Color.rgb(191, 134, 134),
+            Color.rgb(191, 114, 14),
             Color.rgb(179, 48, 80),
             Color.rgb(255, 102, 0),
             Color.rgb(245, 199, 0),

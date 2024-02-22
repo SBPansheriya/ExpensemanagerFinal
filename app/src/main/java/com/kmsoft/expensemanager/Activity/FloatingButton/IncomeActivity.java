@@ -117,6 +117,9 @@ public class IncomeActivity extends AppCompatActivity {
         incomeCategory.setOnClickListener(v -> {
             Intent intent = new Intent(IncomeActivity.this, AddCategoryActivity.class);
             intent.putExtra("clicked", "Income");
+            intent.putExtra("image", imageResId);
+            intent.putExtra("name", categoryName);
+            intent.putExtra("color", categoryColor);
             launchSomeActivityResult.launch(intent);
         });
 
@@ -155,6 +158,9 @@ public class IncomeActivity extends AppCompatActivity {
                 String amount = incomeAddAmount.getText().toString();
                 String description = incomeDescription.getText().toString();
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
+//                if (TextUtils.isEmpty(categoryName)){
+//                    categoryName = incomeCategoryName.getText().toString();
+//                }
                 incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, categoryColor,description, addAttachmentImage, "Income");
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.insertData(incomeAndExpense);

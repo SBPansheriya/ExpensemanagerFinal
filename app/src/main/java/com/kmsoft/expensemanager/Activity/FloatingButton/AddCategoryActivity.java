@@ -61,6 +61,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     Category category;
     String name;
     int image;
+    int color;
     String tagFind;
     String findClick;
     ArrayList<Category> incomeCategoryList = new ArrayList<>();
@@ -68,7 +69,10 @@ public class AddCategoryActivity extends AppCompatActivity {
     ImageView editNewCategoryImage;
     ImageView addNewCategoryImage;
     LinearLayoutManager layoutManager;
-    int color;
+    int getImage;
+    String getName;
+    int getColor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +92,9 @@ public class AddCategoryActivity extends AppCompatActivity {
 
         click = false;
         clicked = getIntent().getStringExtra("clicked");
+        getImage = getIntent().getIntExtra("image", 0);
+        getColor = getIntent().getIntExtra("color", 0);
+        getName = getIntent().getStringExtra("name");
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -161,25 +168,25 @@ public class AddCategoryActivity extends AppCompatActivity {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    if (TextUtils.equals(tagFind, "Income")){
-                        if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() -1){
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (TextUtils.equals(tagFind, "Income")) {
+                        if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() - 1) {
                             addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
                             add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
-                        }else {
+                        } else {
                             addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
                             add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
                         }
-                    }else {
-                        if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() -1){
+                    } else {
+                        if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() - 1) {
                             addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
                             add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
-                        }else {
+                        } else {
                             addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
                             add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
@@ -235,26 +242,51 @@ public class AddCategoryActivity extends AppCompatActivity {
                 Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 addCategoryName = addNewCategory.getText().toString();
-                Random random = new Random();
-                int randomIndex = random.nextInt(MY_COLORS.length);
-                int randomColor = MY_COLORS[randomIndex];
-                category = new Category(0, addCategoryName, addCategoryImage, tagFind, randomColor);
-                categoryArrayList.add(category);
-                dbHelper.insertCategoryData(category);
-                if (tagFind.equals("Income")) {
-                    incomeCategoryList.add(category);
-                    addCategoryIncomeAdapter.updateData(incomeCategoryList);
-                } else if (tagFind.equals("Expense")) {
-                    expenseCategoryList.add(category);
-                    addCategoryIncomeAdapter.updateData(expenseCategoryList);
-                } else {
-                    Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
+                int randomColor = getRandomColor();
+                boolean categoryFound = false;
+                for (int i = 0; i < categoryArrayList.size(); i++) {
+                    if (addCategoryName.equals(categoryArrayList.get(i).getCategoryName())) {
+                        Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show();
+                        categoryFound = true;
+                        break;
+                    }
                 }
-                addCategoryImage = 0;
+
+                if (!categoryFound) {
+                    category = new Category(0, addCategoryName, addCategoryImage, tagFind, randomColor);
+                    categoryArrayList.add(category);
+                    dbHelper.insertCategoryData(category);
+                    if (tagFind.equals("Income")) {
+                        incomeCategoryList.add(category);
+                        addCategoryIncomeAdapter.updateData(incomeCategoryList);
+                    } else if (tagFind.equals("Expense")) {
+                        expenseCategoryList.add(category);
+                        addCategoryIncomeAdapter.updateData(expenseCategoryList);
+                    } else {
+                        Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
+                    }
+                    addCategoryImage = 0;
+                }
                 dialog.dismiss();
             }
         });
         dialog.show();
+    }
+
+    public static int getRandomColor() {
+        Random random = new Random();
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+
+        int randomColor = Color.rgb(red, green, blue);
+
+        for (int color : MY_COLORS) {
+            if (color == randomColor) {
+                return getRandomColor();
+            }
+        }
+        return randomColor;
     }
 
     public void showEditNewCategoryBottomDialog(Category getcategory, int position) {
@@ -352,32 +384,44 @@ public class AddCategoryActivity extends AppCompatActivity {
                 Toast.makeText(AddCategoryActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 addCategoryName = editCategory.getText().toString();
-                if (editCategoryImage == 0){
+                if (editCategoryImage == 0) {
                     editCategoryImage = category.getCategoryImage();
                 }
-                category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind, category.getColor());
-                categoryArrayList.add(category);
-                if (tagFind.equals("Income")) {
-                    for (int i = 0; i < incomeCategoryList.size(); i++) {
-                        if (incomeCategoryList.get(i).getId() == getcategory.getId()) {
-                            incomeCategoryList.set(i, category);
-                            break;
-                        }
+
+                boolean categoryFound = false;
+                for (int i = 0; i < categoryArrayList.size(); i++) {
+                    if (addCategoryName.equals(categoryArrayList.get(i).getCategoryName()) && categoryArrayList.get(i).getId() != getcategory.getId()) {
+                        Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show();
+                        categoryFound = true;
+                        break;
                     }
-                    addCategoryIncomeAdapter.updateData(incomeCategoryList);
-                } else if (tagFind.equals("Expense")) {
-                    for (int i = 0; i < expenseCategoryList.size(); i++) {
-                        if (expenseCategoryList.get(i).getId() == getcategory.getId()) {
-                            expenseCategoryList.set(i, category);
-                            break;
-                        }
-                    }
-                    addCategoryIncomeAdapter.updateData(expenseCategoryList);
-                } else {
-                    Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
                 }
-                dbHelper.updateCategoryData(AddCategoryActivity.this.category);
-                editCategoryImage = 0;
+
+                if (!categoryFound) {
+                    category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind, category.getColor());
+                    categoryArrayList.add(category);
+                    if (tagFind.equals("Income")) {
+                        for (int i = 0; i < incomeCategoryList.size(); i++) {
+                            if (incomeCategoryList.get(i).getId() == getcategory.getId()) {
+                                incomeCategoryList.set(i, category);
+                                break;
+                            }
+                        }
+                        addCategoryIncomeAdapter.updateData(incomeCategoryList);
+                    } else if (tagFind.equals("Expense")) {
+                        for (int i = 0; i < expenseCategoryList.size(); i++) {
+                            if (expenseCategoryList.get(i).getId() == getcategory.getId()) {
+                                expenseCategoryList.set(i, category);
+                                break;
+                            }
+                        }
+                        addCategoryIncomeAdapter.updateData(expenseCategoryList);
+                    } else {
+                        Toast.makeText(AddCategoryActivity.this, "No Added Data", Toast.LENGTH_SHORT).show();
+                    }
+                    dbHelper.updateCategoryData(AddCategoryActivity.this.category);
+                    editCategoryImage = 0;
+                }
                 dialog1.dismiss();
             }
         });
@@ -416,28 +460,28 @@ public class AddCategoryActivity extends AppCompatActivity {
 
             if (TextUtils.equals(tagFind, "Income")) {
                 incomeCategoryRecyclerview.setLayoutManager(layoutManager);
-                addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList);
+                addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, incomeCategoryList, getName);
                 incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
-                if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() -1){
+                if (layoutManager.findLastVisibleItemPosition() == incomeCategoryList.size() - 1) {
                     addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
                     add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
-                }else {
+                } else {
                     addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
                     add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
                 }
             } else if (TextUtils.equals(tagFind, "Expense")) {
                 incomeCategoryRecyclerview.setLayoutManager(layoutManager);
-                addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList);
+                addCategoryIncomeAdapter = new AddCategoryAdapter(AddCategoryActivity.this, expenseCategoryList, getName);
                 incomeCategoryRecyclerview.setAdapter(addCategoryIncomeAdapter);
-                if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() -1){
+                if (layoutManager.findLastVisibleItemPosition() == expenseCategoryList.size() - 1) {
                     addNewCategoryBtn.animate().alpha(0.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.GONE));
 
                     add_mini_layout.animate().alpha(1.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.VISIBLE));
 
-                }else {
+                } else {
                     addNewCategoryBtn.animate().alpha(1.0f).setDuration(500).withEndAction(() -> addNewCategoryBtn.setVisibility(View.VISIBLE));
 
                     add_mini_layout.animate().alpha(0.0f).setDuration(500).withEndAction(() -> add_mini_layout.setVisibility(View.GONE));
@@ -457,15 +501,38 @@ public class AddCategoryActivity extends AppCompatActivity {
     }
 
     public void getData(String name1, int image1, int categoryColor) {
-        name = name1;
-        image = image1;
-        color = categoryColor;
+        if (TextUtils.isEmpty(name1)) {
+            name = getName;
+        } else {
+            name = name1;
+        }
+
+        if (image1 == 0) {
+            image = getImage;
+        } else {
+            image = image1;
+        }
+
+        if (categoryColor == 0) {
+            color = getColor;
+        } else {
+            color = categoryColor;
+        }
         onBackPressed();
     }
 
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
+        if (TextUtils.isEmpty(name)) {
+            name = getName;
+        }
+        if (image == 0) {
+            image = getImage;
+        }
+        if (color == 0) {
+            color = getColor;
+        }
         intent.putExtra("categoryImage", image);
         intent.putExtra("categoryName", name);
         intent.putExtra("categoryColor", color);

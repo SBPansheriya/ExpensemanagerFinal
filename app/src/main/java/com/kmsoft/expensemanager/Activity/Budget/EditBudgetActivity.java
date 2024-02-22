@@ -97,6 +97,8 @@ public class EditBudgetActivity extends AppCompatActivity {
         editBudgetCategory.setOnClickListener(v -> {
             Intent intent = new Intent(EditBudgetActivity.this, AddCategoryActivity.class);
             intent.putExtra("clicked", "Income");
+            intent.putExtra("image", budget.getCategoryImageBudget());
+            intent.putExtra("name", budget.getCategoryNameBudget());
             launchSomeActivityResult.launch(intent);
         });
 

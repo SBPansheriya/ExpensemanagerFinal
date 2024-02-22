@@ -51,7 +51,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         }
 
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault());
         String time = dateFormat.format(calendar.getTime());
 
         int notificationId = budget.getCategoryNameBudget().hashCode();

@@ -96,6 +96,7 @@ public class ProfileFragment extends Fragment {
             username.setText("Your name");
             username.setTextColor(ContextCompat.getColor(getActivity(),R.color.gray));
         } else {
+            username.setTextColor(ContextCompat.getColor(getActivity(),R.color.black));
             username.setText(userName);
         }
 

@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,12 @@ import com.kmsoft.expensemanager.Activity.Profile.NotificationActivity;
 import com.kmsoft.expensemanager.Model.BudgetNotification;
 import com.kmsoft.expensemanager.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapter.ViewHolder> {
 
@@ -30,13 +36,30 @@ public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapte
     @NonNull
     @Override
     public ExceedBudgetAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_reminder_layout,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_reminder_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ExceedBudgetAdapter.ViewHolder holder, int position) {
         BudgetNotification budgetNotification = notificationsList.get(position);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currantDate = dateFormat.format(calendar.getTime());
+        String dateOnly = null;
+        String timeOnly = null;
+        String currentTime = budgetNotification.getCurrentTime();
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault());
+        try {
+            Date parsedDate = dateFormat1.parse(currentTime);
+            SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            SimpleDateFormat timeOnlyFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            dateOnly = dateOnlyFormat.format(parsedDate);
+            timeOnly = timeOnlyFormat.format(parsedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         if (budgetNotification.getTag().equals("Exceed")) {
             holder.itemName.setText(budgetNotification.getName());
             holder.itemAmount.setText(budgetNotification.getAmount());
@@ -45,7 +68,11 @@ public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapte
             } else {
                 holder.itemImage.setImageResource(budgetNotification.getImage());
             }
-            holder.itemDate.setText(budgetNotification.getCurrentTime());
+            if (TextUtils.equals(currantDate, dateOnly)) {
+                holder.itemDate.setText(timeOnly);
+            } else {
+                holder.itemDate.setText(budgetNotification.getCurrentTime());
+            }
             holder.itemDescription.setText(R.string.you_ve_exceed_the_limit);
             holder.itemDescription.setTextColor(ContextCompat.getColor(notificationActivity, R.color.red));
             holder.relativeLayout1.setVisibility(View.GONE);
@@ -53,7 +80,11 @@ public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapte
         } else if (budgetNotification.getTag().equals("Reminder")) {
             holder.relativeLayout1.setVisibility(View.VISIBLE);
             holder.relativeLayout.setVisibility(View.GONE);
-            holder.time.setText(budgetNotification.getCurrentTime());
+            if (TextUtils.equals(currantDate, dateOnly)) {
+                holder.time.setText(timeOnly);
+            } else {
+                holder.time.setText(budgetNotification.getCurrentTime());
+            }
         }
     }
 
@@ -64,8 +95,9 @@ public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
-        RelativeLayout relativeLayout,relativeLayout1;
-        TextView itemName,itemDescription,itemAmount,itemDate,time;
+        RelativeLayout relativeLayout, relativeLayout1;
+        TextView itemName, itemDescription, itemAmount, itemDate, time;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.item_image);

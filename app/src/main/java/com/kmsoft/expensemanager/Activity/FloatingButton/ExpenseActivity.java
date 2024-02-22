@@ -124,6 +124,9 @@ public class ExpenseActivity extends AppCompatActivity {
         expenseCategory.setOnClickListener(v -> {
             Intent intent = new Intent(ExpenseActivity.this, AddCategoryActivity.class);
             intent.putExtra("clicked", "Expense");
+            intent.putExtra("image", imageResId);
+            intent.putExtra("name", categoryName);
+            intent.putExtra("color", categoryColor);
             launchSomeActivityResult.launch(intent);
         });
 

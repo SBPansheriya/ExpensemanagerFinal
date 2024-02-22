@@ -267,7 +267,11 @@ public class ExportDataActivity extends AppCompatActivity {
             // Add data
             for (IncomeAndExpense item : incomeAndExpenseArrayList) {
                 table.addCell(item.getTag());
-                table.addCell(item.getCategoryName());
+                if (!TextUtils.isEmpty(item.getCategoryName())){
+                    table.addCell(item.getCategoryName());
+                } else {
+                    table.addCell("No category found");
+                }
                 if (item.getAddAttachment() != null) {
                     String filePath = getPathFromUri(this, Uri.parse(item.getAddAttachment()));
                     Image img = new Image(ImageDataFactory.create(filePath));
@@ -327,7 +331,7 @@ public class ExportDataActivity extends AppCompatActivity {
                         item.getCategoryName(),
                         String.valueOf(item.getAmount()),
                         item.getDate(),
-                        TextUtils.isEmpty(item.getDescription()) ? item.getDescription() : "No description",
+                        !TextUtils.isEmpty(item.getDescription()) ? item.getDescription() : "No description",
                 };
                 writer.writeNext(data);
             }
@@ -353,7 +357,7 @@ public class ExportDataActivity extends AppCompatActivity {
             }
         }
         catch (Exception e){
-            Toast.makeText(this, "File not open", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Failed to open file. Source not found.", Toast.LENGTH_SHORT).show();
         }
     }
 

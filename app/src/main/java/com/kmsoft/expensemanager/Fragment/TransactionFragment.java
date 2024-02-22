@@ -62,7 +62,9 @@ public class TransactionFragment extends Fragment {
     String FILTER_KEY = "filter_by";
     String SORT_KEY = "sort_by";
     String date;
+    int resetData = 0;
     int click = 0;
+    String newDate;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,31 +117,56 @@ public class TransactionFragment extends Fragment {
 
         TextView cancel = dialog.findViewById(R.id.cancel);
         TextView ok = dialog.findViewById(R.id.ok);
+        TextView reset = dialog.findViewById(R.id.reset);
         CalendarView calendarView = dialog.findViewById(R.id.trans_calenderView);
 
-        if (date != null) {
+        reset.setVisibility(View.VISIBLE);
+
+        if (date != null && resetData == 0) {
             Date date1 = parseDate(date);
             if (date1 != null) {
                 calendarView.setDate(date1.getTime());
             }
         }
 
+        if (resetData == -1){
+            Date date1 = parseDate(newDate);
+            if (date1 != null) {
+                calendarView.setDate(date1.getTime());
+            }
+        }
+
+        Calendar selectedDateCalendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            Calendar selectedDateCalendar = Calendar.getInstance();
             selectedDateCalendar.set(year, month, dayOfMonth);
-            SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             date = dateFormat1.format(selectedDateCalendar.getTime());
         });
 
-        cancel.setOnClickListener(v -> dialog.dismiss());
+        reset.setOnClickListener(v -> {
+            click = 0;
+            resetData = 1;
+            date = null;
+            Display();
+            dialog.dismiss();
+        });
+
+        cancel.setOnClickListener(v -> {
+            resetData = -1;
+            dialog.dismiss();
+        });
 
         ok.setOnClickListener(v -> {
             if (TextUtils.isEmpty(date)) {
-                Calendar selectedDateCalendar = Calendar.getInstance();
-                SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                date = dateFormat1.format(selectedDateCalendar.getTime());
+                Calendar selectedDateCalendar1 = Calendar.getInstance();
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                date = dateFormat2.format(selectedDateCalendar1.getTime());
             }
+
+            newDate = dateFormat1.format(selectedDateCalendar.getTime());
             click = 1;
+            resetData = 0;
             Display();
             dialog.dismiss();
         });
@@ -284,6 +311,8 @@ public class TransactionFragment extends Fragment {
         reset.setOnClickListener(v -> {
             filterBy = "All";
             sortBy = "Newest";
+//            resetData = 1;
+//            click = 0;
             all.setBackgroundResource(R.drawable.selected_border_background);
             all.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
             income.setBackgroundResource(R.drawable.unselected_border_background);
@@ -450,162 +479,173 @@ public class TransactionFragment extends Fragment {
 
             LinearLayoutManager manager = new LinearLayoutManager(getContext());
 
-            if (click == 0) {
-                switch (filterBy) {
-                    case "All": {
-                        if (sortBy.equals("Oldest")) {
-                            incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
-                        } else if (sortBy.equals("Newest")) {
-                            incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
-                            Collections.reverse(incomeAndExpenseArrayList);
-                        } else {
-                            incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
-                            Collections.reverse(incomeAndExpenseArrayList);
-                        }
-
-                        ArrayList<ListDateModel> listDateModels = new ArrayList<>();
-                        String date = "";
-                        for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
-                            String convertDate = convertTimestampToDateString(incomeAndExpenseArrayList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
-                            if (!convertDate.equalsIgnoreCase(date)) {
-                                date = convertDate;
-                                ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeAndExpenseArrayList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
-
-                                ListDateModel listDateModel = new ListDateModel();
-                                listDateModel.incomeAndExpenseArrayList = newList;
-
-                                listDateModels.add(listDateModel);
-                            }
-                        }
-                        if (incomeAndExpenseArrayList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            dateRecyclerview.setVisibility(View.GONE);
-                        } else {
-                            dateRecyclerview.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
-                            dateRecyclerview.setLayoutManager(manager);
-                            dateRecyclerview.setAdapter(dateAdapter);
-                        }
-                        break;
+            switch (filterBy) {
+                case "All": {
+                    if (sortBy.equals("Oldest")) {
+                        incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                    } else if (sortBy.equals("Newest")) {
+                        incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                        Collections.reverse(incomeAndExpenseArrayList);
+                    } else {
+                        incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                        Collections.reverse(incomeAndExpenseArrayList);
                     }
-                    case "Income": {
-                        if (sortBy.equals("Oldest")) {
-                            incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
-                        } else if (sortBy.equals("Newest")) {
-                            incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
 
-                            Collections.reverse(incomeList);
-                        } else {
-                            incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
-
-                            Collections.reverse(incomeList);
-                        }
-
-                        ArrayList<ListDateModel> listDateModels = new ArrayList<>();
-                        String date = "";
-                        for (int i = 0; i < incomeList.size(); i++) {
-                            String convertDate = convertTimestampToDateString(incomeList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
-                            if (!convertDate.equalsIgnoreCase(date)) {
-                                date = convertDate;
-                                ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
-
-                                ListDateModel listDateModel = new ListDateModel();
-                                listDateModel.incomeAndExpenseArrayList = newList;
-
-                                listDateModels.add(listDateModel);
-                            }
-                        }
-                        if (incomeList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            dateRecyclerview.setVisibility(View.GONE);
-                        } else {
-                            dateRecyclerview.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
-                            dateRecyclerview.setLayoutManager(manager);
-                            dateRecyclerview.setAdapter(dateAdapter);
-                        }
-                        break;
+                    if (click == 1) {
+                        incomeAndExpenseArrayList = filterDataByDate(incomeAndExpenseArrayList, date);
                     }
-                    case "Expense": {
-                        if (sortBy.equals("Oldest")) {
-                            expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
-                        } else if (sortBy.equals("Newest")) {
-                            expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
 
-                            Collections.reverse(expenseList);
-                        } else {
-                            expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                    ArrayList<ListDateModel> listDateModels = new ArrayList<>();
+                    String date = "";
+                    for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
+                        String convertDate = convertTimestampToDateString(incomeAndExpenseArrayList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
+                        if (!convertDate.equalsIgnoreCase(date)) {
+                            date = convertDate;
+                            ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeAndExpenseArrayList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
 
-                            Collections.reverse(expenseList);
+                            ListDateModel listDateModel = new ListDateModel();
+                            listDateModel.incomeAndExpenseArrayList = newList;
+
+                            listDateModels.add(listDateModel);
                         }
-
-                        ArrayList<ListDateModel> listDateModels = new ArrayList<>();
-                        String date = "";
-                        for (int i = 0; i < expenseList.size(); i++) {
-                            String convertDate = convertTimestampToDateString(expenseList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
-                            if (!convertDate.equalsIgnoreCase(date)) {
-                                date = convertDate;
-                                ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) expenseList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
-
-                                ListDateModel listDateModel = new ListDateModel();
-                                listDateModel.incomeAndExpenseArrayList = newList;
-
-                                listDateModels.add(listDateModel);
-                            }
-                        }
-                        if (expenseList.isEmpty()) {
-                            emptyTransaction.setVisibility(View.VISIBLE);
-                            dateRecyclerview.setVisibility(View.GONE);
-                        } else {
-                            dateRecyclerview.setVisibility(View.VISIBLE);
-                            emptyTransaction.setVisibility(View.GONE);
-                            dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
-                            dateRecyclerview.setLayoutManager(manager);
-                            dateRecyclerview.setAdapter(dateAdapter);
-                        }
-                        break;
                     }
+                    if (incomeAndExpenseArrayList.isEmpty()) {
+                        emptyTransaction.setVisibility(View.VISIBLE);
+                        dateRecyclerview.setVisibility(View.GONE);
+                    } else {
+                        dateRecyclerview.setVisibility(View.VISIBLE);
+                        emptyTransaction.setVisibility(View.GONE);
+                        dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
+                        dateRecyclerview.setLayoutManager(manager);
+                        dateRecyclerview.setAdapter(dateAdapter);
+                    }
+                    break;
                 }
-            } else if (click == 1) {
-                ArrayList<IncomeAndExpense> incomeAndExpenseArrayList1 = filterDataByDate(incomeAndExpenseArrayList, date);
+                case "Income": {
+                    if (sortBy.equals("Oldest")) {
+                        incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
 
-                incomeAndExpenseArrayList1.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                    } else if (sortBy.equals("Newest")) {
+                        incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
 
-                Collections.reverse(incomeAndExpenseArrayList1);
-
-                ArrayList<ListDateModel> listDateModels = new ArrayList<>();
-                String date = "";
-                for (int i = 0; i < incomeAndExpenseArrayList1.size(); i++) {
-                    String convertDate = convertTimestampToDateString(incomeAndExpenseArrayList1.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
-                    if (!convertDate.equalsIgnoreCase(date)) {
-                        date = convertDate;
-                        ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeAndExpenseArrayList1.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
-
-                        ListDateModel listDateModel = new ListDateModel();
-                        listDateModel.incomeAndExpenseArrayList = newList;
-
-                        listDateModels.add(listDateModel);
+                        Collections.reverse(incomeList);
+                    } else {
+                        incomeList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                        Collections.reverse(incomeList);
                     }
+
+                    if (click == 1) {
+                        incomeList = filterDataByDate(incomeList, date);
+                    }
+
+                    ArrayList<ListDateModel> listDateModels = new ArrayList<>();
+                    String date = "";
+                    for (int i = 0; i < incomeList.size(); i++) {
+                        String convertDate = convertTimestampToDateString(incomeList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
+                        if (!convertDate.equalsIgnoreCase(date)) {
+                            date = convertDate;
+                            ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
+
+                            ListDateModel listDateModel = new ListDateModel();
+                            listDateModel.incomeAndExpenseArrayList = newList;
+
+                            listDateModels.add(listDateModel);
+                        }
+                    }
+                    if (incomeList.isEmpty()) {
+                        emptyTransaction.setVisibility(View.VISIBLE);
+                        dateRecyclerview.setVisibility(View.GONE);
+                    } else {
+                        dateRecyclerview.setVisibility(View.VISIBLE);
+                        emptyTransaction.setVisibility(View.GONE);
+                        dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
+                        dateRecyclerview.setLayoutManager(manager);
+                        dateRecyclerview.setAdapter(dateAdapter);
+                    }
+                    break;
                 }
-                if (listDateModels.isEmpty()) {
-                    emptyTransaction.setVisibility(View.VISIBLE);
-                    dateRecyclerview.setVisibility(View.GONE);
-                } else {
-                    dateRecyclerview.setVisibility(View.VISIBLE);
-                    emptyTransaction.setVisibility(View.GONE);
-                    dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
-                    dateRecyclerview.setLayoutManager(manager);
-                    dateRecyclerview.setAdapter(dateAdapter);
+                case "Expense": {
+                    if (sortBy.equals("Oldest")) {
+                        expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+                    } else if (sortBy.equals("Newest")) {
+                        expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+
+                        Collections.reverse(expenseList);
+                    } else {
+                        expenseList.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+
+                        Collections.reverse(expenseList);
+                    }
+
+                    if (click == 1) {
+                        expenseList = filterDataByDate(expenseList, date);
+                    }
+
+                    ArrayList<ListDateModel> listDateModels = new ArrayList<>();
+                    String date = "";
+                    for (int i = 0; i < expenseList.size(); i++) {
+                        String convertDate = convertTimestampToDateString(expenseList.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
+                        if (!convertDate.equalsIgnoreCase(date)) {
+                            date = convertDate;
+                            ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) expenseList.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
+
+                            ListDateModel listDateModel = new ListDateModel();
+                            listDateModel.incomeAndExpenseArrayList = newList;
+
+                            listDateModels.add(listDateModel);
+                        }
+                    }
+                    if (expenseList.isEmpty()) {
+                        emptyTransaction.setVisibility(View.VISIBLE);
+                        dateRecyclerview.setVisibility(View.GONE);
+                    } else {
+                        dateRecyclerview.setVisibility(View.VISIBLE);
+                        emptyTransaction.setVisibility(View.GONE);
+                        dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
+                        dateRecyclerview.setLayoutManager(manager);
+                        dateRecyclerview.setAdapter(dateAdapter);
+                    }
+                    break;
                 }
             }
+//            }
+//            else if (click == 1) {
+//                ArrayList<IncomeAndExpense> incomeAndExpenseArrayList1 = filterDataByDate(incomeAndExpenseArrayList, date);
+//
+//                incomeAndExpenseArrayList1.sort(Comparator.comparing(IncomeAndExpense::getSelectedDateTimeStamp));
+//
+//                Collections.reverse(incomeAndExpenseArrayList1);
+//
+//                ArrayList<ListDateModel> listDateModels = new ArrayList<>();
+//                String date = "";
+//                for (int i = 0; i < incomeAndExpenseArrayList1.size(); i++) {
+//                    String convertDate = convertTimestampToDateString(incomeAndExpenseArrayList1.get(i).getSelectedDateTimeStamp(), "dd/MM/yyyy");
+//                    if (!convertDate.equalsIgnoreCase(date)) {
+//                        date = convertDate;
+//                        ArrayList<IncomeAndExpense> newList = (ArrayList<IncomeAndExpense>) incomeAndExpenseArrayList1.stream().filter(model -> model.getDate().equalsIgnoreCase(convertDate)).collect(Collectors.toList());
+//
+//                        ListDateModel listDateModel = new ListDateModel();
+//                        listDateModel.incomeAndExpenseArrayList = newList;
+//
+//                        listDateModels.add(listDateModel);
+//                    }
+//                }
+//                if (listDateModels.isEmpty()) {
+//                    emptyTransaction.setVisibility(View.VISIBLE);
+//                    dateRecyclerview.setVisibility(View.GONE);
+//                } else {
+//                    dateRecyclerview.setVisibility(View.VISIBLE);
+//                    emptyTransaction.setVisibility(View.GONE);
+//                    dateAdapter = new DateAdapter(TransactionFragment.this.getContext(), listDateModels, sortBy);
+//                    dateRecyclerview.setLayoutManager(manager);
+//                    dateRecyclerview.setAdapter(dateAdapter);
+//                }
+//            }
         } else {
             incomeAndExpenseArrayList = new ArrayList<>();
             dateRecyclerview.setVisibility(View.GONE);
             emptyTransaction.setVisibility(View.VISIBLE);
         }
-        click = 0;
     }
 
     private ArrayList<IncomeAndExpense> filterCategories(ArrayList<IncomeAndExpense> incomeAndExpenses, String type) {

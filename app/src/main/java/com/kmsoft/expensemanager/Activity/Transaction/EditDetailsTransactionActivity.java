@@ -217,6 +217,9 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         editShowCategory.setOnClickListener(v -> {
             Intent intent = new Intent(EditDetailsTransactionActivity.this, AddCategoryActivity.class);
             intent.putExtra("clicked", incomeAndExpense.getTag());
+            intent.putExtra("image", imageResId);
+            intent.putExtra("name", categoryName);
+            intent.putExtra("color", categoryColor);
             launchSomeActivityResult.launch(intent);
         });
 
