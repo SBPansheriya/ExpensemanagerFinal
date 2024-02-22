@@ -73,8 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lexenddeca_regular"
-                android:inputType="number"
-                android:text="₹0"
+                android:inputType="numberDecimal"
                 android:textColor="#FFF"
                 android:textSize="50.0sp" />
         </LinearLayout>

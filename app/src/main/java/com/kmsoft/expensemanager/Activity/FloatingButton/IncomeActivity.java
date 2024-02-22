@@ -4,6 +4,7 @@ import static android.Manifest.permission_group.CAMERA;
 
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -125,6 +126,8 @@ public class IncomeActivity extends AppCompatActivity {
 
         incomeAddAttachment.setOnClickListener(v -> checkPermissionsForCamera());
 
+        incomeAddAmount.setText(String.format("%s0", currencySymbol));
+
         incomeAddAmount.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -137,8 +140,8 @@ public class IncomeActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
-                if (!input.startsWith("₹")) {
-                    incomeAddAmount.setText(String.format("₹%s", input));
+                if (!input.startsWith(currencySymbol)) {
+                    incomeAddAmount.setText(String.format(currencySymbol + input));
                     incomeAddAmount.setSelection(incomeAddAmount.getText().length());
                 }
             }
@@ -146,7 +149,7 @@ public class IncomeActivity extends AppCompatActivity {
 
         incomeAdded.setOnClickListener(v -> {
             String editTextValue = incomeAddAmount.getText().toString();
-            if (editTextValue.equals("₹0") || editTextValue.equals("₹")) {
+            if (editTextValue.equals(currencySymbol + "0") || editTextValue.equals(currencySymbol)) {
                 Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(editTextValue)) {
                 Toast.makeText(IncomeActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
@@ -155,12 +158,9 @@ public class IncomeActivity extends AppCompatActivity {
             } else if (TextUtils.isEmpty(incomeCategoryName.getText().toString())) {
                 Toast.makeText(IncomeActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
-                String amount = incomeAddAmount.getText().toString();
+                String amount = extractNumericPart(incomeAddAmount.getText().toString());
                 String description = incomeDescription.getText().toString();
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
-//                if (TextUtils.isEmpty(categoryName)){
-//                    categoryName = incomeCategoryName.getText().toString();
-//                }
                 incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, categoryColor,description, addAttachmentImage, "Income");
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.insertData(incomeAndExpense);
@@ -219,6 +219,10 @@ public class IncomeActivity extends AppCompatActivity {
                 incomeSetImage.setVisibility(View.GONE);
             }
         });
+    }
+
+    private String extractNumericPart(String input) {
+        return input.replaceAll("[^\\d.]", "");
     }
 
     private void startCrop(Uri selectedImageUri) {

@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Activity.Profile;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +12,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -38,7 +38,6 @@ import com.kmsoft.expensemanager.R;
 import com.opencsv.CSVWriter;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -46,7 +45,6 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -58,6 +56,9 @@ public class ExportDataActivity extends AppCompatActivity {
     Spinner whatDataExport, whenDateRange, whatFormat;
     ArrayList<IncomeAndExpense> incomeList = new ArrayList<>();
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
+    ArrayList<IncomeAndExpense> incomeAndExpenseArrayList1 = new ArrayList<>();
+    ArrayList<IncomeAndExpense> incomeList1 = new ArrayList<>();
+    ArrayList<IncomeAndExpense> expenseList1 = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +88,6 @@ public class ExportDataActivity extends AppCompatActivity {
         whatDataExport.setSelection(0);
         whenDateRange.setSelection(0);
 
-        filterCategories1(incomeAndExpenseArrayList, whenDateRange.getSelectedItem().toString());
-
         whatDataExport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -103,11 +102,11 @@ public class ExportDataActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (whatDataExport.getSelectedItem().toString().equals("All")) {
-                    incomeAndExpenseArrayList = filterCategories1(incomeAndExpenseArrayList, whenDateRange.getSelectedItem().toString());
+                    incomeAndExpenseArrayList1 = filterCategories1(incomeAndExpenseArrayList, whenDateRange.getSelectedItem().toString());
                 } else if (whatDataExport.getSelectedItem().toString().equals("Income")) {
-                    incomeList = filterCategories1(incomeList, whenDateRange.getSelectedItem().toString());
+                    incomeList1 = filterCategories1(incomeList, whenDateRange.getSelectedItem().toString());
                 } else if (whatDataExport.getSelectedItem().toString().equals("Expense")) {
-                    expenseList = filterCategories1(expenseList, whenDateRange.getSelectedItem().toString());
+                    expenseList1 = filterCategories1(expenseList, whenDateRange.getSelectedItem().toString());
                 }
             }
 
@@ -122,19 +121,43 @@ public class ExportDataActivity extends AppCompatActivity {
         export.setOnClickListener(v -> {
             if (whatFormat.getSelectedItem().toString().equals("PDF")) {
                 if (whatDataExport.getSelectedItem().toString().equals("All")) {
-                    generatePDF(incomeAndExpenseArrayList, "Income and Expense Report");
+                    if (!incomeAndExpenseArrayList1.isEmpty()) {
+                        generatePDF(incomeAndExpenseArrayList1, "Income and Expense Report");
+                    } else {
+                        Toast.makeText(this, "No data for create PDF", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (whatDataExport.getSelectedItem().toString().equals("Income")) {
-                    generatePDF(incomeList, "Income Report");
+                    if (!incomeList1.isEmpty()) {
+                        generatePDF(incomeList1, "Income Report");
+                    } else {
+                        Toast.makeText(this, "No data for create PDF", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (whatDataExport.getSelectedItem().toString().equals("Expense")) {
-                    generatePDF(expenseList, "Expense Report");
+                    if (!expenseList1.isEmpty()) {
+                        generatePDF(expenseList1, "Expense Report");
+                    } else {
+                        Toast.makeText(this, "No data for create PDF", Toast.LENGTH_SHORT).show();
+                    }
                 }
             } else {
                 if (whatDataExport.getSelectedItem().toString().equals("All")) {
-                    generateCsvFile(incomeAndExpenseArrayList, "Income and Expense Report");
+                    if (!incomeAndExpenseArrayList1.isEmpty()) {
+                        generateCsvFile(incomeAndExpenseArrayList1, "Income and Expense Report");
+                    } else {
+                        Toast.makeText(this, "No data for create CSV file", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (whatDataExport.getSelectedItem().toString().equals("Income")) {
-                    generateCsvFile(incomeList, "Income Report");
+                    if (!incomeList1.isEmpty()) {
+                        generateCsvFile(incomeList1, "Income Report");
+                    } else {
+                        Toast.makeText(this, "No data for create CSV file", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (whatDataExport.getSelectedItem().toString().equals("Expense")) {
-                    generateCsvFile(expenseList, "Expense Report");
+                    if (!expenseList1.isEmpty()) {
+                        generateCsvFile(expenseList1, "Expense Report");
+                    } else {
+                        Toast.makeText(this, "No data for create CSV file", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -206,24 +229,6 @@ public class ExportDataActivity extends AppCompatActivity {
         return !transactionDate.before(startDate);
     }
 
-//    public String getDefaultStorageLocation(Context context) {
-//        File dir = context.getFilesDir();
-//        if (!dir.exists()) {
-//            boolean isDirectoryCreated = dir.mkdir();
-//            if (!isDirectoryCreated) {
-//                Log.e("Error", "Directory could not be created");
-//            }
-//        }
-//        return dir.getAbsolutePath() + "/Expense Manager/";
-//    }
-//
-//    public File getOrCreatePdfDirectory() {
-//        File folder = new File(getDefaultStorageLocation(this));
-//        if (!folder.exists())
-//            folder.mkdir();
-//        return folder;
-//    }
-
     private String Path(String head) {
         String folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/Expense Manager";
         File folder = new File(folderPath);
@@ -267,7 +272,7 @@ public class ExportDataActivity extends AppCompatActivity {
             // Add data
             for (IncomeAndExpense item : incomeAndExpenseArrayList) {
                 table.addCell(item.getTag());
-                if (!TextUtils.isEmpty(item.getCategoryName())){
+                if (!TextUtils.isEmpty(item.getCategoryName())) {
                     table.addCell(item.getCategoryName());
                 } else {
                     table.addCell("No category found");
@@ -279,7 +284,7 @@ public class ExportDataActivity extends AppCompatActivity {
                 } else {
                     table.addCell("No image found");
                 }
-                table.addCell(String.valueOf(item.getAmount()));
+                table.addCell(currencySymbol + item.getAmount());
                 table.addCell(item.getDate());
                 if (!TextUtils.isEmpty(item.getDescription())) {
                     table.addCell(item.getDescription());
@@ -329,7 +334,7 @@ public class ExportDataActivity extends AppCompatActivity {
                 String[] data = {
                         item.getTag(),
                         item.getCategoryName(),
-                        String.valueOf(item.getAmount()),
+                        currencySymbol + item.getAmount(),
                         item.getDate(),
                         !TextUtils.isEmpty(item.getDescription()) ? item.getDescription() : "No description",
                 };
@@ -355,27 +360,9 @@ public class ExportDataActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show();
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(this, "Failed to open file. Source not found.", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public static String encodeImageToBase64(String imagePath) {
-        String encodedString = null;
-        try {
-            File imageFile = new File(imagePath);
-            FileInputStream fileInputStreamReader = new FileInputStream(imageFile);
-            byte[] imageData = new byte[(int) imageFile.length()];
-            fileInputStreamReader.read(imageData);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                encodedString = Base64.getEncoder().encodeToString(imageData);
-            }
-            fileInputStreamReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return encodedString;
     }
 
     public static String getPathFromUri(Context context, Uri uri) {

@@ -27,7 +27,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.MainViewHolder
     public ArrayList<ListDateModel> listDateModels;
     String sortBy;
 
-    public DateAdapter(Context context, ArrayList<ListDateModel> listDateModels,String sortBy) {
+    public DateAdapter(Context context, ArrayList<ListDateModel> listDateModels, String sortBy) {
         this.context = context;
         this.listDateModels = listDateModels;
         this.sortBy = sortBy;

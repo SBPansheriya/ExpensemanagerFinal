@@ -311,8 +311,6 @@ public class TransactionFragment extends Fragment {
         reset.setOnClickListener(v -> {
             filterBy = "All";
             sortBy = "Newest";
-//            resetData = 1;
-//            click = 0;
             all.setBackgroundResource(R.drawable.selected_border_background);
             all.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
             income.setBackgroundResource(R.drawable.unselected_border_background);

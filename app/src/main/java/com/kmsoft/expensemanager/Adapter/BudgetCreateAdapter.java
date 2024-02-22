@@ -1,12 +1,9 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +12,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
@@ -25,6 +21,7 @@ import com.kmsoft.expensemanager.Fragment.BudgetFragment;
 import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.R;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
@@ -38,7 +35,6 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
     BudgetFragment budgetFragment;
     ArrayList<Budget> budgetArrayList;
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
-    String remainingFinalAmount;
     String finalAmount;
     Map<Integer, String> remainingFinalAmountMap = new HashMap<>();
     Map<Integer, String> finalAmountMap = new HashMap<>();
@@ -63,58 +59,70 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
         holder.setCategory.setText(budget.getCategoryNameBudget());
 
         double total = 0;
-        for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
-            String categoryName = incomeAndExpenseArrayList.get(i).getCategoryName();
-            if (budget.getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
-                String tag = incomeAndExpenseArrayList.get(i).getTag();
-                String amountString = incomeAndExpenseArrayList.get(i).getAmount();
-                String numericAmount = extractNumericPart(amountString);
-                double amount = Double.parseDouble(numericAmount);
+        if (!incomeAndExpenseArrayList.isEmpty()) {
+            for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
+                String categoryName = incomeAndExpenseArrayList.get(i).getCategoryName();
+                if (budget.getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
+                    String tag = incomeAndExpenseArrayList.get(i).getTag();
+                    String amountString = incomeAndExpenseArrayList.get(i).getAmount();
+                    String numericAmount = extractNumericPart(amountString);
+                    double amount = Double.parseDouble(numericAmount);
 
-                if (tag.equals("Expense")) {
-                    total += amount;
-                }
-                double budgetAmountValue = Double.parseDouble(extractNumericPart(budget.getAmountBudget()));
+                    if (tag.equals("Expense")) {
+                        total += amount;
+                    }
+                    double budgetAmountValue = Double.parseDouble(extractNumericPart(budget.getAmountBudget()));
 
-                DecimalFormat df = new DecimalFormat("#");
-                finalAmount = df.format(total);
+                    DecimalFormat df = new DecimalFormat("#");
+                    finalAmount = df.format(total);
 
-                double remainingAmount = budgetAmountValue - total;
-                remainingFinalAmount = df.format(remainingAmount);
-                holder.setRemainingAmount.setText(String.format("Remaining ₹%s", remainingFinalAmount));
+                    double remainingAmount = budgetAmountValue - total;
+                    DecimalFormat df1 = new DecimalFormat("#.##");
+                    df1.setRoundingMode(RoundingMode.HALF_UP);
+                    String reAmount = df1.format(remainingAmount);
+                    holder.setRemainingAmount.setText(String.format("Remaining " + currencySymbol + reAmount));
 
-                remainingFinalAmountMap.put(position, remainingFinalAmount);
-                finalAmountMap.put(position, finalAmount);
+                    remainingFinalAmountMap.put(position, reAmount);
+                    finalAmountMap.put(position, finalAmount);
 
-                int total1 = (int) total;
-                holder.setIncomeExpenseAmount.setText(String.format("₹%d", total1));
+                    int total1 = (int) total;
+                    DecimalFormat df2 = new DecimalFormat("###0.##");
+                    String formattedTotal = df2.format(total);
+                    holder.setIncomeExpenseAmount.setText(String.format(currencySymbol + formattedTotal));
 
-                if (total1 > budgetAmountValue) {
-                    holder.setSlider.setValueFrom(0);
-                    holder.setSlider.setValueTo((float) budgetAmountValue);
-                    holder.setSlider.setValue((float) budgetAmountValue);
-                    holder.setWarning.setVisibility(View.VISIBLE);
-                    holder.setExceedAmount.setVisibility(View.VISIBLE);
-                } else {
-                    if (total1 < 0) {
-                        holder.setSlider.setValueFrom((float) total);
-                        holder.setSlider.setValueTo((float) budgetAmountValue);
-                        holder.setSlider.setValue((float) total);
-                        break;
-                    } else {
+                    if (total1 > budgetAmountValue) {
                         holder.setSlider.setValueFrom(0);
                         holder.setSlider.setValueTo((float) budgetAmountValue);
-                        holder.setSlider.setValue((float) total);
+                        holder.setSlider.setValue((float) budgetAmountValue);
+                        holder.setWarning.setVisibility(View.VISIBLE);
+                        holder.setExceedAmount.setVisibility(View.VISIBLE);
+                    } else {
+                        if (total1 < 0) {
+                            holder.setSlider.setValueFrom((float) total);
+                            holder.setSlider.setValueTo((float) budgetAmountValue);
+                            holder.setSlider.setValue((float) total);
+                            break;
+                        } else {
+                            holder.setSlider.setValueFrom(0);
+                            holder.setSlider.setValueTo((float) budgetAmountValue);
+                            holder.setSlider.setValue((float) total);
+                        }
+                        holder.setWarning.setVisibility(View.GONE);
+                        holder.setExceedAmount.setVisibility(View.GONE);
                     }
-                    holder.setWarning.setVisibility(View.GONE);
-                    holder.setExceedAmount.setVisibility(View.GONE);
+                } else {
+                    holder.setRemainingAmount.setText(String.format("Remaining " + currencySymbol + budget.getAmountBudget()));
+                    holder.setIncomeExpenseAmount.setText(String.format(currencySymbol + "0"));
                 }
             }
+        } else {
+            holder.setRemainingAmount.setText(String.format("Remaining " + currencySymbol + budget.getAmountBudget()));
+            holder.setIncomeExpenseAmount.setText(String.format(currencySymbol + "0"));
         }
 
         holder.setSlider.setEnabled(false);
 
-        holder.setAmount.setText(String.format(" of %s", budget.getAmountBudget()));
+        holder.setAmount.setText(String.format(" of " + currencySymbol + budget.getAmountBudget()));
 
         holder.itemView.setOnClickListener(v -> {
             String clickedRemainingFinalAmount = remainingFinalAmountMap.get(position);

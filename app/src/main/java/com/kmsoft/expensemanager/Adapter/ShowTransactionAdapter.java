@@ -1,5 +1,7 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -31,7 +33,7 @@ public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransaction
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -42,24 +44,23 @@ public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransaction
         holder.itemDescription.setText(incomeAndExpense.getDescription());
         holder.itemDate.setText(incomeAndExpense.getTime());
 
-        if (incomeAndExpense.getCategoryImage() == 0){
+        if (incomeAndExpense.getCategoryImage() == 0) {
             holder.itemImage.setImageResource(R.drawable.i);
-        }
-        else {
+        } else {
             holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
         }
 
-        if (incomeAndExpense.getTag().equals("Income")){
-            holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
+        if (incomeAndExpense.getTag().equals("Income")) {
+            holder.itemAmount.setText(String.format("+" + currencySymbol + incomeAndExpense.getAmount()));
             holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
         } else if (incomeAndExpense.getTag().equals("Expense")) {
-            holder.itemAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
+            holder.itemAmount.setText(String.format("-" + currencySymbol + incomeAndExpense.getAmount()));
             holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
         }
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailsTransactionActivity.class);
-            intent.putExtra("incomeAndExpense",incomeAndExpenseArrayList.get(position));
+            intent.putExtra("incomeAndExpense", incomeAndExpenseArrayList.get(position));
             context.startActivity(intent);
         });
     }
@@ -72,7 +73,8 @@ public class ShowTransactionAdapter extends RecyclerView.Adapter<ShowTransaction
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
         RelativeLayout relative;
-        TextView itemName,itemDescription,itemAmount,itemDate;
+        TextView itemName, itemDescription, itemAmount, itemDate;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.item_image);

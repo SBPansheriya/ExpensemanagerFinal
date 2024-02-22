@@ -3,6 +3,7 @@ package com.kmsoft.expensemanager.Activity.FloatingButton;
 import static android.Manifest.permission_group.CAMERA;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -132,6 +133,8 @@ public class ExpenseActivity extends AppCompatActivity {
 
         expenseAddAttachment.setOnClickListener(v -> checkPermissionsForCamera());
 
+        expenseAddAmount.setText(String.format("%s0", currencySymbol));
+
         expenseAddAmount.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -144,8 +147,8 @@ public class ExpenseActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
-                if (!input.startsWith("₹")) {
-                    expenseAddAmount.setText(String.format("₹%s", input));
+                if (!input.startsWith(currencySymbol)) {
+                    expenseAddAmount.setText(String.format(currencySymbol + "%s", input));
                     expenseAddAmount.setSelection(expenseAddAmount.getText().length());
                 }
             }
@@ -153,7 +156,7 @@ public class ExpenseActivity extends AppCompatActivity {
 
         expenseAdded.setOnClickListener(v -> {
             String editTextValue = expenseAddAmount.getText().toString();
-            if (editTextValue.equals("₹0") || editTextValue.equals("₹")) {
+            if (editTextValue.equals(currencySymbol + "0") || editTextValue.equals(currencySymbol)) {
                 Toast.makeText(ExpenseActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(editTextValue)) {
                 Toast.makeText(ExpenseActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
@@ -162,7 +165,7 @@ public class ExpenseActivity extends AppCompatActivity {
             } else if (TextUtils.isEmpty(expenseCategoryName.getText().toString())) {
                 Toast.makeText(ExpenseActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
-                String amount = expenseAddAmount.getText().toString();
+                String amount = extractNumericPart(expenseAddAmount.getText().toString());
                 String description = expenseDescription.getText().toString();
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
                 incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, expenseAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, "Expense");

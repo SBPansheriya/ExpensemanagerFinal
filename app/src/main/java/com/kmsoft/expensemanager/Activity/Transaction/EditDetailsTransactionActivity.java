@@ -3,6 +3,7 @@ package com.kmsoft.expensemanager.Activity.Transaction;
 import static android.Manifest.permission_group.CAMERA;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -112,7 +113,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 if (data != null) {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
-                    categoryColor = data.getIntExtra("categoryColor",0);
+                    categoryColor = data.getIntExtra("categoryColor", 0);
                     if (!TextUtils.isEmpty(categoryName)) {
                         editCategory.setText(String.format("%s", categoryName));
                     }
@@ -134,8 +135,8 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
-                if (!input.startsWith("₹")) {
-                    editTotalBalance.setText(String.format("₹%s", input));
+                if (!input.startsWith(currencySymbol)) {
+                    editTotalBalance.setText(String.format(currencySymbol + input));
                     editTotalBalance.setSelection(editTotalBalance.getText().length());
                 }
             }
@@ -161,7 +162,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(addAttachmentImage)) {
                 addAttachmentImage = incomeAndExpense.getAddAttachment();
             }
-            if (amount.equals("₹0") || amount.equals("₹")) {
+            if (amount.equals(currencySymbol + "0") || amount.equals(currencySymbol)) {
                 Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(amount)) {
                 Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
@@ -171,7 +172,8 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                 Toast.makeText(EditDetailsTransactionActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
-                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor,description, addAttachmentImage, incomeAndExpense.getTag());
+                String reAmount = extractNumericPart(amount);
+                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), reAmount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, incomeAndExpense.getTag());
                 dbHelper.updateData(incomeAndExpense);
 
                 Cursor cursor = dbHelper.getAllBudgetData();
@@ -284,7 +286,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        editTotalBalance.setText(incomeAndExpense.getAmount());
+        editTotalBalance.setText(String.format("%s%s", currencySymbol, incomeAndExpense.getAmount()));
         editDate.setText(incomeAndExpense.getDate());
         editCategory.setText(incomeAndExpense.getCategoryName());
         editDescription.setText(incomeAndExpense.getDescription());

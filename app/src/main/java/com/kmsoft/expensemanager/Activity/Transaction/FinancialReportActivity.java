@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Activity.Transaction;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.kmsoft.expensemanager.Adapter.FinancialAdapter;
 import com.kmsoft.expensemanager.Adapter.LegendAdapter;
 import com.kmsoft.expensemanager.DBHelper;
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -764,7 +767,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart(chart, days, entries, pieEntries);
@@ -813,7 +816,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart1(chart, days, entries, pieEntries);
@@ -860,7 +863,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart(chart, days, entries, pieEntries);
@@ -907,7 +910,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart1(chart, days, entries, pieEntries);
@@ -948,7 +951,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart(chart, months, entries, pieEntries);
@@ -990,7 +993,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart1(chart, months, entries, pieEntries);
@@ -1044,7 +1047,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart(chart, years, entries, pieEntries);
@@ -1100,7 +1103,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         if (pieEntries.isEmpty()) {
             pieChart.setCenterText("");
         } else {
-            pieChart.setCenterText("₹" + totalAmount);
+            pieChart.setCenterText(currencySymbol + totalAmount);
         }
         pieChart.invalidate();
         setupLineChart1(chart, years, entries, pieEntries);
@@ -1183,15 +1186,22 @@ public class FinancialReportActivity extends AppCompatActivity {
         legend.setEnabled(false);
 
         ArrayList<Integer> colors = new ArrayList<>();
+        Map<String, Integer> categoryColorMap = new HashMap<>();
 
-        for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
-            for (int j = 0; j < pieEntries.size(); j++) {
-                if (incomeAndExpenseArrayList.get(i).getCategoryName().equals(pieEntries.get(j).getLabel())) {
-                    colors.add(incomeAndExpenseArrayList.get(i).getCategoryColor());
-                    break;
-                }
+        for (IncomeAndExpense item : incomeAndExpenseArrayList) {
+            categoryColorMap.put(item.getCategoryName(), item.getCategoryColor());
+        }
+
+        for (PieEntry entry : pieEntries) {
+            String categoryName = entry.getLabel();
+            Integer color = categoryColorMap.get(categoryName);
+            if (color != null) {
+                colors.add(color.intValue());
+            } else {
+                colors.add(Color.rgb(111, 254, 215));
             }
         }
+
         pieDataSet.setColors(colors);
 
         if (pieEntries.isEmpty() && imgClick == 2) {
@@ -1262,13 +1272,19 @@ public class FinancialReportActivity extends AppCompatActivity {
         legend.setEnabled(false);
 
         ArrayList<Integer> colors = new ArrayList<>();
+        Map<String, Integer> categoryColorMap = new HashMap<>();
 
-        for (int i = 0; i < incomeAndExpenseArrayList.size(); i++) {
-            for (int j = 0; j < pieEntries.size(); j++) {
-                if (incomeAndExpenseArrayList.get(i).getCategoryName().equals(pieEntries.get(j).getLabel())) {
-                    colors.add(incomeAndExpenseArrayList.get(i).getCategoryColor());
-                    break;
-                }
+        for (IncomeAndExpense item : incomeAndExpenseArrayList) {
+            categoryColorMap.put(item.getCategoryName(), item.getCategoryColor());
+        }
+
+        for (PieEntry entry : pieEntries) {
+            String categoryName = entry.getLabel();
+            Integer color = categoryColorMap.get(categoryName);
+            if (color != null) {
+                colors.add(color.intValue());
+            } else {
+                colors.add(Color.rgb(141, 204, 255));
             }
         }
 

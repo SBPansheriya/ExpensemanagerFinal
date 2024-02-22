@@ -1,5 +1,7 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,10 +50,10 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
             holder.itemDate.setText(incomeAndExpense.getDate());
 
             if (selected.equals("Income")) {
-                holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
+                holder.itemAmount.setText(String.format("+" + currencySymbol + incomeAndExpense.getAmount()));
                 holder.itemAmount.setTextColor(context.getResources().getColor(R.color.green));
             } else if (selected.equals("Expense")) {
-                holder.itemAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
+                holder.itemAmount.setText(String.format("-" + currencySymbol + incomeAndExpense.getAmount()));
                 holder.itemAmount.setTextColor(context.getResources().getColor(R.color.red));
             }
 
@@ -65,7 +67,7 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
         } else if (spinner.equals("Category")) {
             holder.itemCategoryName.setText(incomeAndExpense.getCategoryName());
             if (selected.equals("Income")) {
-                holder.itemCategoryAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
+                holder.itemCategoryAmount.setText(String.format("+" + currencySymbol + incomeAndExpense.getAmount()));
                 holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.green));
                 double totalIncome = getTotalIncome();
                 holder.setSlider.setValueFrom(0);
@@ -73,7 +75,7 @@ public class FinancialAdapter extends RecyclerView.Adapter<FinancialAdapter.View
                 String amount = extractNumericPart(incomeAndExpense.getAmount());
                 holder.setSlider.setValue(Float.parseFloat(amount));
             } else if (selected.equals("Expense")) {
-                holder.itemCategoryAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
+                holder.itemCategoryAmount.setText(String.format("-" + currencySymbol + incomeAndExpense.getAmount()));
                 holder.itemCategoryAmount.setTextColor(context.getResources().getColor(R.color.red));
                 double totalExpense = getTotalExpense();
                 holder.setSlider.setValueFrom(0);

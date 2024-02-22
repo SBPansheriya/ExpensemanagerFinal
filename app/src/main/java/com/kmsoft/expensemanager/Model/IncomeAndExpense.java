@@ -98,10 +98,6 @@ public class IncomeAndExpense implements Serializable {
         return categoryColor;
     }
 
-    public void setCategoryColor(int categoryColor) {
-        this.categoryColor = categoryColor;
-    }
-
     public String getDescription() {
         return description;
     }

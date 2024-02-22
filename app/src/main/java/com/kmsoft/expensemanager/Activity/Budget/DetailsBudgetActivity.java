@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,12 +28,13 @@ import com.google.android.material.slider.Slider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import com.kmsoft.expensemanager.Activity.NotificationScheduler;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 import com.kmsoft.expensemanager.R;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,16 +47,15 @@ public class DetailsBudgetActivity extends AppCompatActivity {
     Button showEditBudget;
     Budget budget;
     ActivityResultLauncher<Intent> launchSomeActivity;
+    ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
     Gson gson;
     ArrayList<Budget> budgetArrayList;
     String remainingAmount;
     String finalAmount;
     String name;
-    int remainingFinalAmount;
+    double remainingFinalAmount;
     int exceedAmount;
-    int num1;
-    ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
-
+    double num1;
 
     @SuppressLint("DefaultLocale")
     @Override
@@ -70,13 +71,11 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         dbHelper = new DBHelper(DetailsBudgetActivity.this);
 
         budget = (Budget) getIntent().getSerializableExtra("budget");
-
         remainingAmount = getIntent().getStringExtra("remainingFinalAmount");
         finalAmount = getIntent().getStringExtra("finalAmount");
         String listGet = getIntent().getStringExtra("budgetArrayList");
         gson = new Gson();
-        budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {
-        }.getType());
+        budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {}.getType());
 
         setData();
 
@@ -87,11 +86,11 @@ public class DetailsBudgetActivity extends AppCompatActivity {
             exceedAmount = 0;
         }
         String valueTo = extractNumericPart(budget.getAmountBudget());
-        num1 = Integer.parseInt(valueTo);
+        num1 = Double.parseDouble(valueTo);
         if (exceedAmount >= num1) {
-            showPercentage.setValueTo(num1);
+            showPercentage.setValueTo((float) num1);
             showPercentage.setValueFrom(0);
-            showPercentage.setValue(num1);
+            showPercentage.setValue((float) num1);
             showExceedAmount.setVisibility(View.VISIBLE);
         } else {
             if (exceedAmount < 0) {
@@ -110,11 +109,19 @@ public class DetailsBudgetActivity extends AppCompatActivity {
 
         // remainingAmount set
         if (remainingAmount != null && !remainingAmount.isEmpty()) {
-            remainingFinalAmount = Integer.parseInt(remainingAmount);
+            remainingFinalAmount = Double.parseDouble(remainingAmount);
         } else {
             remainingFinalAmount = 0;
         }
-        amountBudget.setText(String.format("₹%d", remainingFinalAmount));
+
+        if (finalAmount == null){
+            amountBudget.setText(String.format(currencySymbol + budget.getAmountBudget()));
+        } else {
+            DecimalFormat df1 = new DecimalFormat("#.##");
+            df1.setRoundingMode(RoundingMode.HALF_UP);
+            String reAmount = df1.format(remainingFinalAmount);
+            amountBudget.setText(String.format(currencySymbol + reAmount));
+        }
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -129,12 +136,12 @@ public class DetailsBudgetActivity extends AppCompatActivity {
                     if (budget != null) {
                         // exceedAmount set
                         String valueTo1 = extractNumericPart(budget.getAmountBudget());
-                        num1 = Integer.parseInt(valueTo1);
+                        num1 = Double.parseDouble(valueTo1);
                         if (budget.getCategoryNameBudget().equals(name)) {
                             if (exceedAmount >= num1) {
-                                showPercentage.setValueTo(num1);
+                                showPercentage.setValueTo((float) num1);
                                 showPercentage.setValueFrom(0);
-                                showPercentage.setValue(num1);
+                                showPercentage.setValue((float) num1);
                                 showExceedAmount.setVisibility(View.VISIBLE);
                             } else {
                                 showPercentage.setValueTo(Float.parseFloat(valueTo1));
@@ -142,9 +149,13 @@ public class DetailsBudgetActivity extends AppCompatActivity {
                                 showPercentage.setValue(exceedAmount);
                                 showExceedAmount.setVisibility(View.GONE);
                             }
+
                             // remainingAmount set
-                            int result1 = num1 - exceedAmount;
-                            amountBudget.setText(String.format("₹%d", result1));
+                            double result1 = num1 - exceedAmount;
+                            DecimalFormat df1 = new DecimalFormat("#.##");
+                            df1.setRoundingMode(RoundingMode.HALF_UP);
+                            String reAmount = df1.format(result1);
+                            amountBudget.setText(String.format(currencySymbol +  reAmount));
                         } else {
                             expenseList = filterCategories(incomeAndExpenseArrayList);
                             HashMap<String, Double> categoryTotalExpenses = new HashMap<>();
@@ -156,7 +167,7 @@ public class DetailsBudgetActivity extends AppCompatActivity {
                             }
 
                             double categoryTotalExpense = 0;
-                            double budgetAmount1 = 0;
+                            double budgetAmount1;
                             for (IncomeAndExpense expense : expenseList) {
                                 if (expense.getCategoryName().equals(budget.getCategoryNameBudget())) {
                                     categoryTotalExpense = categoryTotalExpenses.getOrDefault(expense.getCategoryName(), 0.0);
@@ -179,7 +190,7 @@ public class DetailsBudgetActivity extends AppCompatActivity {
                             // remainingAmount set
                             double result1 = budgetAmount1 - categoryTotalExpense;
                             int a = (int) result1;
-                            amountBudget.setText(String.format("₹" + a));
+                            amountBudget.setText(String.format(currencySymbol + a));
                         }
                         setData();
                     }
@@ -221,8 +232,6 @@ public class DetailsBudgetActivity extends AppCompatActivity {
         } else {
             showCategoryImageBudget.setImageResource(budget.getCategoryImageBudget());
         }
-//        amountBudget.setText(String.format("%s", budget.getAmountBudget()));
-//        showPercentage.setValue(budget.getPercentageBudget());
         showPercentage.setEnabled(false);
     }
 

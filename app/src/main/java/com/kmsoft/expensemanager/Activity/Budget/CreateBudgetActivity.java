@@ -1,6 +1,7 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -82,6 +83,8 @@ public class CreateBudgetActivity extends AppCompatActivity {
             }
         });
 
+        createBudgetAmount.setText(String.format("%s0", currencySymbol));
+
         createBudgetAmount.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -94,17 +97,17 @@ public class CreateBudgetActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
-                if (!input.startsWith("₹")) {
-                    createBudgetAmount.setText(String.format("₹%s", input));
+                if (!input.startsWith(currencySymbol)) {
+                    createBudgetAmount.setText(String.format(currencySymbol + input));
                     createBudgetAmount.setSelection(createBudgetAmount.getText().length());
                 }
             }
         });
 
         createBudgetContinue.setOnClickListener(v -> {
-            String budgetAmount = createBudgetAmount.getText().toString();
+            String budgetAmount =createBudgetAmount.getText().toString();
             int percentageBudget = (int) createSlider.getValue();
-            if (budgetAmount.equals("₹0") || budgetAmount.equals("₹")) {
+            if (budgetAmount.equals(currencySymbol + "0") || budgetAmount.equals(currencySymbol)) {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(budgetAmount)) {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
@@ -125,7 +128,8 @@ public class CreateBudgetActivity extends AppCompatActivity {
                 }
 
                 if (!categoryFound) {
-                    budget = new Budget(0, budgetAmount, categoryName, imageResId, percentageBudget);
+                    String amount = extractNumericPart(createBudgetAmount.getText().toString());
+                    budget = new Budget(0, amount, categoryName, imageResId, percentageBudget);
                     budgetArrayList.add(budget);
                     dbHelper.insertBudgetData(budget);
 

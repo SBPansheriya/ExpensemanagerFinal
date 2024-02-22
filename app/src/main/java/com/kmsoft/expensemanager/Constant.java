@@ -67,7 +67,7 @@ public class Constant {
 
     public static int[] categoriesImage = {
             R.drawable.i23,
-            R.drawable.i12,
+            R.drawable.i8,
             R.drawable.i11,
             R.drawable.i7,
             R.drawable.i18,

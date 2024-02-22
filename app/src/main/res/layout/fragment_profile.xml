@@ -47,22 +47,23 @@
                 <ImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:src="@drawable/border_img"/>
+                    android:src="@drawable/border_img" />
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_centerInParent="true"
-                app:cardCornerRadius="150dp">
-
-                <ImageView
-                    android:id="@+id/profile_image"
+                <androidx.cardview.widget.CardView
                     android:layout_width="42dp"
                     android:layout_height="42dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/profile" />
-            </androidx.cardview.widget.CardView>
+                    android:layout_centerInParent="true"
+                    app:cardCornerRadius="150dp">
+
+                    <ImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/profile" />
+                </androidx.cardview.widget.CardView>
             </RelativeLayout>
+
             <LinearLayout
                 android:id="@+id/title2"
                 android:layout_width="match_parent"
@@ -108,28 +109,89 @@
             android:layout_below="@+id/title"
             android:orientation="vertical">
 
-            <ImageView
+            <RelativeLayout
                 android:id="@+id/export_data"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:layout_marginTop="15dp"
+                android:layout_height="60dp"
                 android:layout_marginHorizontal="20dp"
-                android:src="@drawable/export_data_img"/>
+                android:layout_marginTop="20dp"
+                android:background="@drawable/border4">
 
-            <ImageView
+                <ImageView
+                    android:id="@+id/export_data1"
+                    android:layout_width="40dp"
+                    android:layout_height="33dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/export_data" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toStartOf="@+id/next"
+                    android:layout_toEndOf="@+id/export_data1"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:gravity="start|center"
+                    android:text="@string/export_data"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/next"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/right_arrow_black" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/settings"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:layout_marginHorizontal="20dp"
-                android:src="@drawable/settings"/>
+                android:layout_marginTop="20dp"
+                android:background="@drawable/border4">
+
+                <ImageView
+                    android:id="@+id/settings1"
+                    android:layout_width="40dp"
+                    android:layout_height="33dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/settings1" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toStartOf="@+id/next1"
+                    android:layout_toEndOf="@+id/settings1"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:gravity="start|center"
+                    android:text="@string/settings"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/next1"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/right_arrow_black" />
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:visibility="gone"
                 android:layout_marginHorizontal="20dp"
-                android:src="@drawable/logout_img"/>
+                android:src="@drawable/logout_img"
+                android:visibility="gone" />
         </LinearLayout>
     </RelativeLayout>
 </FrameLayout>

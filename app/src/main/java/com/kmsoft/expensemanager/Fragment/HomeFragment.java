@@ -3,6 +3,7 @@ package com.kmsoft.expensemanager.Fragment;
 import static com.kmsoft.expensemanager.Activity.MainActivity.isStep;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.annotation.SuppressLint;
@@ -50,6 +51,8 @@ import com.kmsoft.expensemanager.R;
 import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -627,7 +630,7 @@ public class HomeFragment extends Fragment {
             totalSum = totalSum.add(numericAmount);
         }
         totalIncomeAmount = totalSum.toString();
-        totalIncome.setText("₹" + totalSum);
+        totalIncome.setText(currencySymbol + totalSum);
         return totalSum;
     }
 
@@ -640,7 +643,7 @@ public class HomeFragment extends Fragment {
             totalSum = totalSum.add(numericAmount);
         }
         totalExpenseAmount = totalSum.toString();
-        totalExpense.setText("₹" + totalSum);
+        totalExpense.setText(currencySymbol + totalSum);
         return totalSum;
     }
 
@@ -649,7 +652,10 @@ public class HomeFragment extends Fragment {
         BigDecimal totalIncome = calculateTotalIncome();
         BigDecimal totalExpense = calculateTotalExpense();
         BigDecimal total = totalIncome.subtract(totalExpense);
-        showBalance.setText("₹" + total.toString());
+        DecimalFormat df1 = new DecimalFormat("#.##");
+        df1.setRoundingMode(RoundingMode.HALF_UP);
+        String reAmount = df1.format(total);
+        showBalance.setText(currencySymbol + reAmount);
     }
 
     private String extractNumericPart(String input) {
@@ -760,10 +766,6 @@ public class HomeFragment extends Fragment {
             }
         }
         return filteredList;
-    }
-
-    public void hideImageView() {
-        markRead.setVisibility(View.GONE);
     }
 
 //    private static ArrayList<IncomeAndExpense> filterIncomeListByTodayDate(ArrayList<IncomeAndExpense> incomeAndExpenses) {

@@ -1,5 +1,7 @@
 package com.kmsoft.expensemanager.Activity.Transaction;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +31,7 @@ import com.kmsoft.expensemanager.R;
 public class DetailsTransactionActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
-    ImageView delete, back, showAddAttachment,placeHolder;
+    ImageView delete, back, showAddAttachment, placeHolder;
     TextView showTotalBalance, showDescription, showType, showCategory, showTime, showDate;
     IncomeAndExpense incomeAndExpense;
     ActivityResultLauncher<Intent> launchSomeActivity;
@@ -74,12 +76,12 @@ public class DetailsTransactionActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        showTotalBalance.setText(incomeAndExpense.getAmount());
+        showTotalBalance.setText(String.format("%s%s", currencySymbol, incomeAndExpense.getAmount()));
         showDate.setText(String.format("%s,%s", incomeAndExpense.getDayName(), incomeAndExpense.getDate()));
         showType.setText(incomeAndExpense.getTag());
         showCategory.setText(incomeAndExpense.getCategoryName());
         showTime.setText(incomeAndExpense.getTime());
-        if (TextUtils.isEmpty(incomeAndExpense.getDescription())){
+        if (TextUtils.isEmpty(incomeAndExpense.getDescription())) {
             showDescription.setText(R.string.no_description);
         } else {
             showDescription.setText(incomeAndExpense.getDescription());

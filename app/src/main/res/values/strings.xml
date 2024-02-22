@@ -45,7 +45,7 @@
     <string name="are_you_sure_do_you_wanna_remove_this_transaction">Are you sure do you wanna remove this transaction?</string>
     <string name="transaction_has_been_successfully_removed">Transaction has been successfully removed</string>
     <string name="create_a_budget">Create a Budget</string>
-    <string name="you_don_t_have_a_budget_let_s_make_one_so_you_in_control">You don’t have a budget. Let’s make one so you in control.</string>
+    <string name="you_don_t_have_a_budget_let_s_make_one_so_you_in_control">You don’t have a budget. Let’s make one so you spend in control.</string>
     <string name="you_ve_exceed_the_limit">You’ve exceed the limit!</string>
     <string name="budget">Budget</string>
     <string name="how_much_do_yo_want_to_spend">How much do yo want to spend?</string>
@@ -95,6 +95,7 @@
     <string name="postNotification">You have chosen to never ask the permission again, but post notification permission is needed for proper functioning of app.</string>
     <string name="post_notification_permission_is_needed_for_proper_functioning_of_app">Post notification permission is needed for proper functioning of app.</string>
     <string name="todo">TODO</string>
+    <string name="settings">Settings</string>
 
     <string-array name="spendFrequency" translatable="false">
         <item>Income</item>

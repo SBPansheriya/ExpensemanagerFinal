@@ -62,7 +62,7 @@
             android:gravity="start|center"
             android:fontFamily="@font/lexenddeca_semibold"
             android:textColor="@color/black"
-            android:text="Remaining ₹0"/>
+            android:text="Remaining"/>
 
         <com.google.android.material.slider.Slider
             android:id="@+id/set_slider"
@@ -90,7 +90,6 @@
                 android:id="@+id/set_income_expense_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="₹0"
                 android:fontFamily="@font/lexenddeca_semibold"
                 android:textColor="@color/gray"
                 android:textSize="16sp"/>

@@ -5,9 +5,9 @@ public class BudgetNotification {
     private String amount;
     private String name;
     private int image;
-    private String currentTime;
-    private String isRemove;
-    private String tag;
+    private final String currentTime;
+    private final String isRemove;
+    private final String tag;
 
     public BudgetNotification(int id, String amount, String name, int image, String currentTime, String isRemove,String tag) {
         this.id = id;
@@ -55,24 +55,9 @@ public class BudgetNotification {
         return currentTime;
     }
 
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
-    }
-
-    public String getIsRemove() {
-        return isRemove;
-    }
-
-    public void setIsRemove(String isRemove) {
-        this.isRemove = isRemove;
-    }
-
     public String getTag() {
         return tag;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
 }
 

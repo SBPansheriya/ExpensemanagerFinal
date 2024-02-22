@@ -1,5 +1,7 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +64,7 @@ public class ExceedBudgetAdapter extends RecyclerView.Adapter<ExceedBudgetAdapte
 
         if (budgetNotification.getTag().equals("Exceed")) {
             holder.itemName.setText(budgetNotification.getName());
-            holder.itemAmount.setText(budgetNotification.getAmount());
+            holder.itemAmount.setText(String.format("%s%s", currencySymbol, budgetNotification.getAmount()));
             if (budgetNotification.getImage() == 0) {
                 holder.itemImage.setImageResource(R.drawable.i);
             } else {

@@ -54,10 +54,12 @@ public class NotificationActivity extends AppCompatActivity {
             popupMenu.getMenuInflater().inflate(R.menu.pop_up_menu, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 if (menuItem.getTitle().equals("Remove all")) {
-                    dbHelper.deleteAllBudgetNotificationData();
-                    notificationsList.clear();
-                    exceedBudgetAdapter.notifyDataSetChanged();
-                    noNotification.setVisibility(View.VISIBLE);
+                    if (!notificationsList.isEmpty()) {
+                        dbHelper.deleteAllBudgetNotificationData();
+                        notificationsList.clear();
+                        exceedBudgetAdapter.notifyDataSetChanged();
+                        noNotification.setVisibility(View.VISIBLE);
+                    }
                 }
                 return true;
             });

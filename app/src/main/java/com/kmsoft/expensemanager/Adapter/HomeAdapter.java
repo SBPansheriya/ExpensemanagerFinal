@@ -1,5 +1,7 @@
 package com.kmsoft.expensemanager.Adapter;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +24,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     ArrayList<IncomeAndExpense> incomeAndExpenseArrayList;
     String selected;
 
-    public HomeAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList,String selected) {
+    public HomeAdapter(Context context, ArrayList<IncomeAndExpense> incomeAndExpenseArrayList, String selected) {
         this.context = context;
         this.incomeAndExpenseArrayList = incomeAndExpenseArrayList;
         this.selected = selected;
@@ -31,7 +33,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @NonNull
     @Override
     public HomeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recent_transaction_layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -42,19 +44,18 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         holder.itemDescription.setText(incomeAndExpense.getDescription());
         holder.itemDate.setText(incomeAndExpense.getTime());
 
-        if (incomeAndExpense.getCategoryImage() == 0){
+        if (incomeAndExpense.getCategoryImage() == 0) {
             holder.itemImage.setImageResource(R.drawable.i);
-        }
-        else {
+        } else {
             holder.itemImage.setImageResource(incomeAndExpense.getCategoryImage());
         }
 
-        if (incomeAndExpense.getTag().equals("Income")){
-            holder.itemAmount.setText(String.format("+%s", incomeAndExpense.getAmount()));
-            holder.itemAmount.setTextColor(ContextCompat.getColor(context,R.color.green));
+        if (incomeAndExpense.getTag().equals("Income")) {
+            holder.itemAmount.setText(String.format("+" + currencySymbol + incomeAndExpense.getAmount()));
+            holder.itemAmount.setTextColor(ContextCompat.getColor(context, R.color.green));
         } else if (incomeAndExpense.getTag().equals("Expense")) {
-            holder.itemAmount.setText(String.format("-%s", incomeAndExpense.getAmount()));
-            holder.itemAmount.setTextColor(ContextCompat.getColor(context,R.color.red));
+            holder.itemAmount.setText(String.format("-" + currencySymbol + incomeAndExpense.getAmount()));
+            holder.itemAmount.setTextColor(ContextCompat.getColor(context, R.color.red));
         }
     }
 
@@ -66,7 +67,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView itemImage;
         RelativeLayout relative;
-        TextView itemName,itemDescription,itemAmount,itemDate;
+        TextView itemName, itemDescription, itemAmount, itemDate;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.item_image);

@@ -127,7 +127,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/lexenddeca_semibold"
-            android:text="When date range?"
+            android:text="What formate do you want to export?"
             android:textColor="@color/gray"
             android:textSize="14sp" />
 

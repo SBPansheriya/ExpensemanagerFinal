@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -36,7 +37,8 @@ import com.squareup.picasso.Picasso;
 
 public class ProfileFragment extends Fragment {
 
-    ImageView editUserDetails,exportData,settings,logout, profileImage;
+    ImageView editUserDetails,logout, profileImage;
+    RelativeLayout exportData,settings;
     TextView username;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;

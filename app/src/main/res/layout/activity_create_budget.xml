@@ -79,10 +79,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     style="@style/EditTextNoUnderline"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:fontFamily="@font/lexenddeca_regular"
                     android:letterSpacing="0.050"
-                    android:text="₹0"
                     android:textColor="#FFF"
                     android:textSize="50.0sp" />
             </LinearLayout>

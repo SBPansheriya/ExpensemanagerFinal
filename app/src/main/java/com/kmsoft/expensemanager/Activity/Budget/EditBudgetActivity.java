@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
+import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.budgetArrayList;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
@@ -68,15 +69,12 @@ public class EditBudgetActivity extends AppCompatActivity {
 
         budget = (Budget) getIntent().getSerializableExtra("budget");
 
-        editBudgetAmount.setText(String.format("%s", budget.getAmountBudget()));
-        editBudgetSlider.setValue(budget.getPercentageBudget());
-
         String listGet = getIntent().getStringExtra("budgetArrayList");
         gson = new Gson();
         budgetArrayList = gson.fromJson(listGet, new TypeToken<ArrayList<Budget>>() {
         }.getType());
 
-        editBudgetAmount.setText(String.format("%s", budget.getAmountBudget()));
+        editBudgetAmount.setText(String.format("%s%s", currencySymbol, budget.getAmountBudget()));
         editBudgetCategoryName.setText(String.format("%s", budget.getCategoryNameBudget()));
 
         launchSomeActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -114,7 +112,7 @@ public class EditBudgetActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String input = s.toString();
-                if (!input.startsWith("₹")) {
+                if (!input.startsWith(currencySymbol)) {
                     editBudgetAmount.setText(String.format("₹%s", input));
                     editBudgetAmount.setSelection(editBudgetAmount.getText().length());
                 }
@@ -122,13 +120,13 @@ public class EditBudgetActivity extends AppCompatActivity {
         });
 
         editBudget.setOnClickListener(view -> {
-            String amount = editBudgetAmount.getText().toString();
+            String amount = extractNumericPart(editBudgetAmount.getText().toString());
             int percentage = (int) editBudgetSlider.getValue();
 
             if (TextUtils.isEmpty(categoryName)) {
                 categoryName = budget.getCategoryNameBudget();
             }
-            if (amount.equals("₹0") || amount.equals("₹")) {
+            if (amount.equals(currencySymbol + "0") || amount.equals(currencySymbol)) {
                 Toast.makeText(EditBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(amount)) {
                 Toast.makeText(EditBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();

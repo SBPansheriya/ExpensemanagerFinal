@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
     BottomNavigationView bottomNavigationView;
+    LinearLayout fabVisibility;
     String fragment = "";
     FloatingActionButton fab, fab1, fab2;
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
@@ -60,14 +62,17 @@ public class MainActivity extends AppCompatActivity {
         openFragment(new HomeFragment());
 
         fabOpen = AnimationUtils.loadAnimation
-                (this,R.anim.fab_open);
+                (this, R.anim.fab_open);
         fabClose = AnimationUtils.loadAnimation
-                (this,R.anim.fab_close);
+                (this, R.anim.fab_close);
         rotateForward = AnimationUtils.loadAnimation
-                (this,R.anim.rotate_forward);
+                (this, R.anim.rotate_forward);
         rotateBackward = AnimationUtils.loadAnimation
-                (this,R.anim.rotate_backward);
-        fab.setOnClickListener(view -> animateFab());
+                (this, R.anim.rotate_backward);
+        fab.setOnClickListener(view -> {
+            animateFab();
+            fabVisibility.setVisibility(View.VISIBLE);
+        });
 
         fab1.setOnClickListener(view -> {
             animateFab();
@@ -86,23 +91,31 @@ public class MainActivity extends AppCompatActivity {
 
             if (item.getItemId() == R.id.home) {
                 fragment = "home";
+                isOpen = false;
                 openFragment(new HomeFragment());
+                fabVisibility.setVisibility(View.GONE);
                 return true;
             }
             if (item.getItemId() == R.id.transaction) {
                 fragment = "transaction";
+                isOpen = false;
                 isStep = true;
                 openFragment(new TransactionFragment());
+                fabVisibility.setVisibility(View.GONE);
                 return true;
             }
             if (item.getItemId() == R.id.budget) {
                 fragment = "budget";
+                isOpen = false;
                 openFragment(new BudgetFragment());
+                fabVisibility.setVisibility(View.GONE);
                 return true;
             }
             if (item.getItemId() == R.id.profile) {
                 fragment = "profile";
+                isOpen = false;
                 openFragment(new ProfileFragment());
+                fabVisibility.setVisibility(View.GONE);
                 return true;
             }
             return true;
@@ -110,38 +123,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openFragment(Fragment fragment) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.framelayout, fragment)
-                    .commit();
-
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.framelayout, fragment)
+                .commit();
     }
 
-    private void animateFab(){
-        if (isOpen){
+    private void animateFab() {
+        if (isOpen) {
             fab1.startAnimation(fabClose);
             fab2.startAnimation(fabClose);
             fab1.setClickable(false);
             fab2.setClickable(false);
-            isOpen=false;
+            isOpen = false;
         } else {
             fab1.startAnimation(fabOpen);
             fab2.startAnimation(fabOpen);
             fab1.setClickable(true);
             fab2.setClickable(true);
-            isOpen=true;
+            isOpen = true;
         }
     }
 
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.framelayout);
-        if (fragment instanceof TransactionFragment){
+        if (fragment instanceof TransactionFragment) {
             if (isStep) {
                 super.onBackPressed();
-            }
-            else {
+            } else {
                 Fragment mFragment = new HomeFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.framelayout, mFragment).setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
             }
@@ -234,10 +245,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void init(){
+    private void init() {
         bottomNavigationView = findViewById(R.id.bottomnavigationview);
         fab = findViewById(R.id.fabAdd);
         fab1 = findViewById(R.id.fab1);
         fab2 = findViewById(R.id.fab2);
+        fabVisibility = findViewById(R.id.fab_visibility);
     }
 }

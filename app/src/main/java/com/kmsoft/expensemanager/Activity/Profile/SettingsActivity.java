@@ -38,6 +38,20 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(shareIntent, "Share via..."));
         });
 
+        help.setOnClickListener(v -> {
+            String[] recipient = {"testkmsof@gmail.com"};
+            String subject = "Help Request";
+            String body = "Hello, I need help with the following: ";
+
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_EMAIL, recipient);
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+            intent.setType("message/rfc822");
+
+            startActivity(Intent.createChooser(intent, "Send Email"));
+        });
+
         about.setOnClickListener(v -> {
             Intent intent = new Intent(SettingsActivity.this,AboutActivity.class);
             startActivity(intent);
