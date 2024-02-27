@@ -9,5 +9,5 @@
 
     <gradient android:startColor="@color/lightGreen"
         android:endColor="@color/lightDarkGreen"
-        android:angle="50"/> <!-- Set your desired background color here -->
+        android:angle="135"/> <!-- Set your desired background color here -->
 </shape>
