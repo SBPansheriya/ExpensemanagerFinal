@@ -148,6 +148,82 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/backup_data"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/border4">
+
+                <ImageView
+                    android:id="@+id/backup"
+                    android:layout_width="40dp"
+                    android:layout_height="33dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/backup" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toStartOf="@+id/next2"
+                    android:layout_toEndOf="@+id/backup"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:gravity="start|center"
+                    android:text="@string/backup"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/next2"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/right_arrow_black" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/restore_data"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/border4">
+
+                <ImageView
+                    android:id="@+id/restore"
+                    android:layout_width="40dp"
+                    android:layout_height="33dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/restore" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toStartOf="@+id/next3"
+                    android:layout_toEndOf="@+id/restore"
+                    android:fontFamily="@font/lexenddeca_semibold"
+                    android:gravity="start|center"
+                    android:text="@string/restore"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/next3"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/right_arrow_black" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/settings"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"

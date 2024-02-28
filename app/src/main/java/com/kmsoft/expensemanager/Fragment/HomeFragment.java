@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Fragment;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static com.kmsoft.expensemanager.Activity.MainActivity.isStep;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
@@ -8,16 +9,21 @@ import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
@@ -26,11 +32,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -87,6 +96,8 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         init(view);
+
+        checkPermissionsForNotification();
 
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
@@ -663,7 +674,7 @@ public class HomeFragment extends Fragment {
     }
 
     private BigDecimal extractNumericAmount(String amount) {
-        String numericString = amount.substring(1);
+        String numericString = amount.replaceAll("[^\\d.]", "");
         return new BigDecimal(numericString);
     }
 
@@ -695,6 +706,91 @@ public class HomeFragment extends Fragment {
             }
         }
         return -1;
+    }
+
+    private void checkPermissionsForNotification() {
+        String[] permissions = new String[0];
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{POST_NOTIFICATIONS};
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(getActivity(), permissions, 100);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("TAG", "onRequestPermissionsResult: Granted");
+        } else {
+            showPermissionDenyDialog(getActivity());
+        }
+    }
+
+    private void showPermissionDenyDialog(Activity activity) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, POST_NOTIFICATIONS)) {
+            Dialog dialog = new Dialog(activity);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setGravity(Gravity.CENTER);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                dialog.setCancelable(false);
+            }
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.setContentView(R.layout.permission_denied_first_dialog);
+            dialog.setCancelable(false);
+            dialog.show();
+
+            Button cancel = dialog.findViewById(R.id.canceldialog);
+            Button ok = dialog.findViewById(R.id.okdialog);
+            TextView filename = dialog.findViewById(R.id.filename);
+
+            filename.setText(R.string.post_notification_permission_is_needed_for_proper_functioning_of_app);
+
+            cancel.setOnClickListener(view -> dialog.dismiss());
+
+            ok.setOnClickListener(view -> {
+                checkPermissionsForNotification();
+                dialog.dismiss();
+            });
+        }
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, POST_NOTIFICATIONS)) {
+
+            Dialog dialog = new Dialog(activity);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setGravity(Gravity.CENTER);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                dialog.setCancelable(false);
+            }
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.setContentView(R.layout.permission_denied_first_dialog);
+            dialog.setCancelable(false);
+            dialog.show();
+
+            Button cancel = dialog.findViewById(R.id.canceldialog);
+            Button ok = dialog.findViewById(R.id.okdialog);
+            TextView textView = dialog.findViewById(R.id.filename);
+
+            textView.setText(R.string.postNotification);
+            ok.setText(R.string.enable_from_settings);
+
+            cancel.setOnClickListener(view -> dialog.dismiss());
+
+            ok.setOnClickListener(view -> {
+                Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                intent.setData(uri);
+                ActivityCompat.startActivityForResult(getActivity(), intent, 100, null);
+                dialog.dismiss();
+            });
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100) {
+            checkPermissionsForNotification();
+        }
     }
 
     public int getMonthFromDateString(String dateString) {

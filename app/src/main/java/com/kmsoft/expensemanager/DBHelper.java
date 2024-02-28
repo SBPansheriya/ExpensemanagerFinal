@@ -5,13 +5,28 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
 
 import com.kmsoft.expensemanager.Model.Budget;
 import com.kmsoft.expensemanager.Model.Category;
 import com.kmsoft.expensemanager.Model.IncomeAndExpense;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -24,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_SELECTEDDATETIMESTAMP = "selecteddatetimestamp";
     private static final String COLUMN_CURRENTDATE = "currentdate";
     private static final String COLUMN_DATE = "date";
-    private static final String COLUMN_DAY= "day";
+    private static final String COLUMN_DAY = "day";
     private static final String COLUMN_TIME = "time";
     private static final String COLUMN_CATEGORY_NAME = "category_name";
     private static final String COLUMN_CATEGORY_IMAGE = "category_image";
@@ -182,7 +197,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
     // Category Crud
 
     //insert Data
@@ -224,7 +238,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.delete(TABLE1, COLUMN_ID_SHOW + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
-
 
 
     //Budget Crud
@@ -272,7 +285,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Notification Curd
 
     //insert Data
-    public void insertBudgetNotificationData(String amount,String name,int image,String time,boolean isRemove,String tag) {
+    public void insertBudgetNotificationData(String amount, String name, int image, String time, boolean isRemove, String tag) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT_NOTIFICATION, amount);
@@ -297,5 +310,69 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE3, null, null);
         db.close();
+    }
+
+    public void backupDatabase(Context context) {
+        try {
+            File originalDBFile = context.getDatabasePath(DBNAME);
+            String backupFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/ExpenseManagerBackup";
+            File backupDir = new File(backupFilePath);
+            if (!backupDir.exists()) {
+                backupDir.mkdirs();
+            }
+
+            String timeStamp1 = new SimpleDateFormat("dd_MM_yyyy_HHmmss", Locale.getDefault()).format(new Date());
+            String backupFileName1 = "New" + timeStamp1;
+
+            String newFolderPath = backupFilePath + "/" + backupFileName1;
+            File newFolder = new File(newFolderPath);
+            if (!newFolder.exists()) {
+                newFolder.mkdirs();
+            }
+
+            String backupFileName = "ListData.db";
+            File backupDBFile = new File(newFolder, backupFileName);
+
+            if (originalDBFile.exists()  && originalDBFile.length() > 0) {
+                FileChannel src = new FileInputStream(originalDBFile).getChannel();
+                FileChannel dst = new FileOutputStream(backupDBFile).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                Toast.makeText(context, "Backup Successfully!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "No data in the database to backup", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Backup error!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void restoreDatabase(Context context, Uri directoryUri) {
+        try {
+            DocumentFile directory = DocumentFile.fromTreeUri(context, directoryUri);
+            if (directory != null && directory.exists()) {
+                String backupFileName = "ListData.db";
+                DocumentFile backupDBFile = directory.findFile(backupFileName);
+                if (backupDBFile != null && backupDBFile.exists()) {
+                    File originalDBFile = context.getDatabasePath(DBNAME);
+                    try (InputStream inputStream = context.getContentResolver().openInputStream(backupDBFile.getUri());
+                         OutputStream outputStream = new FileOutputStream(originalDBFile)) {
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = inputStream.read(buffer)) > 0) {
+                            outputStream.write(buffer, 0, length);
+                        }
+                    }
+                    Toast.makeText(context, "Restore Successfully!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            Toast.makeText(context, "Backup File Not Found", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Restore error!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
