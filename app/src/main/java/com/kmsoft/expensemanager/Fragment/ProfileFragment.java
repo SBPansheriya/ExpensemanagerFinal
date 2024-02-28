@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -113,19 +114,28 @@ public class ProfileFragment extends Fragment {
     }
 
     private void checkPermissionsForBackup() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestBackupPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        } else {
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
             dbHelper.backupDatabase(getContext());
+        } else {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestBackupPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            } else {
+                dbHelper.backupDatabase(getContext());
+            }
         }
     }
 
     private void checkPermissionsForRestore() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            requestRestorePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        } else {
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             launchPickActivity.launch(intent);
+        } else {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                requestRestorePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            } else {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                launchPickActivity.launch(intent);
+            }
         }
     }
 
