@@ -74,39 +74,44 @@ public class NotificationActivity extends AppCompatActivity {
     }
 
     private void Display() {
-        Cursor cursor = dbHelper.getAllBudgetNotificationData();
-        if (cursor != null && cursor.moveToFirst()) {
-            notificationsList = new ArrayList<>();
-            do {
-                int id = cursor.getInt(0);
-                String amount = cursor.getString(1);
-                String name = cursor.getString(2);
-                int image = cursor.getInt(3);
-                String currentTime = cursor.getString(4);
-                String isRemove = cursor.getString(5);
-                String tag = cursor.getString(6);
+        try {
+            Cursor cursor = dbHelper.getAllBudgetNotificationData();
+            if (cursor != null && cursor.moveToFirst()) {
+                notificationsList = new ArrayList<>();
+                do {
+                    int id = cursor.getInt(0);
+                    String amount = cursor.getString(1);
+                    String name = cursor.getString(2);
+                    int image = cursor.getInt(3);
+                    String currentTime = cursor.getString(4);
+                    String isRemove = cursor.getString(5);
+                    String tag = cursor.getString(6);
 
-                BudgetNotification notification = new BudgetNotification(id, amount, name, image, currentTime, isRemove,tag);
-                notificationsList.add(notification);
+                    BudgetNotification notification = new BudgetNotification(id, amount, name, image, currentTime, isRemove, tag);
+                    notificationsList.add(notification);
 
-                notificationsList.sort(Comparator.comparing(BudgetNotification::getCurrentTime));
+                    notificationsList.sort(Comparator.comparing(BudgetNotification::getCurrentTime));
 
-                Collections.reverse(notificationsList);
+                    Collections.reverse(notificationsList);
 
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
 
-            if (notificationsList.isEmpty()) {
+                if (notificationsList.isEmpty()) {
+                    noNotification.setVisibility(View.VISIBLE);
+                    exceedBudgetRecyclerview.setVisibility(View.GONE);
+                } else {
+                    noNotification.setVisibility(View.GONE);
+                    exceedBudgetRecyclerview.setVisibility(View.VISIBLE);
+                    LinearLayoutManager manager = new LinearLayoutManager(this);
+                    exceedBudgetAdapter = new ExceedBudgetAdapter(NotificationActivity.this, notificationsList);
+                    exceedBudgetRecyclerview.setLayoutManager(manager);
+                    exceedBudgetRecyclerview.setAdapter(exceedBudgetAdapter);
+                }
+            } else {
                 noNotification.setVisibility(View.VISIBLE);
                 exceedBudgetRecyclerview.setVisibility(View.GONE);
-            } else {
-                noNotification.setVisibility(View.GONE);
-                exceedBudgetRecyclerview.setVisibility(View.VISIBLE);
-                LinearLayoutManager manager = new LinearLayoutManager(this);
-                exceedBudgetAdapter = new ExceedBudgetAdapter(NotificationActivity.this, notificationsList);
-                exceedBudgetRecyclerview.setLayoutManager(manager);
-                exceedBudgetRecyclerview.setAdapter(exceedBudgetAdapter);
             }
-        } else {
+        } catch (Exception e) {
             noNotification.setVisibility(View.VISIBLE);
             exceedBudgetRecyclerview.setVisibility(View.GONE);
         }

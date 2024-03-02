@@ -23,6 +23,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -46,8 +47,9 @@ import java.util.stream.Collectors;
 
 public class TransactionFragment extends Fragment {
 
-    ImageView calender, filter, img;
-    TextView see_financial_txt, emptyTransaction;
+    ImageView calender, filter;
+    LinearLayout see_financial_txt;
+    TextView  emptyTransaction;
     IncomeAndExpense incomeAndExpense;
     RecyclerView dateRecyclerview;
     DateAdapter dateAdapter;
@@ -93,11 +95,6 @@ public class TransactionFragment extends Fragment {
         });
 
         filter.setOnClickListener(v -> showFilterBottomDialog());
-
-        img.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), DetailsTransactionActivity.class);
-            startActivity(intent);
-        });
 
         return view;
     }
@@ -694,7 +691,6 @@ public class TransactionFragment extends Fragment {
     private void init(View view) {
         calender = view.findViewById(R.id.trans_calender);
         filter = view.findViewById(R.id.trans_filter);
-        img = view.findViewById(R.id.img);
         see_financial_txt = view.findViewById(R.id.see_financial_txt);
         dateRecyclerview = view.findViewById(R.id.date_recyclerview);
         emptyTransaction = view.findViewById(R.id.empty_transaction);
