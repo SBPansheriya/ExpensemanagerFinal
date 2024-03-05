@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".Activity.MyApp"
@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ExpenseManager"
         tools:targetApi="31">
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.kmsoft.expensemanager.fileprovider"
@@ -30,7 +31,7 @@
         </provider>
 
         <receiver android:name="com.kmsoft.expensemanager.Activity.NotificationReceiver" />
-        <receiver android:name="com.kmsoft.expensemanager.Activity.MyAlarmReceiver"/>
+        <receiver android:name="com.kmsoft.expensemanager.Activity.MyAlarmReceiver" />
 
         <activity
             android:name=".Activity.Profile.AboutActivity"
@@ -55,7 +56,13 @@
         <activity
             android:name=".Activity.Profile.SettingsActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO" />
+                <data android:scheme="mailto" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Activity.Profile.EditProfileActivity"
             android:exported="false"
@@ -98,7 +105,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

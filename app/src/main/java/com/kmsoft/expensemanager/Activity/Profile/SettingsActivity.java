@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.kmsoft.expensemanager.R;
 
@@ -39,17 +41,12 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         help.setOnClickListener(v -> {
-            String[] recipient = {"testkmsof@gmail.com"};
-            String subject = "Help Request";
-            String body = "Hello, I need help with the following: ";
-
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_EMAIL, recipient);
-            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            intent.putExtra(Intent.EXTRA_TEXT, body);
-            intent.setType("message/rfc822");
-
-            startActivity(Intent.createChooser(intent, "Send Email"));
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"testkmsoft@gmail.com"});
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            }
         });
 
         about.setOnClickListener(v -> {

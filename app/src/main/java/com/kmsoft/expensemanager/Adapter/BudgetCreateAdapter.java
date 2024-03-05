@@ -1,6 +1,7 @@
 package com.kmsoft.expensemanager.Adapter;
 
-import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
+import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

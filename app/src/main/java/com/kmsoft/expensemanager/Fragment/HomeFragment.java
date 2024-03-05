@@ -1,10 +1,10 @@
 package com.kmsoft.expensemanager.Fragment;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Activity.MainActivity.isStep;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
-import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.annotation.SuppressLint;

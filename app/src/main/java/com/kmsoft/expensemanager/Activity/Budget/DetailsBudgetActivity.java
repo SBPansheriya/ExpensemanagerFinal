@@ -1,6 +1,6 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
-import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -270,7 +270,7 @@ public class DetailsBudgetActivity extends AppCompatActivity {
             }
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             dialog.setContentView(R.layout.dailog_removed_layout);
-            dialog.setCancelable(true);
+            dialog.setCancelable(false);
             dialog.show();
 
             TextView txt2 = dialog.findViewById(R.id.txt);

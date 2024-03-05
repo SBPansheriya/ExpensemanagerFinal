@@ -19,6 +19,7 @@ import com.kmsoft.expensemanager.Model.IncomeAndExpense;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -312,67 +313,112 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void backupDatabase(Context context) {
-        try {
-            File originalDBFile = context.getDatabasePath(DBNAME);
-            String backupFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/ExpenseManagerBackup";
-            File backupDir = new File(backupFilePath);
-            if (!backupDir.exists()) {
-                backupDir.mkdirs();
-            }
-
-            String timeStamp1 = new SimpleDateFormat("dd_MM_yyyy_HHmmss", Locale.getDefault()).format(new Date());
-            String backupFileName1 = "New" + timeStamp1;
-
-            String newFolderPath = backupFilePath + "/" + backupFileName1;
-            File newFolder = new File(newFolderPath);
-            if (!newFolder.exists()) {
-                newFolder.mkdirs();
-            }
-
-            String backupFileName = "ListData.db";
-            File backupDBFile = new File(newFolder, backupFileName);
-
-            if (originalDBFile.exists()  && originalDBFile.length() > 0) {
-                FileChannel src = new FileInputStream(originalDBFile).getChannel();
-                FileChannel dst = new FileOutputStream(backupDBFile).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
-                Toast.makeText(context, "Backup Successfully!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(context, "No data in the database to backup", Toast.LENGTH_SHORT).show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "Backup error!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public void restoreDatabase(Context context, Uri directoryUri) {
         try {
-            DocumentFile directory = DocumentFile.fromTreeUri(context, directoryUri);
-            if (directory != null && directory.exists()) {
-                String backupFileName = "ListData.db";
-                DocumentFile backupDBFile = directory.findFile(backupFileName);
-                if (backupDBFile != null && backupDBFile.exists()) {
-                    File originalDBFile = context.getDatabasePath(DBNAME);
-                    try (InputStream inputStream = context.getContentResolver().openInputStream(backupDBFile.getUri());
-                         OutputStream outputStream = new FileOutputStream(originalDBFile)) {
-                        byte[] buffer = new byte[1024];
-                        int length;
-                        while ((length = inputStream.read(buffer)) > 0) {
-                            outputStream.write(buffer, 0, length);
-                        }
-                    }
-                    Toast.makeText(context, "Restore Successfully!", Toast.LENGTH_SHORT).show();
-                    return;
+            File originalDBFile = context.getDatabasePath(DBNAME);
+            try (InputStream inputStream = context.getContentResolver().openInputStream(directoryUri);
+                 OutputStream outputStream = new FileOutputStream(originalDBFile)) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, length);
                 }
             }
-            Toast.makeText(context, "Backup File Not Found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Restore Successfully!", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(context, "Restore error!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void backupDatabase1(Context context, Uri directoryUri) {
+        try {
+            File originalDBFile = context.getDatabasePath(DBNAME);
+            DocumentFile directory = DocumentFile.fromTreeUri(context, directoryUri);
+
+            String backupFileName = "ListData.db";
+            DocumentFile backupDBFile = directory.createFile("application/x-sqlite3", backupFileName);
+
+            if (directory.exists()) {
+                FileChannel src = new FileInputStream(originalDBFile).getChannel();
+                FileOutputStream outputStream = (FileOutputStream) context.getContentResolver().openOutputStream(backupDBFile.getUri());
+                if (outputStream != null) {
+                    FileChannel dst = outputStream.getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                    Toast.makeText(context, "Backup Successfully!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            Toast.makeText(context, "Backup File Not Found", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+//    public void backupDatabase(Context context) {
+//        try {
+//            File originalDBFile = context.getDatabasePath(DBNAME);
+//            String backupFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/ExpenseManagerBackup";
+//            File backupDir = new File(backupFilePath);
+//            if (!backupDir.exists()) {
+//                backupDir.mkdirs();
+//            }
+//
+//            String timeStamp1 = new SimpleDateFormat("dd_MM_yyyy_HHmmss", Locale.getDefault()).format(new Date());
+//            String backupFileName1 = "New" + timeStamp1;
+//
+//            String newFolderPath = backupFilePath + "/" + backupFileName1;
+//            File newFolder = new File(newFolderPath);
+//            if (!newFolder.exists()) {
+//                newFolder.mkdirs();
+//            }
+//
+//            String backupFileName = "ListData.db";
+//            File backupDBFile = new File(newFolder, backupFileName);
+//
+//            if (originalDBFile.exists() && originalDBFile.length() > 0) {
+//                FileChannel src = new FileInputStream(originalDBFile).getChannel();
+//                FileChannel dst = new FileOutputStream(backupDBFile).getChannel();
+//                dst.transferFrom(src, 0, src.size());
+//                src.close();
+//                dst.close();
+//                Toast.makeText(context, "Backup Successfully!", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Toast.makeText(context, "No data in the database to backup", Toast.LENGTH_SHORT).show();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Toast.makeText(context, "Backup error!", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+//
+//    public void restoreDatabase1(Context context, Uri directoryUri) {
+//        try {
+//
+//            InputStream inputStream = context.getContentResolver().openInputStream(directoryUri);
+//            if (inputStream != null) {
+//                OutputStream outputStream = new FileOutputStream(context.getDatabasePath(DBNAME));
+//
+//                byte[] buffer = new byte[1024];
+//                int length;
+//                while ((length = inputStream.read(buffer)) > 0) {
+//                    outputStream.write(buffer, 0, length);
+//                }
+//                inputStream.close();
+//                outputStream.close();
+//                Toast.makeText(context, "Restore Successful!", Toast.LENGTH_SHORT).show();
+//
+//            } else {
+//                // Handle backup file not found
+//                Log.e("Restore", "Backup file not found");
+//            }
+//        } catch (IOException e) {
+//            // Handle IOException
+//            e.printStackTrace();
+//            Log.e("Restore", "Error while restoring database: " + e.getMessage());
+//        }
+//
+//    }
 }

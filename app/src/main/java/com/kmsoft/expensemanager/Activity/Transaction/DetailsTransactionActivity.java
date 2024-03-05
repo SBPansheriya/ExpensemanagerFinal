@@ -1,6 +1,7 @@
 package com.kmsoft.expensemanager.Activity.Transaction;
 
-import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+
+import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -121,11 +122,11 @@ public class DetailsTransactionActivity extends AppCompatActivity {
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setGravity(Gravity.CENTER);
                 dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                dialog.setCancelable(true);
+                dialog.setCancelable(false);
             }
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             dialog.setContentView(R.layout.dailog_removed_layout);
-            dialog.setCancelable(true);
+            dialog.setCancelable(false);
             dialog.show();
 
             new Handler().postDelayed(() -> {

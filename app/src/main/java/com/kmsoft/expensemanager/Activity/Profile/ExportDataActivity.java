@@ -1,6 +1,6 @@
 package com.kmsoft.expensemanager.Activity.Profile;
 
-import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;

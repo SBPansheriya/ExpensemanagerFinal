@@ -23,6 +23,9 @@ import com.kmsoft.expensemanager.Fragment.ProfileFragment;
 import com.kmsoft.expensemanager.R;
 import com.kmsoft.expensemanager.Fragment.TransactionFragment;
 
+import java.util.Currency;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
     boolean isOpen = false;
     public static boolean isStep = false;
+    public static String currencySymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         getSupportActionBar().hide();
         init();
+
+        currencySymbol = getCurrencySymbol();
 
         dbHelper = new DBHelper(this);
 
@@ -106,6 +112,17 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+    }
+
+    private String getCurrencySymbol() {
+        // Get the default locale of the device
+        Locale locale = Locale.getDefault();
+
+        // Get the currency instance for the device's locale
+        Currency currency = Currency.getInstance(locale);
+
+        // Get the currency symbol
+        return currency.getSymbol();
     }
 
     private void openFragment(Fragment fragment) {

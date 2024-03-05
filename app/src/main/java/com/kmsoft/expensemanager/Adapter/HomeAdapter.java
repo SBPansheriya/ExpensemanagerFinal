@@ -1,6 +1,6 @@
 package com.kmsoft.expensemanager.Adapter;
 
-import static com.kmsoft.expensemanager.Activity.SplashActivity.currencySymbol;
+import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -44,6 +44,7 @@ public class ProfileFragment extends Fragment {
 
     DBHelper dbHelper;
     ActivityResultLauncher<Intent> launchPickActivity;
+    ActivityResultLauncher<Intent> launchPickActivity1;
     ImageView editUserDetails, profileImage;
     RelativeLayout exportData, settings, backup, restore;
     TextView username;
@@ -106,6 +107,17 @@ public class ProfileFragment extends Fragment {
                 Uri directoryUri = data.getData();
 
                 if (directoryUri != null) {
+                    dbHelper.backupDatabase1(ProfileFragment.this.getActivity(),directoryUri);
+                }
+            }
+        });
+
+        launchPickActivity1 = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                Uri directoryUri = data.getData();
+
+                if (directoryUri != null) {
                     dbHelper.restoreDatabase(ProfileFragment.this.getActivity(), directoryUri);
                 }
             }
@@ -115,23 +127,11 @@ public class ProfileFragment extends Fragment {
 
     private void checkPermissionsForBackup() {
         if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
-            dbHelper.backupDatabase(getContext());
-        } else {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestBackupPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            } else {
-                dbHelper.backupDatabase(getContext());
-            }
-        }
-    }
-
-    private void checkPermissionsForRestore() {
-        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             launchPickActivity.launch(intent);
         } else {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                requestRestorePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestBackupPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             } else {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 launchPickActivity.launch(intent);
@@ -139,10 +139,29 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    private void checkPermissionsForRestore() {
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
+            Intent intent = new Intent();
+            intent.setType("*/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            launchPickActivity1.launch(Intent.createChooser(intent, "Select file to import"));
+        } else {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                requestRestorePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            } else {
+                Intent intent = new Intent();
+                intent.setType("*/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                launchPickActivity1.launch(Intent.createChooser(intent, "Select file to import"));
+            }
+        }
+    }
+
     private final ActivityResultLauncher<String> requestBackupPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    dbHelper.backupDatabase(getContext());
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    launchPickActivity.launch(intent);
                 } else {
                     showPermissionDenyDialog1(getActivity());
                 }
@@ -151,8 +170,10 @@ public class ProfileFragment extends Fragment {
     private final ActivityResultLauncher<String> requestRestorePermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    launchPickActivity.launch(intent);
+                    Intent intent = new Intent();
+                    intent.setType("*/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    launchPickActivity1.launch(Intent.createChooser(intent, "Select file to import"));
                 } else {
                     showPermissionDenyDialog(getActivity());
                 }

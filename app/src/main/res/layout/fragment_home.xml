@@ -149,6 +149,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
+                                android:layout_gravity="center"
                                 android:layout_toEndOf="@+id/home_income"
                                 android:orientation="vertical">
 
@@ -174,7 +175,7 @@
                     </RelativeLayout>
 
                     <View
-                        android:layout_width="20dp"
+                        android:layout_width="18dp"
                         android:layout_height="0dp" />
 
                     <RelativeLayout
@@ -200,6 +201,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
+                                android:layout_gravity="center"
                                 android:layout_toEndOf="@+id/home_expense"
                                 android:orientation="vertical">
 

@@ -26,7 +26,6 @@ public class SplashActivity extends AppCompatActivity {
     public static String USER_NAME = "userName";
     public static String USER_IMAGE = "userImage";
     ImageView getStarted,person;
-    public static String currencySymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +35,6 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
-        currencySymbol = getCurrencySymbol();
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -52,16 +50,5 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-    }
-
-    private String getCurrencySymbol() {
-        // Get the default locale of the device
-        Locale locale = Locale.getDefault();
-
-        // Get the currency instance for the device's locale
-        Currency currency = Currency.getInstance(locale);
-
-        // Get the currency symbol
-        return currency.getSymbol();
     }
 }
