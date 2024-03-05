@@ -464,7 +464,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         apr.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 4;
             apr.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -485,7 +485,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         may.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 5;
             may.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -506,7 +506,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         june.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 6;
             june.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -527,7 +527,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         july.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 7;
             july.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -548,7 +548,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         aug.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 8;
             aug.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -569,7 +569,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         sep.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 9;
             sep.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -590,7 +590,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         oct.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 10;
             oct.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -611,7 +611,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         nov.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 11;
             nov.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
@@ -632,7 +632,7 @@ public class FinancialReportActivity extends AppCompatActivity {
         });
 
         dec.setOnClickListener(v -> {
-            monthly = 3;
+            monthly = 12;
             dec.setTextColor(ContextCompat.getColor(this, R.color.green));
             jan.setTextColor(Color.BLACK);
             feb.setTextColor(Color.BLACK);
