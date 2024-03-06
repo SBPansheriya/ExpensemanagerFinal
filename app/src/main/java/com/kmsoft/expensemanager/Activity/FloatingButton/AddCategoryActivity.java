@@ -60,6 +60,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launchSomeActivity;
     Category category;
     String name;
+    int id;
     int image;
     int color;
     String tagFind;
@@ -72,6 +73,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     int getImage;
     String getName;
     int getColor;
+    int newImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +103,8 @@ public class AddCategoryActivity extends AppCompatActivity {
                 Intent data = result.getData();
                 if (data != null) {
                     if (findClick.equals("Edit")) {
-                        editCategoryImage = data.getIntExtra("imageResId", 0);
-                        editNewCategoryImage.setImageResource(editCategoryImage);
+                        newImage = data.getIntExtra("imageResId", 0);
+                        editNewCategoryImage.setImageResource(newImage);
                     } else if (findClick.equals("Add")) {
                         addCategoryImage = data.getIntExtra("imageResId", 0);
                         addNewCategoryImage.setImageResource(addCategoryImage);
@@ -311,7 +313,10 @@ public class AddCategoryActivity extends AppCompatActivity {
             }
         }
 
-        dialog1.setOnDismissListener(dialog -> editCategoryImage = 0);
+        dialog1.setOnDismissListener(dialog -> {
+            editCategoryImage = 0;
+            newImage = 0;
+        });
 
         editCategory.setText(getcategory.getCategoryName());
 
@@ -361,11 +366,11 @@ public class AddCategoryActivity extends AppCompatActivity {
                 if (dialog.getWindow() != null) {
                     dialog.getWindow().setGravity(Gravity.CENTER);
                     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    dialog.setCancelable(true);
+                    dialog.setCancelable(false);
                 }
                 dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 dialog.setContentView(R.layout.dailog_removed_layout);
-                dialog.setCancelable(true);
+                dialog.setCancelable(false);
                 dialog.show();
 
                 TextView text = dialog.findViewById(R.id.txt);
@@ -398,7 +403,10 @@ public class AddCategoryActivity extends AppCompatActivity {
                 }
 
                 if (!categoryFound) {
-                    category = new Category(getcategory.getId(), addCategoryName, editCategoryImage, tagFind, category.getColor());
+                    if (newImage == 0){
+                        newImage = getcategory.getCategoryImage();
+                    }
+                    category = new Category(getcategory.getId(), addCategoryName, newImage, tagFind, category.getColor());
                     categoryArrayList.add(category);
                     if (tagFind.equals("Income")) {
                         for (int i = 0; i < incomeCategoryList.size(); i++) {
@@ -500,12 +508,13 @@ public class AddCategoryActivity extends AppCompatActivity {
         return filteredList;
     }
 
-    public void getData(String name1, int image1, int categoryColor) {
+    public void getData(String name1, int image1, int categoryColor,int id1) {
         if (TextUtils.isEmpty(name1)) {
             name = getName;
         } else {
             name = name1;
         }
+        id = id1;
 
         if (image1 == 0) {
             image = getImage;
@@ -533,6 +542,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         if (color == 0) {
             color = getColor;
         }
+        intent.putExtra("id",id);
         intent.putExtra("categoryImage", image);
         intent.putExtra("categoryName", name);
         intent.putExtra("categoryColor", color);

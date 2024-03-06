@@ -133,8 +133,8 @@ public class HomeFragment extends Fragment {
 
         homeProfileImage.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-            intent.putExtra("name",userName);
-            intent.putExtra("image",profileImage);
+            intent.putExtra("name", userName);
+            intent.putExtra("image", profileImage);
             startActivity(intent);
         });
 
@@ -813,7 +813,7 @@ public class HomeFragment extends Fragment {
                     Picasso.get().load(profileImage).into(homeProfileImage);
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -832,14 +832,21 @@ public class HomeFragment extends Fragment {
                 String incomeDate = cursor.getString(5);
                 String incomeDay = cursor.getString(6);
                 String incomeAddTime = cursor.getString(7);
-                String categoryName = cursor.getString(8);
                 int categoryImage = cursor.getInt(9);
                 int categoryColor = cursor.getInt(10);
                 String incomeDescription = cursor.getString(11);
                 String addAttachment = cursor.getString(12);
                 String tag = cursor.getString(13);
+                int categoryId = cursor.getInt(14);
+                String name = null;
+                Cursor cursor1 = dbHelper.getCategory(categoryId);
+                if (cursor1 != null && cursor1.moveToFirst()) {
+                    do {
+                        name = cursor1.getString(1);
+                    } while (cursor1.moveToNext());
+                }
 
-                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, categoryColor, incomeDescription, addAttachment, tag);
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, name, categoryImage, categoryColor, incomeDescription, addAttachment, tag, categoryId);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
             } while (cursor.moveToNext());
             incomeAndExpenseArrayList.sort(Comparator.comparing(IncomeAndExpense::getCurrantDateTimeStamp));

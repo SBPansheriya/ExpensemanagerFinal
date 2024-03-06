@@ -61,10 +61,11 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
         holder.itemView.setOnClickListener(view -> holder.checkbox.performClick());
 
         holder.checkbox.setOnClickListener(v -> {
+            int id = categoryArrayList.get(position).getId();
             String categoryName = categoryArrayList.get(position).getCategoryName();
             int categoryImage = categoryArrayList.get(position).getCategoryImage();
             int categoryColor = categoryArrayList.get(position).getColor();
-            addCategoryActivity.getData(categoryName, categoryImage, categoryColor);
+            addCategoryActivity.getData(categoryName, categoryImage, categoryColor,id);
         });
     }
 

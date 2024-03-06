@@ -91,6 +91,13 @@ public class ExportDataActivity extends AppCompatActivity {
         whatDataExport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (whatDataExport.getSelectedItem().toString().equals("All")) {
+                    incomeAndExpenseArrayList1 = filterCategories1(incomeAndExpenseArrayList, whenDateRange.getSelectedItem().toString());
+                } else if (whatDataExport.getSelectedItem().toString().equals("Income")) {
+                    incomeList1 = filterCategories1(incomeList, whenDateRange.getSelectedItem().toString());
+                } else if (whatDataExport.getSelectedItem().toString().equals("Expense")) {
+                    expenseList1 = filterCategories1(expenseList, whenDateRange.getSelectedItem().toString());
+                }
             }
 
             @Override

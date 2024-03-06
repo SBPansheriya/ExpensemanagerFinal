@@ -17,11 +17,12 @@ public class IncomeAndExpense implements Serializable {
     String description;
     String addAttachment;
     String tag;
+    int categoryId;
 
     public IncomeAndExpense() {
     }
 
-    public IncomeAndExpense(int id, String amount, double currantDateTimeStamp, double selectedDateTimeStamp, String currantDate, String date, String dayName, String time, String categoryName, int categoryImage, int categoryColor, String description, String addAttachment, String tag) {
+    public IncomeAndExpense(int id, String amount, double currantDateTimeStamp, double selectedDateTimeStamp, String currantDate, String date, String dayName, String time, String categoryName, int categoryImage, int categoryColor, String description, String addAttachment, String tag,int categoryId) {
         this.id = id;
         this.amount = amount;
         this.currantDateTimeStamp = currantDateTimeStamp;
@@ -36,6 +37,7 @@ public class IncomeAndExpense implements Serializable {
         this.description = description;
         this.addAttachment = addAttachment;
         this.tag = tag;
+        this.categoryId = categoryId;
     }
 
     public int getId() {
@@ -116,5 +118,13 @@ public class IncomeAndExpense implements Serializable {
 
     public double getAmountValue() {
         return Double.parseDouble(amount.replace("₹", ""));
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 }

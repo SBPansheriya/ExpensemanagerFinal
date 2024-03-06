@@ -460,14 +460,22 @@ public class TransactionFragment extends Fragment {
                 String incomeDate = cursor.getString(5);
                 String incomeDay = cursor.getString(6);
                 String incomeAddTime = cursor.getString(7);
-                String categoryName = cursor.getString(8);
                 int categoryImage = cursor.getInt(9);
                 int categoryColor = cursor.getInt(10);
                 String incomeDescription = cursor.getString(11);
                 String addAttachment = cursor.getString(12);
                 String tag = cursor.getString(13);
+                int categoryId = cursor.getInt(14);
 
-                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, categoryName, categoryImage, categoryColor, incomeDescription, addAttachment, tag);
+                String name = null;
+                Cursor cursor1 = dbHelper.getCategory(categoryId);
+                if (cursor1 != null && cursor1.moveToFirst()) {
+                    do {
+                        name = cursor1.getString(1);
+                    } while (cursor1.moveToNext());
+                }
+
+                incomeAndExpense = new IncomeAndExpense(id, incomeAmount, currantDateTimeStamp, selectedDateTimeStamp, currentdate, incomeDate, incomeDay, incomeAddTime, name, categoryImage, categoryColor, incomeDescription, addAttachment, tag,categoryId);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
 
             }

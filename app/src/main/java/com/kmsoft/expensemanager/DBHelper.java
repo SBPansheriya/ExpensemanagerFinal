@@ -48,6 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_ADD_ATTACHMENT = "add_attachment";
     private static final String COLUMN_TAG = "tag";
+    private static final String COLUMN_CATEGORY_ID = "category_id";
 
     private static final String TABLE1 = "Categorydata";
     private static final String COLUMN_ID_SHOW = "id";
@@ -93,7 +94,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_CATEGORY_COLOR + " TEXT,"
             + COLUMN_DESCRIPTION + " TEXT,"
             + COLUMN_ADD_ATTACHMENT + " TEXT,"
-            + COLUMN_TAG + " TEXT"
+            + COLUMN_TAG + " TEXT,"
+            + COLUMN_CATEGORY_ID + " TEXT"
             + ")";
 
     private static final String CREATE_TABLE_CATEGORY = "CREATE TABLE " + TABLE1 + "("
@@ -171,6 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_DESCRIPTION, incomeAndExpense.getDescription());
         contentValues.put(COLUMN_ADD_ATTACHMENT, incomeAndExpense.getAddAttachment());
         contentValues.put(COLUMN_TAG, incomeAndExpense.getTag());
+        contentValues.put(COLUMN_CATEGORY_ID, incomeAndExpense.getCategoryId());
         db.insert(TABLE, null, contentValues);
         db.close();
     }
@@ -192,6 +195,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_DESCRIPTION, incomeAndExpense.getDescription());
         contentValues.put(COLUMN_ADD_ATTACHMENT, incomeAndExpense.getAddAttachment());
         contentValues.put(COLUMN_TAG, incomeAndExpense.getTag());
+        contentValues.put(COLUMN_CATEGORY_ID, incomeAndExpense.getCategoryId());
         db.update(TABLE, contentValues, COLUMN_ID + " = ?",
                 new String[]{String.valueOf(incomeAndExpense.getId())});
         db.close();
@@ -224,6 +228,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.insert(TABLE1, null, contentValues);
         db.close();
+    }
+
+    public Cursor getCategory(int id){
+        SQLiteDatabase db =  this.getWritableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE1 + " WHERE " + COLUMN_ID_SHOW + " = ?", new String[]{String.valueOf(id)}, null);
     }
 
     // Retrieve All Data

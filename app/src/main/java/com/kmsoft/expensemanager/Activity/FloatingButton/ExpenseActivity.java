@@ -90,6 +90,7 @@ public class ExpenseActivity extends AppCompatActivity {
     String addAttachmentImage;
     ArrayList<Budget> budgetArrayList = new ArrayList<>();
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
+    int categoryId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +111,7 @@ public class ExpenseActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     categoryColor = data.getIntExtra("categoryColor", 0);
+                    categoryId = data.getIntExtra("id", 0);
 
                     if (!TextUtils.isEmpty(categoryName)) {
                         expenseCategoryName.setText(String.format("%s", categoryName));
@@ -168,7 +170,7 @@ public class ExpenseActivity extends AppCompatActivity {
                 String amount = extractNumericPart(expenseAddAmount.getText().toString());
                 String description = expenseDescription.getText().toString();
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
-                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, expenseAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, "Expense");
+                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, expenseAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, "Expense", categoryId);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.insertData(incomeAndExpense);
                 Cursor cursor = dbHelper.getAllBudgetData();

@@ -84,6 +84,7 @@ public class IncomeActivity extends AppCompatActivity {
     String incomeAddTime;
     String addAttachmentImage;
     int categoryColor;
+    int categoryId;
 
 
     @Override
@@ -105,6 +106,7 @@ public class IncomeActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     categoryColor = data.getIntExtra("categoryColor", 0);
+                    categoryId = data.getIntExtra("id",0);
                     if (!TextUtils.isEmpty(categoryName)) {
                         incomeCategoryName.setText(String.format("%s", categoryName));
                     }
@@ -161,7 +163,7 @@ public class IncomeActivity extends AppCompatActivity {
                 String amount = extractNumericPart(incomeAddAmount.getText().toString());
                 String description = incomeDescription.getText().toString();
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
-                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, "Income");
+                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, "Income",categoryId);
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.insertData(incomeAndExpense);
                 Dialog dialog = new Dialog(IncomeActivity.this);

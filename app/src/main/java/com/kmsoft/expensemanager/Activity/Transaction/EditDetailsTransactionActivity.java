@@ -92,7 +92,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     String addAttachmentImage;
     ArrayList<Budget> budgetArrayList = new ArrayList<>();
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
-
+    int categoryId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +114,8 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     categoryColor = data.getIntExtra("categoryColor", 0);
+                    categoryId = data.getIntExtra("id",0);
+
                     if (!TextUtils.isEmpty(categoryName)) {
                         editCategory.setText(String.format("%s", categoryName));
                     }
@@ -173,7 +175,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             } else {
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
                 String reAmount = extractNumericPart(amount);
-                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), reAmount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, incomeAndExpense.getTag());
+                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), reAmount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, incomeAndExpense.getTag(),categoryId);
                 dbHelper.updateData(incomeAndExpense);
 
                 Cursor cursor = dbHelper.getAllBudgetData();
