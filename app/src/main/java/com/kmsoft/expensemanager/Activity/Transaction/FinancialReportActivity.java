@@ -1328,7 +1328,6 @@ public class FinancialReportActivity extends AppCompatActivity {
                 String incomeDate = cursor.getString(5);
                 String incomeDay = cursor.getString(6);
                 String incomeAddTime = cursor.getString(7);
-                int categoryImage = cursor.getInt(9);
                 int categoryColor = cursor.getInt(10);
                 String incomeDescription = cursor.getString(11);
                 String addAttachment = cursor.getString(12);
@@ -1336,9 +1335,11 @@ public class FinancialReportActivity extends AppCompatActivity {
                 int categoryId = cursor.getInt(14);
 
                 String name = null;
+                int categoryImage = 0;
                 Cursor cursor1 = dbHelper.getCategory(categoryId);
                 if (cursor1 != null && cursor1.moveToFirst()) {
                     do {
+                        categoryImage = cursor1.getInt(2);
                         name = cursor1.getString(1);
                     } while (cursor1.moveToNext());
                 }
