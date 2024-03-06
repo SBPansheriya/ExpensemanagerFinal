@@ -4,6 +4,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_IMAGE;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.USER_NAME;
+import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextUtils;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +42,8 @@ import com.kmsoft.expensemanager.Activity.Profile.SettingsActivity;
 import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.R;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
 
@@ -62,15 +67,11 @@ public class ProfileFragment extends Fragment {
         init(view);
 
         dbHelper = new DBHelper(ProfileFragment.this.getActivity());
+//        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+//        editor = sharedPreferences.edit();
 
-        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-
-        userName = sharedPreferences.getString(USER_NAME, "");
-        image = sharedPreferences.getString(USER_IMAGE, "");
-
-        setData();
-
+//        userName = sharedPreferences.getString(USER_NAME, "");
+//        image = sharedPreferences.getString(USER_IMAGE, "");
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 Intent data = result.getData();
@@ -78,12 +79,13 @@ public class ProfileFragment extends Fragment {
                     userName = data.getStringExtra("userName");
                     image = data.getStringExtra("userImage");
                 }
-                setData();
             }
         });
 
         editUserDetails.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            intent.putExtra("name",userName);
+            intent.putExtra("image",image);
             launchSomeActivity.launch(intent);
         });
 
@@ -107,7 +109,7 @@ public class ProfileFragment extends Fragment {
                 Uri directoryUri = data.getData();
 
                 if (directoryUri != null) {
-                    dbHelper.backupDatabase1(ProfileFragment.this.getActivity(),directoryUri);
+                    dbHelper.backupDatabase(ProfileFragment.this.getActivity(),directoryUri);
                 }
             }
         });
@@ -123,6 +125,12 @@ public class ProfileFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Display();
     }
 
     private void checkPermissionsForBackup() {
@@ -305,20 +313,37 @@ public class ProfileFragment extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    private void setData() {
-        if (TextUtils.isEmpty(userName)) {
+    private void setData(String name,String image1) {
+        if (TextUtils.isEmpty(name)) {
             username.setText("Your name");
             username.setTextColor(ContextCompat.getColor(getActivity(), R.color.gray));
         } else {
             username.setTextColor(ContextCompat.getColor(getActivity(), R.color.black));
-            username.setText(userName);
+            username.setText(name);
         }
 
-        if (TextUtils.isEmpty(image)) {
+        if (TextUtils.isEmpty(image1)) {
             profileImage.setImageResource(R.drawable.profile);
         } else {
-            Picasso.get().load(image).into(profileImage);
+            Picasso.get().load(image1).into(profileImage);
         }
+    }
+
+    private void Display(){
+        try {
+            Cursor cursor = dbHelper.getAllProfileData();
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(0);
+                    userName = cursor.getString(1);
+                    image = cursor.getString(2);
+
+                } while (cursor.moveToNext());
+                setData(userName,image);
+            }
+        } catch (Exception e){
+
+           }
     }
 
 

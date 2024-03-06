@@ -69,7 +69,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     DBHelper dbHelper;
     ImageView back, setEditImage, removeImage;
     RelativeLayout editSetImage;
-    LinearLayout editAddAttachment, editShowCategory;
+    LinearLayout editAddAttachment, editShowCategory,title1;
     EditText editTotalBalance;
     TextView editDescription, editCategory, editDate;
     IncomeAndExpense incomeAndExpense;
@@ -225,7 +225,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             launchSomeActivityResult.launch(intent);
         });
 
-        calendar.setOnClickListener(v -> showCalenderBottomDialog());
+        title1.setOnClickListener(v -> showCalenderBottomDialog());
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -533,5 +533,6 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         calendar = findViewById(R.id.calendar);
         editShowCategory = findViewById(R.id.edit_category);
         editSetImage = findViewById(R.id.edit_set_image);
+        title1 = findViewById(R.id.title1);
     }
 }

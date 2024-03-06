@@ -72,6 +72,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_ISREMOVE_NOTIFICATION = "notification_category_isRemove_budget";
     public static final String COLUMN_CATEGORY_TAG_NOTIFICATION = "notification_category_tag_budget";
 
+    private static final String TABLE4 = "Profiledata";
+    private static final String COLUMN_ID_PROFILE = "id";
+    public static final String COLUMN_USER_NAME = "user_name";
+    public static final String COLUMN_USER_IMAGE = "user_image";
+
     private static final int VER = 1;
 
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "("
@@ -117,6 +122,12 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_CATEGORY_TAG_NOTIFICATION + " TEXT"
             + ")";
 
+    private static final String CREATE_TABLE_PROFILE = "CREATE TABLE " + TABLE4 + "("
+            + COLUMN_ID_PROFILE + " INTEGER PRIMARY KEY,"
+            + COLUMN_USER_NAME + " TEXT,"
+            + COLUMN_USER_IMAGE + " TEXT"
+            + ")";
+
     public DBHelper(@Nullable Context context) {
         super(context, DBNAME, null, VER);
         Log.d("TTT", "DataBase: create database");
@@ -129,6 +140,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_CATEGORY);
         sqLiteDatabase.execSQL(CREATE_TABLE_BUDGET);
         sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
+        sqLiteDatabase.execSQL(CREATE_TABLE_PROFILE);
         Log.d("TTT", "onCreate: create table");
     }
 
@@ -138,6 +150,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE1);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE2);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE3);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE4);
         onCreate(sqLiteDatabase);
     }
 
@@ -313,6 +326,30 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    //insert Data
+    public void insertProfileData(String name,String image) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_NAME, name);
+        contentValues.put(COLUMN_USER_IMAGE, image);
+
+        db.insert(TABLE4, null, contentValues);
+        db.close();
+    }
+
+    // Retrieve All Data
+    public Cursor getAllProfileData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE4, null);
+    }
+
+    // Delete Data
+    public void deleteProfileData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE4, null, null);
+        db.close();
+    }
+
     public void restoreDatabase(Context context, Uri directoryUri) {
         try {
             File originalDBFile = context.getDatabasePath(DBNAME);
@@ -331,7 +368,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void backupDatabase1(Context context, Uri directoryUri) {
+    public void backupDatabase(Context context, Uri directoryUri) {
         try {
             File originalDBFile = context.getDatabasePath(DBNAME);
             DocumentFile directory = DocumentFile.fromTreeUri(context, directoryUri);
@@ -341,7 +378,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
             if (directory.exists()) {
                 FileChannel src = new FileInputStream(originalDBFile).getChannel();
-                FileOutputStream outputStream = (FileOutputStream) context.getContentResolver().openOutputStream(backupDBFile.getUri());
+                    FileOutputStream outputStream = (FileOutputStream) context.getContentResolver().openOutputStream(backupDBFile.getUri());
                 if (outputStream != null) {
                     FileChannel dst = outputStream.getChannel();
                     dst.transferFrom(src, 0, src.size());
@@ -356,7 +393,6 @@ public class DBHelper extends SQLiteOpenHelper {
             throw new RuntimeException(e);
         }
     }
-
 //    public void backupDatabase(Context context) {
 //        try {
 //            File originalDBFile = context.getDatabasePath(DBNAME);

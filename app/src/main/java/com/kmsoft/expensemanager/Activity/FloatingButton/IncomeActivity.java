@@ -104,7 +104,7 @@ public class IncomeActivity extends AppCompatActivity {
                 if (data != null) {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
-                    categoryColor = data.getIntExtra("categoryColor",0);
+                    categoryColor = data.getIntExtra("categoryColor", 0);
                     if (!TextUtils.isEmpty(categoryName)) {
                         incomeCategoryName.setText(String.format("%s", categoryName));
                     }
@@ -161,7 +161,7 @@ public class IncomeActivity extends AppCompatActivity {
                 String amount = extractNumericPart(incomeAddAmount.getText().toString());
                 String description = incomeDescription.getText().toString();
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
-                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, categoryColor,description, addAttachmentImage, "Income");
+                incomeAndExpense = new IncomeAndExpense(0, amount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, incomeAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, "Income");
                 incomeAndExpenseArrayList.add(incomeAndExpense);
                 dbHelper.insertData(incomeAndExpense);
                 Dialog dialog = new Dialog(IncomeActivity.this);
@@ -387,6 +387,7 @@ public class IncomeActivity extends AppCompatActivity {
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             Calendar currentTime = Calendar.getInstance();
             currentTime.set(year, month, dayOfMonth);
+
             Date currentDate = new Date();
             @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             currantDate = sdf.format(currentDate);

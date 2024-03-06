@@ -42,6 +42,7 @@ import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.kmsoft.expensemanager.DBHelper;
 import com.kmsoft.expensemanager.R;
 import com.squareup.picasso.Picasso;
 
@@ -49,10 +50,9 @@ import java.io.IOException;
 
 public class EditProfileActivity extends AppCompatActivity {
 
+    DBHelper dbHelper;
     ImageView editProfileImg, setImage, back;
     EditText editProfileUsername;
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
     Button editProfile;
     Bitmap bitmap;
     ActivityResultLauncher<Intent> launchSomeActivity;
@@ -72,11 +72,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
         init();
 
-        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        dbHelper = new DBHelper(EditProfileActivity.this);
 
-        userName = sharedPreferences.getString(USER_NAME, "");
-        userImage = sharedPreferences.getString(USER_IMAGE, "");
+        userName = getIntent().getStringExtra("name");
+        userImage = getIntent().getStringExtra("image");
 
         if (TextUtils.isEmpty(userName)) {
             editProfileUsername.setHint(R.string.your_name);
@@ -102,12 +101,14 @@ public class EditProfileActivity extends AppCompatActivity {
             } else {
                 userName = editProfileUsername.getText().toString();
                 if (bitmap == null) {
-                    userImage = sharedPreferences.getString(USER_IMAGE, "");
+                    userImage = userImage;
                 } else {
                     userImage = (MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title1", null));
                 }
-                editor.putString(USER_NAME, userName).apply();
-                editor.putString(USER_IMAGE, userImage).apply();
+                if (userName != null) {
+                    dbHelper.deleteProfileData();
+                }
+                dbHelper.insertProfileData(userName, userImage);
                 onBackPressed();
             }
         });

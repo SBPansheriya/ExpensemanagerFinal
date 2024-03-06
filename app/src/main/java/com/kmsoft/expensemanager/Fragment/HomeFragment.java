@@ -85,9 +85,9 @@ public class HomeFragment extends Fragment {
     ArrayList<IncomeAndExpense> incomeList = new ArrayList<>();
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
     NestedScrollView nestedScrollView;
-    SharedPreferences sharedPreferences;
     ActivityResultLauncher<Intent> launchSomeActivity;
     String profileImage;
+    String userName;
 
 
     @Override
@@ -99,31 +99,21 @@ public class HomeFragment extends Fragment {
 
         checkPermissionsForNotification();
 
-        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
-        profileImage = sharedPreferences.getString(USER_IMAGE, "");
-
-        if (TextUtils.isEmpty(profileImage)) {
-            homeProfileImage.setImageResource(R.drawable.profile);
-        } else {
-            Picasso.get().load(profileImage).into(homeProfileImage);
-        }
-
         dbHelper = new DBHelper(getContext());
 
-        launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == Activity.RESULT_OK) {
-                Intent data = result.getData();
-                if (data != null) {
-                    profileImage = data.getStringExtra("userImage");
-                }
-                if (TextUtils.isEmpty(profileImage)) {
-                    homeProfileImage.setImageResource(R.drawable.profile);
-                } else {
-                    Picasso.get().load(profileImage).into(homeProfileImage);
-                }
-            }
-        });
+//        launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+//            if (result.getResultCode() == Activity.RESULT_OK) {
+//                Intent data = result.getData();
+//                if (data != null) {
+//                    profileImage = data.getStringExtra("userImage");
+//                }
+//                if (TextUtils.isEmpty(profileImage)) {
+//                    homeProfileImage.setImageResource(R.drawable.profile);
+//                } else {
+//                    Picasso.get().load(profileImage).into(homeProfileImage);
+//                }
+//            }
+//        });
 
         see_all.setOnClickListener(v -> {
             isStep = false;
@@ -143,7 +133,9 @@ public class HomeFragment extends Fragment {
 
         homeProfileImage.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-            launchSomeActivity.launch(intent);
+            intent.putExtra("name",userName);
+            intent.putExtra("image",profileImage);
+            startActivity(intent);
         });
 
         homeNotification.setOnClickListener(v -> {
@@ -467,6 +459,7 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Display();
+        Display1();
         populateChartWithTodayIncomeData();
         calculateTotalExpense();
         calculateTotalIncome();
@@ -803,6 +796,28 @@ public class HomeFragment extends Fragment {
             return -1;
         }
     }
+
+    private void Display1() {
+        try {
+            Cursor cursor = dbHelper.getAllProfileData();
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    userName = cursor.getString(1);
+                    profileImage = cursor.getString(2);
+
+                } while (cursor.moveToNext());
+
+                if (TextUtils.isEmpty(profileImage)) {
+                    homeProfileImage.setImageResource(R.drawable.profile);
+                } else {
+                    Picasso.get().load(profileImage).into(homeProfileImage);
+                }
+            }
+        } catch (Exception e){
+
+        }
+    }
+
 
     private void Display() {
         Cursor cursor = dbHelper.getAllData();
