@@ -133,6 +133,9 @@ public class TransactionFragment extends Fragment {
             }
         }
 
+        long currentDateMillis = System.currentTimeMillis();
+        calendarView.setMaxDate(currentDateMillis);
+
         Calendar selectedDateCalendar = Calendar.getInstance();
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
