@@ -130,6 +130,7 @@ public class ExpenseActivity extends AppCompatActivity {
             intent.putExtra("image", imageResId);
             intent.putExtra("name", categoryName);
             intent.putExtra("color", categoryColor);
+            intent.putExtra("id", categoryId);
             launchSomeActivityResult.launch(intent);
         });
 
@@ -182,8 +183,10 @@ public class ExpenseActivity extends AppCompatActivity {
                         String categoryNameBudget = cursor.getString(2);
                         int categoryImageBudget = cursor.getInt(3);
                         int percentageBudget = cursor.getInt(4);
+                        int categoryId = cursor.getInt(5);
 
-                        Budget budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget);
+
+                        Budget budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget,categoryId);
                         budgetArrayList.add(budget);
                     } while (cursor.moveToNext());
                 }

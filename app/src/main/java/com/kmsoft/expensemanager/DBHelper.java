@@ -63,6 +63,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_NAME_BUDGET = "category_name_budget";
     public static final String COLUMN_CATEGORY_IMAGE_BUDGET = "category_image_budget";
     public static final String COLUMN_PERCENTAGE_BUDGET = "percentage_budget";
+    public static final String COLUMN_CATEGORY_BUDGET_ID = "category_id";
 
     private static final String TABLE3 = "Notificationdata";
     private static final String COLUMN_ID_NOTIFICATION = "id";
@@ -72,6 +73,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_CURRENTTIME_NOTIFICATION = "notification_category_currentTime_budget";
     public static final String COLUMN_CATEGORY_ISREMOVE_NOTIFICATION = "notification_category_isRemove_budget";
     public static final String COLUMN_CATEGORY_TAG_NOTIFICATION = "notification_category_tag_budget";
+    public static final String COLUMN_CATEGORY_NOTIFICATION_ID = "notification_category_id";
 
     private static final String TABLE4 = "Profiledata";
     private static final String COLUMN_ID_PROFILE = "id";
@@ -111,7 +113,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_AMOUNT_BUDGET + " TEXT,"
             + COLUMN_CATEGORY_NAME_BUDGET + " TEXT,"
             + COLUMN_CATEGORY_IMAGE_BUDGET + " TEXT,"
-            + COLUMN_PERCENTAGE_BUDGET + " TEXT"
+            + COLUMN_PERCENTAGE_BUDGET + " TEXT,"
+            + COLUMN_CATEGORY_BUDGET_ID + " TEXT"
             + ")";
 
     private static final String CREATE_TABLE_NOTIFICATION = "CREATE TABLE " + TABLE3 + "("
@@ -121,7 +124,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_CATEGORY_IMAGE_NOTIFICATION + " TEXT,"
             + COLUMN_CATEGORY_CURRENTTIME_NOTIFICATION + " TEXT,"
             + COLUMN_CATEGORY_ISREMOVE_NOTIFICATION + " TEXT,"
-            + COLUMN_CATEGORY_TAG_NOTIFICATION + " TEXT"
+            + COLUMN_CATEGORY_TAG_NOTIFICATION + " TEXT,"
+            + COLUMN_CATEGORY_NOTIFICATION_ID + " TEXT"
             + ")";
 
     private static final String CREATE_TABLE_PROFILE = "CREATE TABLE " + TABLE4 + "("
@@ -208,6 +212,13 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteAllData(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE,  COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(id)});
+        System.out.println("########## "+ result);
+        db.close();
+    }
+
     // Retrieve All Data
     public Cursor getAllData() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -273,6 +284,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_CATEGORY_NAME_BUDGET, budget.getCategoryNameBudget());
         contentValues.put(COLUMN_CATEGORY_IMAGE_BUDGET, budget.getCategoryImageBudget());
         contentValues.put(COLUMN_PERCENTAGE_BUDGET, budget.getPercentageBudget());
+        contentValues.put(COLUMN_CATEGORY_BUDGET_ID, budget.getCategoryId());
 
         db.insert(TABLE2, null, contentValues);
         db.close();
@@ -292,6 +304,8 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_CATEGORY_NAME_BUDGET, budget.getCategoryNameBudget());
         contentValues.put(COLUMN_CATEGORY_IMAGE_BUDGET, budget.getCategoryImageBudget());
         contentValues.put(COLUMN_PERCENTAGE_BUDGET, budget.getPercentageBudget());
+        contentValues.put(COLUMN_CATEGORY_BUDGET_ID, budget.getCategoryId());
+
         db.update(TABLE2, contentValues, COLUMN_ID_BUDGET + " = ?",
                 new String[]{String.valueOf(budget.getId())});
         db.close();
@@ -304,11 +318,18 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteAllBudgetData(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE2,  COLUMN_CATEGORY_BUDGET_ID + " = ?", new String[]{String.valueOf(id)});
+        System.out.println("########## "+ result);
+        db.close();
+    }
+
 
     // Notification Curd
 
     //insert Data
-    public void insertBudgetNotificationData(String amount, String name, int image, String time, boolean isRemove, String tag) {
+    public void insertBudgetNotificationData(String amount, String name, int image, String time, boolean isRemove, String tag,int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_AMOUNT_NOTIFICATION, amount);
@@ -317,6 +338,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_CATEGORY_CURRENTTIME_NOTIFICATION, time);
         contentValues.put(COLUMN_CATEGORY_ISREMOVE_NOTIFICATION, isRemove);
         contentValues.put(COLUMN_CATEGORY_TAG_NOTIFICATION, tag);
+        contentValues.put(COLUMN_CATEGORY_NOTIFICATION_ID, id);
 
         db.insert(TABLE3, null, contentValues);
         db.close();
@@ -332,6 +354,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public void deleteAllBudgetNotificationData() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE3, null, null);
+        db.close();
+    }
+
+    public void deleteNotificationData(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE3,  COLUMN_CATEGORY_NOTIFICATION_ID + " = ?", new String[]{String.valueOf(id)});
+        System.out.println("########## "+ result);
         db.close();
     }
 

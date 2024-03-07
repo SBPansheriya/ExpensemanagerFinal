@@ -8,13 +8,15 @@ public class Budget implements Serializable {
     String categoryNameBudget;
     int categoryImageBudget;
     int percentageBudget;
+    int categoryId;
 
-    public Budget(int id, String amountBudget, String categoryNameBudget, int categoryImageBudget, int percentageBudget) {
+    public Budget(int id, String amountBudget, String categoryNameBudget, int categoryImageBudget, int percentageBudget,int categoryId) {
         this.id = id;
         this.amountBudget = amountBudget;
         this.categoryNameBudget = categoryNameBudget;
         this.categoryImageBudget = categoryImageBudget;
         this.percentageBudget = percentageBudget;
+        this.categoryId = categoryId;
     }
 
     public int getId() {
@@ -41,4 +43,11 @@ public class Budget implements Serializable {
         return percentageBudget;
     }
 
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
 }

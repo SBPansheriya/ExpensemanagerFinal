@@ -56,10 +56,10 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, POST_NOTIFICATIONS) != PackageManager.PERMISSION_DENIED) {
-                dbHelper.insertBudgetNotificationData(budget.getAmountBudget(), budget.getCategoryNameBudget(), budget.getCategoryImageBudget(), time, false, "Exceed");
+                dbHelper.insertBudgetNotificationData(budget.getAmountBudget(), budget.getCategoryNameBudget(), budget.getCategoryImageBudget(), time, false, "Exceed", budget.getCategoryId());
             }
         } else {
-            dbHelper.insertBudgetNotificationData(budget.getAmountBudget(), budget.getCategoryNameBudget(), budget.getCategoryImageBudget(), time, false, "Exceed");
+            dbHelper.insertBudgetNotificationData(budget.getAmountBudget(), budget.getCategoryNameBudget(), budget.getCategoryImageBudget(), time, false, "Exceed", budget.getCategoryId());
         }
 
         // Create notification

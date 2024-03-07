@@ -4,6 +4,7 @@ import static com.kmsoft.expensemanager.Constant.MY_COLORS;
 import static com.kmsoft.expensemanager.Constant.categories;
 import static com.kmsoft.expensemanager.Constant.categoriesImage;
 import static com.kmsoft.expensemanager.Constant.categoryArrayList;
+import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -74,6 +75,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     String getName;
     int getColor;
     int newImage;
+    int getId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         clicked = getIntent().getStringExtra("clicked");
         getImage = getIntent().getIntExtra("image", 0);
         getColor = getIntent().getIntExtra("color", 0);
+        getId = getIntent().getIntExtra("id", 0);
         getName = getIntent().getStringExtra("name");
 
         launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -352,13 +355,15 @@ public class AddCategoryActivity extends AppCompatActivity {
             yes.setOnClickListener(v12 -> {
                 if (tagFind.equals("Income")) {
                     dbHelper.deleteCategoryData(getcategory.getId());
-                    incomeCategoryList.remove(position);
                     addCategoryIncomeAdapter.updateData(incomeCategoryList);
                 } else if (tagFind.equals("Expense")) {
                     dbHelper.deleteCategoryData(getcategory.getId());
                     expenseCategoryList.remove(position);
                     addCategoryIncomeAdapter.updateData(expenseCategoryList);
                 }
+                dbHelper.deleteAllData(getcategory.getId());
+                dbHelper.deleteNotificationData(getcategory.getId());
+                dbHelper.deleteAllBudgetData(getcategory.getId());
                 categoryArrayList.remove(position);
                 bottomSheetDialog.dismiss();
 
@@ -403,7 +408,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                 }
 
                 if (!categoryFound) {
-                    if (newImage == 0){
+                    if (newImage == 0) {
                         newImage = getcategory.getCategoryImage();
                     }
                     category = new Category(getcategory.getId(), addCategoryName, newImage, tagFind, category.getColor());
@@ -508,13 +513,18 @@ public class AddCategoryActivity extends AppCompatActivity {
         return filteredList;
     }
 
-    public void getData(String name1, int image1, int categoryColor,int id1) {
+    public void getData(String name1, int image1, int categoryColor, int id1) {
         if (TextUtils.isEmpty(name1)) {
             name = getName;
         } else {
             name = name1;
         }
-        id = id1;
+
+        if (id1 == 0) {
+            id = getId;
+        } else {
+            id = id1;
+        }
 
         if (image1 == 0) {
             image = getImage;
@@ -536,13 +546,16 @@ public class AddCategoryActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(name)) {
             name = getName;
         }
+        if (id == 0) {
+            id = getId;
+        }
         if (image == 0) {
             image = getImage;
         }
         if (color == 0) {
             color = getColor;
         }
-        intent.putExtra("id",id);
+        intent.putExtra("id", id);
         intent.putExtra("categoryImage", image);
         intent.putExtra("categoryName", name);
         intent.putExtra("categoryColor", color);

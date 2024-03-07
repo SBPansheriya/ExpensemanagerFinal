@@ -69,7 +69,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     DBHelper dbHelper;
     ImageView back, setEditImage, removeImage;
     RelativeLayout editSetImage;
-    LinearLayout editAddAttachment, editShowCategory,title1;
+    LinearLayout editAddAttachment, editShowCategory, title1;
     EditText editTotalBalance;
     TextView editDescription, editCategory, editDate;
     IncomeAndExpense incomeAndExpense;
@@ -93,6 +93,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
     ArrayList<Budget> budgetArrayList = new ArrayList<>();
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
     int categoryId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +115,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
                     categoryColor = data.getIntExtra("categoryColor", 0);
-                    categoryId = data.getIntExtra("id",0);
+                    categoryId = data.getIntExtra("id", 0);
 
                     if (!TextUtils.isEmpty(categoryName)) {
                         editCategory.setText(String.format("%s", categoryName));
@@ -175,7 +176,7 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
             } else {
                 double currantDateTimeStamp = Calendar.getInstance().getTimeInMillis();
                 String reAmount = extractNumericPart(amount);
-                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), reAmount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, incomeAndExpense.getTag(),categoryId);
+                incomeAndExpense = new IncomeAndExpense(incomeAndExpense.getId(), reAmount, currantDateTimeStamp, selectedDateTimeStamp, currantDate, selectedDate, dayName, editAddTime, categoryName, imageResId, categoryColor, description, addAttachmentImage, incomeAndExpense.getTag(), categoryId);
                 dbHelper.updateData(incomeAndExpense);
 
                 Cursor cursor = dbHelper.getAllBudgetData();
@@ -187,8 +188,9 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
                         String categoryNameBudget = cursor.getString(2);
                         int categoryImageBudget = cursor.getInt(3);
                         int percentageBudget = cursor.getInt(4);
+                        int categoryId = cursor.getInt(5);
 
-                        Budget budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget);
+                        Budget budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget, categoryId);
                         budgetArrayList.add(budget);
                     } while (cursor.moveToNext());
                 }
@@ -221,9 +223,26 @@ public class EditDetailsTransactionActivity extends AppCompatActivity {
         editShowCategory.setOnClickListener(v -> {
             Intent intent = new Intent(EditDetailsTransactionActivity.this, AddCategoryActivity.class);
             intent.putExtra("clicked", incomeAndExpense.getTag());
-            intent.putExtra("image", imageResId);
-            intent.putExtra("name", categoryName);
-            intent.putExtra("color", categoryColor);
+            if (imageResId == 0) {
+                intent.putExtra("image", incomeAndExpense.getCategoryImage());
+            } else {
+                intent.putExtra("image", imageResId);
+            }
+            if (TextUtils.isEmpty(categoryName)) {
+                intent.putExtra("name", incomeAndExpense.getCategoryName());
+            } else {
+                intent.putExtra("name", categoryName);
+            }
+            if (categoryColor == 0) {
+                intent.putExtra("color", incomeAndExpense.getCategoryColor());
+            } else {
+                intent.putExtra("color", categoryColor);
+            }
+            if (categoryId == 0) {
+                intent.putExtra("id", incomeAndExpense.getCategoryId());
+            } else {
+                intent.putExtra("id", categoryId);
+            }
             launchSomeActivityResult.launch(intent);
         });
 

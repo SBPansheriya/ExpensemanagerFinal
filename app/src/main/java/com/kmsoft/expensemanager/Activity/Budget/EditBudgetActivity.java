@@ -53,6 +53,7 @@ public class EditBudgetActivity extends AppCompatActivity {
     int imageResId;
     String categoryName;
     Gson gson;
+    int categoryId;
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
 
     @Override
@@ -83,6 +84,7 @@ public class EditBudgetActivity extends AppCompatActivity {
                 if (data != null) {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
+                    categoryId = data.getIntExtra("id", 0);
                     if (!TextUtils.isEmpty(categoryName)) {
                         editBudgetCategoryName.setText(String.format("%s", categoryName));
                     }
@@ -94,9 +96,23 @@ public class EditBudgetActivity extends AppCompatActivity {
 
         editBudgetCategory.setOnClickListener(v -> {
             Intent intent = new Intent(EditBudgetActivity.this, AddCategoryActivity.class);
+            if (imageResId == 0) {
+                intent.putExtra("image", budget.getCategoryImageBudget());
+            } else {
+                intent.putExtra("image", imageResId);
+            }
+            if (TextUtils.isEmpty(categoryName)) {
+                intent.putExtra("name", budget.getCategoryNameBudget());
+            } else {
+                intent.putExtra("name", categoryName);
+            }
+            if (categoryId == 0) {
+                intent.putExtra("id", budget.getCategoryId());
+            } else {
+                intent.putExtra("id", categoryId);
+            }
             intent.putExtra("clicked", "Income");
-            intent.putExtra("image", budget.getCategoryImageBudget());
-            intent.putExtra("name", budget.getCategoryNameBudget());
+
             launchSomeActivityResult.launch(intent);
         });
 
@@ -139,15 +155,18 @@ public class EditBudgetActivity extends AppCompatActivity {
                 if (imageResId == 0) {
                     imageResId = budget.getCategoryImageBudget();
                 }
+                if (categoryId == 0) {
+                    categoryId = budget.getCategoryId();
+                }
 
                 for (int i = 0; i < budgetArrayList.size(); i++) {
                     if (budgetArrayList.get(i).getCategoryNameBudget().equalsIgnoreCase(categoryName)) {
                         if (!existingCategoryName.equalsIgnoreCase(budgetArrayList.get(i).getCategoryNameBudget())) {
-                            budget = new Budget(budgetArrayList.get(i).getId(), amount, categoryName, imageResId, percentage);
+                            budget = new Budget(budgetArrayList.get(i).getId(), amount, categoryName, imageResId, percentage, categoryId);
                             dbHelper.updateBudgetData(budget);
                             dbHelper.deleteBudgetData(existingId);
                         } else {
-                            budget = new Budget(existingId, amount, categoryName, imageResId, percentage);
+                            budget = new Budget(existingId, amount, categoryName, imageResId, percentage, categoryId);
                             dbHelper.updateBudgetData(budget);
                         }
                         categoryFound = true;
@@ -156,11 +175,10 @@ public class EditBudgetActivity extends AppCompatActivity {
                 }
 
                 if (!categoryFound) {
-                    budget = new Budget(budget.getId(), amount, categoryName, imageResId, percentage);
+                    budget = new Budget(budget.getId(), amount, categoryName, imageResId, percentage, categoryId);
                     dbHelper.updateBudgetData(budget);
                 }
                 budgetArrayList.add(budget);
-
                 expenseList = filterCategories(incomeAndExpenseArrayList);
 
                 double totalExpense = 0;

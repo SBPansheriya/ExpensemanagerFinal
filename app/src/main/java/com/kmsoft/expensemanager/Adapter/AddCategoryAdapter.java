@@ -1,6 +1,7 @@
 package com.kmsoft.expensemanager.Adapter;
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,14 +51,13 @@ public class AddCategoryAdapter extends RecyclerView.Adapter<AddCategoryAdapter.
 
         holder.editCategory.setOnClickListener(v -> addCategoryActivity.showEditNewCategoryBottomDialog(categoryArrayList.get(position), position));
 
-//        if (!TextUtils.isEmpty(name)) {
-//            if (TextUtils.equals(name, categoryArrayList.get(position).getCategoryName())) {
-//                holder.checkbox.setChecked(true);
-//            } else {
-//                holder.checkbox.setChecked(false);
-//            }
-//        }
-
+        if (!TextUtils.isEmpty(name)) {
+            if (TextUtils.equals(name, categoryArrayList.get(position).getCategoryName())) {
+                holder.checkbox.setChecked(true);
+            } else {
+                holder.checkbox.setChecked(false);
+            }
+        }
         holder.itemView.setOnClickListener(view -> holder.checkbox.performClick());
 
         holder.checkbox.setOnClickListener(v -> {

@@ -65,10 +65,10 @@ public class MyAlarmReceiver extends BroadcastReceiver {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, POST_NOTIFICATIONS) != PackageManager.PERMISSION_DENIED) {
-                dbHelper.insertBudgetNotificationData("", "", 0, time, false, "Reminder");
+                dbHelper.insertBudgetNotificationData("", "", 0, time, false, "Reminder",0);
             }
         } else {
-            dbHelper.insertBudgetNotificationData("", "", 0, time, false, "Reminder");
+            dbHelper.insertBudgetNotificationData("", "", 0, time, false, "Reminder",0);
         }
 
         // Create notification

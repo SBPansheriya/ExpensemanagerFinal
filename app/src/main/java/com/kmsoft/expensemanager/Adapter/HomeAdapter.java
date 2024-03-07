@@ -3,6 +3,7 @@ package com.kmsoft.expensemanager.Adapter;
 import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.ViewHolder holder, int position) {
         IncomeAndExpense incomeAndExpense = incomeAndExpenseArrayList.get(position);
+
         holder.itemName.setText(incomeAndExpense.getCategoryName());
         holder.itemDescription.setText(incomeAndExpense.getDescription());
         holder.itemDate.setText(incomeAndExpense.getTime());

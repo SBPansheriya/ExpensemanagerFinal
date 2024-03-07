@@ -86,11 +86,20 @@ public class BudgetFragment extends Fragment {
             do {
                 int id = cursor.getInt(0);
                 String amountBudget = cursor.getString(1);
-                String categoryNameBudget = cursor.getString(2);
-                int categoryImageBudget = cursor.getInt(3);
                 int percentageBudget = cursor.getInt(4);
+                int categoryId = cursor.getInt(5);
 
-                budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget);
+                String categoryNameBudget = null;
+                int categoryImageBudget = 0;
+                Cursor cursor1 = dbHelper.getCategory(categoryId);
+                if (cursor1 != null && cursor1.moveToFirst()) {
+                    do {
+                        categoryImageBudget = cursor1.getInt(2);
+                        categoryNameBudget = cursor1.getString(1);
+                    } while (cursor1.moveToNext());
+                }
+
+                budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget,categoryId);
                 budgetArrayList.add(budget);
 
             } while (cursor.moveToNext());

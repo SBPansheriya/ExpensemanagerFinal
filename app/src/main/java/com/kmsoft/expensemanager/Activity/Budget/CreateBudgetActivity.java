@@ -1,6 +1,5 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
-
 import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
@@ -51,6 +50,7 @@ public class CreateBudgetActivity extends AppCompatActivity {
     ArrayList<Budget> budgetArrayList;
     ArrayList<IncomeAndExpense> expenseList = new ArrayList<>();
     Gson gson;
+    int categoryId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +76,7 @@ public class CreateBudgetActivity extends AppCompatActivity {
                 if (data != null) {
                     imageResId = data.getIntExtra("categoryImage", 0);
                     categoryName = data.getStringExtra("categoryName");
+                    categoryId = data.getIntExtra("id",0);
                     if (!TextUtils.isEmpty(categoryName)) {
                         budgetCategoryName.setText(String.format("%s", categoryName));
                     }
@@ -129,7 +130,7 @@ public class CreateBudgetActivity extends AppCompatActivity {
 
                 if (!categoryFound) {
                     String amount = extractNumericPart(createBudgetAmount.getText().toString());
-                    budget = new Budget(0, amount, categoryName, imageResId, percentageBudget);
+                    budget = new Budget(0, amount, categoryName, imageResId, percentageBudget,categoryId);
                     budgetArrayList.add(budget);
                     dbHelper.insertBudgetData(budget);
 
@@ -163,6 +164,8 @@ public class CreateBudgetActivity extends AppCompatActivity {
             intent.putExtra("clicked", "Expense");
             intent.putExtra("image", imageResId);
             intent.putExtra("name", categoryName);
+            intent.putExtra("id", categoryId);
+
             launchSomeActivityResult.launch(intent);
         });
     }

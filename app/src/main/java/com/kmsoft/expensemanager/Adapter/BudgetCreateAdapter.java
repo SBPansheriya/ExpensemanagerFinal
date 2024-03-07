@@ -72,6 +72,7 @@ public class BudgetCreateAdapter extends RecyclerView.Adapter<BudgetCreateAdapte
                     if (tag.equals("Expense")) {
                         total += amount;
                     }
+
                     double budgetAmountValue = Double.parseDouble(extractNumericPart(budget.getAmountBudget()));
 
                     DecimalFormat df = new DecimalFormat("#");

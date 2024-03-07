@@ -81,11 +81,22 @@ public class NotificationActivity extends AppCompatActivity {
                 do {
                     int id = cursor.getInt(0);
                     String amount = cursor.getString(1);
-                    String name = cursor.getString(2);
-                    int image = cursor.getInt(3);
+//                    String name = cursor.getString(2);
+//                    int image = cursor.getInt(3);
                     String currentTime = cursor.getString(4);
                     String isRemove = cursor.getString(5);
                     String tag = cursor.getString(6);
+                    int categoryId = cursor.getInt(7);
+
+                    String name = null;
+                    int image = 0;
+                    Cursor cursor1 = dbHelper.getCategory(categoryId);
+                    if (cursor1 != null && cursor1.moveToFirst()) {
+                        do {
+                            image = cursor1.getInt(2);
+                            name = cursor1.getString(1);
+                        } while (cursor1.moveToNext());
+                    }
 
                     BudgetNotification notification = new BudgetNotification(id, amount, name, image, currentTime, isRemove, tag);
                     notificationsList.add(notification);
