@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Activity.FloatingButton;
 
+import static com.kmsoft.expensemanager.Activity.FloatingButton.IncomeActivity.clickable;
 import static com.kmsoft.expensemanager.Constant.MY_COLORS;
 import static com.kmsoft.expensemanager.Constant.categories;
 import static com.kmsoft.expensemanager.Constant.categoriesImage;
@@ -353,8 +354,10 @@ public class AddCategoryActivity extends AppCompatActivity {
             });
 
             yes.setOnClickListener(v12 -> {
+                clickable = 1;
                 if (tagFind.equals("Income")) {
                     dbHelper.deleteCategoryData(getcategory.getId());
+                    incomeCategoryList.remove(position);
                     addCategoryIncomeAdapter.updateData(incomeCategoryList);
                 } else if (tagFind.equals("Expense")) {
                     dbHelper.deleteCategoryData(getcategory.getId());

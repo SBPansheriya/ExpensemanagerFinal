@@ -1,6 +1,7 @@
 package com.kmsoft.expensemanager.Activity.FloatingButton;
 
 import static android.Manifest.permission_group.CAMERA;
+import static com.kmsoft.expensemanager.Activity.FloatingButton.IncomeActivity.clickable;
 import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.CLICK_KEY;
 import static com.kmsoft.expensemanager.Activity.SplashActivity.PREFS_NAME;
@@ -114,7 +115,13 @@ public class ExpenseActivity extends AppCompatActivity {
                     categoryId = data.getIntExtra("id", 0);
 
                     if (!TextUtils.isEmpty(categoryName)) {
-                        expenseCategoryName.setText(String.format("%s", categoryName));
+                        if (clickable == 1) {
+                            expenseCategoryName.setText("");
+                            categoryName = "";
+                            clickable = 0;
+                        } else {
+                            expenseCategoryName.setText(String.format("%s", categoryName));
+                        }
                     }
                 }
             }
@@ -186,7 +193,7 @@ public class ExpenseActivity extends AppCompatActivity {
                         int categoryId = cursor.getInt(5);
 
 
-                        Budget budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget,categoryId);
+                        Budget budget = new Budget(id, amountBudget, categoryNameBudget, categoryImageBudget, percentageBudget, categoryId);
                         budgetArrayList.add(budget);
                     } while (cursor.moveToNext());
                 }

@@ -1,5 +1,6 @@
 package com.kmsoft.expensemanager.Activity.Budget;
 
+import static com.kmsoft.expensemanager.Activity.FloatingButton.IncomeActivity.clickable;
 import static com.kmsoft.expensemanager.Activity.MainActivity.currencySymbol;
 import static com.kmsoft.expensemanager.Constant.incomeAndExpenseArrayList;
 
@@ -78,7 +79,13 @@ public class CreateBudgetActivity extends AppCompatActivity {
                     categoryName = data.getStringExtra("categoryName");
                     categoryId = data.getIntExtra("id",0);
                     if (!TextUtils.isEmpty(categoryName)) {
-                        budgetCategoryName.setText(String.format("%s", categoryName));
+                        if (clickable == 1) {
+                            categoryName = "";
+                            budgetCategoryName.setText("");
+                            clickable = 0;
+                        } else {
+                            budgetCategoryName.setText(String.format("%s", categoryName));
+                        }
                     }
                 }
             }
@@ -112,6 +119,8 @@ public class CreateBudgetActivity extends AppCompatActivity {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(budgetAmount)) {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            } else if (TextUtils.isEmpty(budgetCategoryName.getText().toString())) {
+                Toast.makeText(CreateBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else if (TextUtils.isEmpty(categoryName)) {
                 Toast.makeText(CreateBudgetActivity.this, "Please enter a valid category", Toast.LENGTH_SHORT).show();
             } else {

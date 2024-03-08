@@ -60,6 +60,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class IncomeActivity extends AppCompatActivity {
+    private static final int CAMERA_REQUEST = 101;
+    public static int clickable = 0;
 
     DBHelper dbHelper;
     IncomeAndExpense incomeAndExpense = new IncomeAndExpense();
@@ -76,7 +78,6 @@ public class IncomeActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launchSomeActivity;
     ActivityResultLauncher<CropImageContractOptions> cropImage;
     ActivityResultLauncher<Intent> launchSomeActivityResult;
-    private static final int CAMERA_REQUEST = 101;
     int click;
     int imageResId;
     double selectedDateTimeStamp;
@@ -108,7 +109,13 @@ public class IncomeActivity extends AppCompatActivity {
                     categoryColor = data.getIntExtra("categoryColor", 0);
                     categoryId = data.getIntExtra("id", 0);
                     if (!TextUtils.isEmpty(categoryName)) {
-                        incomeCategoryName.setText(String.format("%s", categoryName));
+                        if (clickable == 1) {
+                            incomeCategoryName.setText("");
+                            categoryName = "";
+                            clickable = 0;
+                        } else {
+                            incomeCategoryName.setText(String.format("%s", categoryName));
+                        }
                     }
                 }
             }
